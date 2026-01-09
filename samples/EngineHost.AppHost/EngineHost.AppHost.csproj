@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Sdk Name="Aspire.AppHost.Sdk" Version="9.5.2" />
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>545af734-6880-4874-a133-00e736d4eee9</UserSecretsId>
+    <!-- https://github.com/dotnet/aspire/issues/6184 -->
+    <RestorePackagesWithLockFile>false</RestorePackagesWithLockFile>
+    <RestoreLockedMode>false</RestoreLockedMode>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.AppHost" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\EngineHost\EngineHost.csproj" />
+    <ProjectReference Include="..\Aspire.Hosting.Mosquitto\Aspire.Hosting.Mosquitto.csproj" IsAspireProjectResource="false" />
+  </ItemGroup>
+
+</Project>

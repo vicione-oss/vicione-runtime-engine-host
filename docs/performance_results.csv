@@ -1,0 +1,127 @@
+Gerät,Prozessor,Arbeitsspeicher (GB),OS,BenchmarkDotNet,.NET SDK,.NET,Kommunikationspartner,Standort Kommunikationspartner,Anbindung (MBit),Werte (insgesamt),Connectoren oder Links (insgesamt),Technologie,Protokoll,Art,Richtung,Durchsatz (Werte/s)
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,10,1,Direct,,External,IncomingAndOutgoing,365674.1
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,10,10,Direct,,External,IncomingAndOutgoing,1765908.5
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,10,2,Direct,,External,IncomingAndOutgoing,716186.1
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,10,5,Direct,,External,IncomingAndOutgoing,1306582.8
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,100,1,Direct,,External,IncomingAndOutgoing,367653.3
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,100,10,Direct,,External,IncomingAndOutgoing,2771027.8
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,100,100,Direct,,External,IncomingAndOutgoing,3371032.4
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,100,5,Direct,,External,IncomingAndOutgoing,1655647.8
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,100,50,Direct,,External,IncomingAndOutgoing,4488518.3
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,1000,1,Direct,,External,IncomingAndOutgoing,398214.5
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,1000,100,Direct,,External,IncomingAndOutgoing,7799345.2
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,1000,1000,Direct,,External,IncomingAndOutgoing,3243504.6
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,1000,50,Direct,,External,IncomingAndOutgoing,7033489
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,1000,500,Direct,,External,IncomingAndOutgoing,5222331.5
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,10,1,Direct,,External,Incoming,10887537.4
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,10,10,Direct,,External,Incoming,3709640.5
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,10,2,Direct,,External,Incoming,9461863.1
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,10,5,Direct,,External,Incoming,5734031.4
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,100,1,Direct,,External,Incoming,23349920.5
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,100,10,Direct,,External,Incoming,17055345.4
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,100,100,Direct,,External,Incoming,4233774.8
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,100,5,Direct,,External,Incoming,20078490.2
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,100,50,Direct,,External,Incoming,7522433.2
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,1000,1,Direct,,External,Incoming,26290865.8
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,1000,100,Direct,,External,Incoming,18852283.8
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,1000,1000,Direct,,External,Incoming,4015037
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,1000,50,Direct,,External,Incoming,21025524
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,1000,500,Direct,,External,Incoming,7112449.4
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,10,1,Direct,,External,Outgoing,339531
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,10,10,Direct,,External,Outgoing,3343439.2
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,10,2,Direct,,External,Outgoing,746500.3
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,10,5,Direct,,External,Outgoing,1812281.9
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,100,1,Direct,,External,Outgoing,392527
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,100,10,Direct,,External,Outgoing,2916280.4
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,100,100,Direct,,External,Outgoing,14071583.9
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,100,5,Direct,,External,Outgoing,1821401.1
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,100,50,Direct,,External,Outgoing,9759466.4
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,1000,1,Direct,,External,Outgoing,347471
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,1000,100,Direct,,External,Outgoing,13516780.9
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,1000,1000,Direct,,External,Outgoing,19583876.5
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,1000,50,Direct,,External,Outgoing,10680477.8
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,,Selber Prozess,,1000,500,Direct,,External,Outgoing,19752381.1
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,MQTTnet 4.2.1.781,Selber Prozess,,10,1,Mqtt,TCP,External,IncomingAndOutgoing,544.4
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,MQTTnet 4.2.1.781,Selber Prozess,,10,10,Mqtt,TCP,External,IncomingAndOutgoing,539.5
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,MQTTnet 4.2.1.781,Selber Prozess,,10,2,Mqtt,TCP,External,IncomingAndOutgoing,588.9
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,MQTTnet 4.2.1.781,Selber Prozess,,10,5,Mqtt,TCP,External,IncomingAndOutgoing,598.3
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,MQTTnet 4.2.1.781,Selber Prozess,,100,1,Mqtt,TCP,External,IncomingAndOutgoing,5265.1
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,MQTTnet 4.2.1.781,Selber Prozess,,100,10,Mqtt,TCP,External,IncomingAndOutgoing,5250.6
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,MQTTnet 4.2.1.781,Selber Prozess,,100,100,Mqtt,TCP,External,IncomingAndOutgoing,5271.9
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,MQTTnet 4.2.1.781,Selber Prozess,,100,5,Mqtt,TCP,External,IncomingAndOutgoing,5286.1
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,MQTTnet 4.2.1.781,Selber Prozess,,100,50,Mqtt,TCP,External,IncomingAndOutgoing,5278.9
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,MQTTnet 4.2.1.781,Selber Prozess,,1000,1,Mqtt,TCP,External,IncomingAndOutgoing,20384.1
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,MQTTnet 4.2.1.781,Selber Prozess,,1000,100,Mqtt,TCP,External,IncomingAndOutgoing,20874.1
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,MQTTnet 4.2.1.781,Selber Prozess,,1000,1000,Mqtt,TCP,External,IncomingAndOutgoing,15915.2
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,MQTTnet 4.2.1.781,Selber Prozess,,1000,50,Mqtt,TCP,External,IncomingAndOutgoing,20428.9
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,MQTTnet 4.2.1.781,Selber Prozess,,1000,500,Mqtt,TCP,External,IncomingAndOutgoing,19369.6
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,,10,1,Mqtt,TCP,External,IncomingAndOutgoing,175.1
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,,10,10,Mqtt,TCP,External,IncomingAndOutgoing,173.6
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,,10,2,Mqtt,TCP,External,IncomingAndOutgoing,171.8
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,,10,5,Mqtt,TCP,External,IncomingAndOutgoing,172.7
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,,100,1,Mqtt,TCP,External,IncomingAndOutgoing,1613.4
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,,100,10,Mqtt,TCP,External,IncomingAndOutgoing,1586.1
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,,100,100,Mqtt,TCP,External,IncomingAndOutgoing,1632.8
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,,100,5,Mqtt,TCP,External,IncomingAndOutgoing,1594.4
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,,100,50,Mqtt,TCP,External,IncomingAndOutgoing,1580.1
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,,1000,1,Mqtt,TCP,External,IncomingAndOutgoing,2720.3
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,,1000,100,Mqtt,TCP,External,IncomingAndOutgoing,2088.7
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,,1000,1000,Mqtt,TCP,External,IncomingAndOutgoing,1916.7
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,,1000,50,Mqtt,TCP,External,IncomingAndOutgoing,2224.9
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,,1000,500,Mqtt,TCP,External,IncomingAndOutgoing,2230.7
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,,10,1,Mqtt,WebSocket,External,IncomingAndOutgoing,173.9
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,,10,10,Mqtt,WebSocket,External,IncomingAndOutgoing,178.2
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,,10,2,Mqtt,WebSocket,External,IncomingAndOutgoing,173.6
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,,10,5,Mqtt,WebSocket,External,IncomingAndOutgoing,174.4
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,,100,1,Mqtt,WebSocket,External,IncomingAndOutgoing,1569.9
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,,100,10,Mqtt,WebSocket,External,IncomingAndOutgoing,1582.6
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,,100,100,Mqtt,WebSocket,External,IncomingAndOutgoing,1572.5
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,,100,5,Mqtt,WebSocket,External,IncomingAndOutgoing,1575.7
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,,100,50,Mqtt,WebSocket,External,IncomingAndOutgoing,1564.7
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,,1000,1,Mqtt,WebSocket,External,IncomingAndOutgoing,2424.6
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,,1000,100,Mqtt,WebSocket,External,IncomingAndOutgoing,1973.8
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,,1000,1000,Mqtt,WebSocket,External,IncomingAndOutgoing,1846.6
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,,1000,50,Mqtt,WebSocket,External,IncomingAndOutgoing,1761.3
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,,1000,500,Mqtt,WebSocket,External,IncomingAndOutgoing,1933.1
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,MQTTnet 4.2.1.781,Selber Prozess,,10,1,Mqtt,TCP,Persistence,Outgoing,23086.5
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,MQTTnet 4.2.1.781,Selber Prozess,,10,10,Mqtt,TCP,Persistence,Outgoing,23731.4
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,MQTTnet 4.2.1.781,Selber Prozess,,10,2,Mqtt,TCP,Persistence,Outgoing,23549.8
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,MQTTnet 4.2.1.781,Selber Prozess,,10,5,Mqtt,TCP,Persistence,Outgoing,24008.5
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,MQTTnet 4.2.1.781,Selber Prozess,,100,1,Mqtt,TCP,Persistence,Outgoing,24576.5
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,MQTTnet 4.2.1.781,Selber Prozess,,100,10,Mqtt,TCP,Persistence,Outgoing,24587
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,MQTTnet 4.2.1.781,Selber Prozess,,100,100,Mqtt,TCP,Persistence,Outgoing,23564
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,MQTTnet 4.2.1.781,Selber Prozess,,100,5,Mqtt,TCP,Persistence,Outgoing,25388.1
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,MQTTnet 4.2.1.781,Selber Prozess,,100,50,Mqtt,TCP,Persistence,Outgoing,24378.1
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,MQTTnet 4.2.1.781,Selber Prozess,,1000,1,Mqtt,TCP,Persistence,Outgoing,24737.7
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,MQTTnet 4.2.1.781,Selber Prozess,,1000,100,Mqtt,TCP,Persistence,Outgoing,23653.1
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,MQTTnet 4.2.1.781,Selber Prozess,,1000,1000,Mqtt,TCP,Persistence,Outgoing,13813.5
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,MQTTnet 4.2.1.781,Selber Prozess,,1000,50,Mqtt,TCP,Persistence,Outgoing,24752.7
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,MQTTnet 4.2.1.781,Selber Prozess,,1000,500,Mqtt,TCP,Persistence,Outgoing,18024.8
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,1000,10,1,Mqtt,TCP,Persistence,Outgoing,13864
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,1000,10,10,Mqtt,TCP,Persistence,Outgoing,13901.1
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,1000,10,2,Mqtt,TCP,Persistence,Outgoing,13716
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,1000,10,5,Mqtt,TCP,Persistence,Outgoing,13683.2
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,1000,100,1,Mqtt,TCP,Persistence,Outgoing,14077.7
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,1000,100,10,Mqtt,TCP,Persistence,Outgoing,13915.4
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,1000,100,100,Mqtt,TCP,Persistence,Outgoing,11807.2
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,1000,100,5,Mqtt,TCP,Persistence,Outgoing,13223.1
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,1000,100,50,Mqtt,TCP,Persistence,Outgoing,11710.9
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,1000,1000,1,Mqtt,TCP,Persistence,Outgoing,14594.5
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,1000,1000,100,Mqtt,TCP,Persistence,Outgoing,11672.4
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,1000,1000,1000,Mqtt,TCP,Persistence,Outgoing,13091.6
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,1000,1000,50,Mqtt,TCP,Persistence,Outgoing,11486.5
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,1000,1000,500,Mqtt,TCP,Persistence,Outgoing,10874.1
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,1000,10,1,Mqtt,WebSocket,Persistence,Outgoing,14290.8
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,1000,10,10,Mqtt,WebSocket,Persistence,Outgoing,14963.1
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,1000,10,2,Mqtt,WebSocket,Persistence,Outgoing,14927.6
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,1000,10,5,Mqtt,WebSocket,Persistence,Outgoing,15276.8
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,1000,100,1,Mqtt,WebSocket,Persistence,Outgoing,16299
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,1000,100,10,Mqtt,WebSocket,Persistence,Outgoing,15055.2
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,1000,100,100,Mqtt,WebSocket,Persistence,Outgoing,13647.6
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,1000,100,5,Mqtt,WebSocket,Persistence,Outgoing,14615
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,1000,100,50,Mqtt,WebSocket,Persistence,Outgoing,13295.5
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,1000,1000,1,Mqtt,WebSocket,Persistence,Outgoing,15637.5
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,1000,1000,100,Mqtt,WebSocket,Persistence,Outgoing,13435.9
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,1000,1000,1000,Mqtt,WebSocket,Persistence,Outgoing,16146.5
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,1000,1000,50,Mqtt,WebSocket,Persistence,Outgoing,15420.2
+Dell XPS15,i7-7700HQ,16,Windows 10.0.19045,v0.13.6,7.0.306,7.0.9,HiveMQ 4.16.0,Selber Host,1000,1000,500,Mqtt,WebSocket,Persistence,Outgoing,15082.4

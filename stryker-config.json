@@ -1,0 +1,16 @@
+{
+    "stryker-config": {
+        "ignore-methods": [
+            "ConfigureAwait"
+        ],
+        "mutation-level": "Complete",
+        "mutate": [
+            "!**Contracts**",
+            "!**Common.Tests**"
+        ],
+        "reporters": [
+            "html",
+            "progress"
+        ]
+    }
+}

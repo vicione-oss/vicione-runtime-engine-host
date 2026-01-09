@@ -1,0 +1,163 @@
+include:
+  - project: 'acx/tooling/templates'
+    file: '/CI-Templates/v2/dotnet.yml'
+  - project: 'acx/tooling/ci-templates'
+    file: '/project/v1/dotnet.yml'
+
+default:
+  image: mcr.microsoft.com/dotnet/sdk:9.0
+
+Build:
+  extends: .dotnet-build
+
+xUnit:
+  extends: .dotnet-test-xunit
+
+Prerelease CommunicationContracts NuGet:
+  extends: .dotnet-deploy-nuget
+  variables:
+    PROJECT: 'src/CommunicationContracts/CommunicationContracts.csproj'
+    REPO: 'JFrogViciOne'
+
+Release CommunicationContracts NuGet:
+  extends: .dotnet-release-nuget
+  variables:
+    PROJECT: 'src/CommunicationContracts/CommunicationContracts.csproj'
+    REPO: 'JFrogViciOne'
+
+markdown:
+  extends: .dotnet-test-xunit
+  variables: null
+  artifacts: null
+  image:
+    name: jfrog.i40.ifm-datalink.net:443/docker-remote/davidanson/markdownlint-cli2:latest
+    entrypoint: ["/bin/sh", "-c"]
+  script:
+    - markdownlint-cli2 "/builds/**/*.md"
+
+Prerelease EngineHost Raw:
+  extends: .dotnet-deploy-raw-rids
+  variables:
+    SERVER: 'https://ifm.jfrog.io/artifactory/vicione-suite-dev'
+    USER: ${Raw_User_RW_JFrog}
+    PASSWORD: ${Raw_PW_RW_JFrog}
+    PROJECT: 'src/EngineHost/EngineHost.csproj'
+    DST_DIRECTORY: 'enginehost'
+    SELF_CONTAINED: 'true'
+    METADATA_FILE: 'src/EngineHost/metadata.json'
+    METADATA_VERSION_FILE: 'VERSION'
+    METADATA_MIN_VERSION_FILE: 'VERSION_CORE'
+    METADATA_MIN_VERSION_KEY: 'MinCoreVersion'
+  after_script:
+    - !reference [.push-metadata]
+
+Release EngineHost Raw:
+  extends: .dotnet-release-raw-rids
+  variables:
+    SERVER: 'https://ifm.jfrog.io/artifactory/vicione-suite-staging'
+    USER: ${Raw_User_RW_JFrog}
+    PASSWORD: ${Raw_PW_RW_JFrog}
+    PROJECT: 'src/EngineHost/EngineHost.csproj'
+    DST_DIRECTORY: 'enginehost'
+    SELF_CONTAINED: 'true'
+    METADATA_FILE: 'src/EngineHost/metadata.json'
+    METADATA_VERSION_FILE: 'VERSION'
+    METADATA_MIN_VERSION_FILE: 'VERSION_CORE'
+    METADATA_MIN_VERSION_KEY: 'MinCoreVersion'
+  after_script:
+    - !reference [.push-metadata]
+
+.release_job: &release_job
+  stage: release
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_COMMIT_REF_PROTECTED == "true"
+
+.git_version: &git_version
+  image:
+    name: gittools/gitversion:6.4.0-alpine.3.21-9.0
+    entrypoint: [""]
+  variables:
+    GIT_STRATEGY: fetch
+    GIT_DEPTH: 0
+  tags:
+    - docker
+
+Get version:
+  stage: .pre
+  <<: *git_version
+  script:
+    - /tools/dotnet-gitversion /output json /format "VERSION={SemVer}" > version.env
+  artifacts:
+    reports:
+      dotenv: version.env
+
+# https://docs.gitlab.com/ee/user/project/releases/release_cicd_examples.html#create-release-metadata-in-a-custom-script
+Get next version:
+  <<: *release_job
+  when: manual
+  dependencies: [] # Does not need any artifacts of previous stages
+  <<: *git_version
+  script:
+    - |
+      NextVersion=$(/tools/dotnet-gitversion /output json /format "{MajorMinorPatch}")
+      echo "NEXTVERSION=${NextVersion}" > nextversion.env
+    - |
+      echo -e "🚩"
+      echo -e "🚩 Version for next release \e[31m${NextVersion}\e[0m 🚀"
+      echo -e "🚩"
+  artifacts:
+    reports:
+      dotenv: nextversion.env
+
+Confirm next version:
+  <<: *release_job
+  when: manual
+  manual_confirmation: "Are you sure you want to create a release with the version found in the previous job? If not, run the job with a custom value for variable Version."
+  needs:
+    - job: Get next version
+  variables:
+    Version: $NEXTVERSION
+  tags:
+    - linux
+  script:
+    - echo "NEXTVERSION=${Version}" > nextversion.env
+  artifacts:
+    reports:
+      dotenv: nextversion.env
+
+Get changelog:
+  <<: *release_job
+  needs:
+    - job: Confirm next version
+  tags:
+    - linux
+  script:
+    - sed "0,/^## ${NEXTVERSION}/d;/^## /Q" CHANGELOG.md | sed '1d;$d' > changelog.md
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - changelog.md
+
+Create release:
+  <<: *release_job
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  needs:
+    - job: Confirm next version
+    - job: Get changelog
+  tags:
+    - docker
+    - x64
+  # https://docs.gitlab.com/ee/ci/yaml/index.html#release
+  script:
+    - echo "" # unfortunately mandatory and addressed in https://gitlab.com/gitlab-org/gitlab/-/issues/223856
+  release:
+    tag_name: 'v$NEXTVERSION'
+    tag_message: 'Version $NEXTVERSION'
+    name: 'v$NEXTVERSION'
+    description: './changelog.md'
+
+# Public Release
+Public Release Raw:
+  extends: .dotnet-release-public

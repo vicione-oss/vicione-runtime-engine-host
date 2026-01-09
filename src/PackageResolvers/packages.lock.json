@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "dependencies": {
+    "net9.0": {
+      "Microsoft.Extensions.DependencyModel": {
+        "type": "Direct",
+        "requested": "[9.0.10, )",
+        "resolved": "9.0.10",
+        "contentHash": "qCIWxEPt6Y9Z/Vx2R6JsfX7pwxIHC2GYlkcFbTox3MpsiNexyLkvPFTNsfmAaKpjTZ6FhNmvY3BdrwLX4+X0cQ=="
+      },
+      "Testably.Abstractions": {
+        "type": "Direct",
+        "requested": "[10.0.0, )",
+        "resolved": "10.0.0",
+        "contentHash": "TITBSFn9H5iRntBB+VGfJ1SRq8T3mq3JiqSV340S9InQc+PahLWGmJk1q52AJOrsUzQwyczGr1F0e3NmS3k3ww==",
+        "dependencies": {
+          "Testably.Abstractions.Interface": "10.0.0-pre.1"
+        }
+      },
+      "Testably.Abstractions.FileSystem.Interface": {
+        "type": "Transitive",
+        "resolved": "10.0.0-pre.1",
+        "contentHash": "2NN3Slz8S/RcTFVOQ441FVE98MKJvf+caECzBw3TnK0pGbYdt0qPDcjckMKuZyl6FWk11SLdNqTlvu4hgGdnKA=="
+      },
+      "Testably.Abstractions.Interface": {
+        "type": "Transitive",
+        "resolved": "10.0.0-pre.1",
+        "contentHash": "lRxYVeYayVjfVZukwkSTwe6U7Y8oFKEzeIYY4qn8zVjsaeh3D6zl73G+WoN9cM8mFS8nLKyXC+rFQh4L8Djwkw==",
+        "dependencies": {
+          "Testably.Abstractions.FileSystem.Interface": "10.0.0-pre.1"
+        }
+      }
+    },
+    "net9.0/linux-arm64": {},
+    "net9.0/linux-x64": {},
+    "net9.0/win-x64": {}
+  }
+}

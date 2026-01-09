@@ -1,0 +1,53 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Properties for all projects in the repo -->
+  <PropertyGroup>
+    <Nullable>enable</Nullable>
+    <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
+    <!-- General information -->
+    <TargetFramework>net9.0</TargetFramework>
+    <RuntimeIdentifiers Condition="$(MSBuildProjectDirectory.Contains('src'))">linux-x64;linux-arm64;win-x64</RuntimeIdentifiers>
+    <Description>-</Description>
+    <Product>ViciOne</Product>
+    <Company>ifm software</Company>
+    <Year>$([System.DateTime]::Now.Year)</Year>
+    <Copyright>Copyright © $(Company) $(Year)</Copyright>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
+    <!-- Code quality -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <NoWarn>$(NoWarn);EnableGenerateDocumentationFile</NoWarn> <!-- Workaround for https://github.com/dotnet/roslyn/issues/41640 -->
+    <!-- NuGet lock file -->
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <RestoreLockedMode Condition="'$(CI)' == 'true'">true</RestoreLockedMode>
+    <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+    <DisableImplicitLibraryPacksFolder>true</DisableImplicitLibraryPacksFolder>
+    <NuGetAuditMode>all</NuGetAuditMode>
+  </PropertyGroup>
+
+  <!-- NuGet packages publish information -->
+  <PropertyGroup>
+    <!-- https://docs.microsoft.com/de-de/nuget/reference/msbuild-targets -->
+    <PackageProjectUrl>https://gitlab.i40.ifm-datalink.net/acx/vicione/runtime/engine-host</PackageProjectUrl>
+    <Authors>$(Company)</Authors>
+  </PropertyGroup>
+
+  <!-- Properties for source projects -->
+  <ItemGroup Condition="$(MSBuildProjectDirectory.Contains('src'))">
+    <InternalsVisibleTo Include="$(MSBuildProjectName).Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" /> <!-- NSubstitute -->
+  </ItemGroup>
+
+  <!-- Properties for test projects -->
+  <PropertyGroup Condition="$(MSBuildProjectDirectory.Contains('tests'))">
+    <IsPackable>false</IsPackable>
+    <IsPublishable>false</IsPublishable>
+    <RunSettingsFilePath>$(MsBuildThisFileDirectory)\tests.runsettings</RunSettingsFilePath>
+  </PropertyGroup>
+
+  <!-- Properties for sample projects -->
+  <PropertyGroup Condition="$(MSBuildProjectDirectory.Contains('samples'))">
+    <IsPackable>false</IsPackable>
+    <IsPublishable>false</IsPublishable>
+  </PropertyGroup>
+</Project>

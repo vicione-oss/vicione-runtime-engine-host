@@ -1,0 +1,64 @@
+{
+  "version": 2,
+  "dependencies": {
+    "net9.0": {
+      "Microsoft.Extensions.Logging.Abstractions": {
+        "type": "Direct",
+        "requested": "[9.0.10, )",
+        "resolved": "9.0.10",
+        "contentHash": "MFUPv/nN1rAQ19w43smm6bbf0JDYN/1HEPHoiMYY50pvDMFpglzWAuoTavByDmZq7UuhjaxwrET3joU69ZHoHQ==",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.10"
+        }
+      },
+      "Testably.Abstractions": {
+        "type": "Direct",
+        "requested": "[10.0.0, )",
+        "resolved": "10.0.0",
+        "contentHash": "TITBSFn9H5iRntBB+VGfJ1SRq8T3mq3JiqSV340S9InQc+PahLWGmJk1q52AJOrsUzQwyczGr1F0e3NmS3k3ww==",
+        "dependencies": {
+          "Testably.Abstractions.Interface": "10.0.0-pre.1"
+        }
+      },
+      "Testably.Abstractions.Testing": {
+        "type": "Direct",
+        "requested": "[5.0.1, )",
+        "resolved": "5.0.1",
+        "contentHash": "ihe3dm7cfjhOvEFknxnsW0KPX5A9MBLYLfq7NgrwAuDS7bAli5+f2khuqglm9tvixo1nzqT349mAWmpgyPtcFA==",
+        "dependencies": {
+          "DotNet.Glob": "3.1.3",
+          "System.Linq.Async": "6.0.3",
+          "Testably.Abstractions.Interface": "10.0.0"
+        }
+      },
+      "DotNet.Glob": {
+        "type": "Transitive",
+        "resolved": "3.1.3",
+        "contentHash": "hOfHw7MLJw/tbXaFwR1oiDb+dIXDp8URTxp5Pco42OOhiw77wrUNx6v6syNygHZbWwYdXQocL2Mo1l5FnfDVjg=="
+      },
+      "Microsoft.Extensions.DependencyInjection.Abstractions": {
+        "type": "Transitive",
+        "resolved": "9.0.10",
+        "contentHash": "r9waLiOPe9ZF1PvzUT+RDoHvpMmY8MW+lb4lqjYGObwKpnyPMLI3odVvlmshwuZcdoHynsGWOrCPA0hxZ63lIA=="
+      },
+      "System.Linq.Async": {
+        "type": "Transitive",
+        "resolved": "6.0.3",
+        "contentHash": "hSHiq2m1ky7zUQgTp+/2h1K3lABIQ+GltRixoclHPg/Sc1vnfeS6g/Uy5moOVZKrZJdQiFPFZd6OobBp3tZcFg=="
+      },
+      "Testably.Abstractions.FileSystem.Interface": {
+        "type": "Transitive",
+        "resolved": "10.0.0",
+        "contentHash": "tZOXFLGjkh8TxgMgKeEcM2HAlz9DwndGl6TFLo6ISHcszFX3FkuPMrtVbmqVjhooWNXrgJ/a9cH9ym5MZL1LAg=="
+      },
+      "Testably.Abstractions.Interface": {
+        "type": "Transitive",
+        "resolved": "10.0.0",
+        "contentHash": "58YTG5gM48ioN0Qt+9uStgSE6ytLNobq7ltck09BE127e2KDAuGcsM2zBR59S4flaNdcFq11e4sMFIytBCIEEw==",
+        "dependencies": {
+          "Testably.Abstractions.FileSystem.Interface": "10.0.0"
+        }
+      }
+    }
+  }
+}

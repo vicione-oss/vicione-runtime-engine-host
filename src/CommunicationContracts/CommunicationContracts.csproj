@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>ViciOne.ManagedEngine.CommunicationContracts</AssemblyName>
+    <RootNamespace>ViciOne.ManagedEngine.Communication</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ViciOne.ManagedEngine.Contracts" />
+  </ItemGroup>
+
+</Project>

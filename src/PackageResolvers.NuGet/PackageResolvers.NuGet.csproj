@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>ViciOne.ManagedEngine.PackageResolvers.NuGet</AssemblyName>
+    <RootNamespace>ViciOne.ManagedEngine.PackageResolver</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="NuGet.Commands" />
+    <PackageReference Include="Testably.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PackageResolvers\PackageResolvers.csproj" />
+  </ItemGroup>
+
+</Project>

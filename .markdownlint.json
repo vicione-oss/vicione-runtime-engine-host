@@ -1,0 +1,19 @@
+{
+    "MD013": false,
+    "MD024": {
+        "siblings_only": true
+    },
+    "MD044": {
+        "names": [
+            "FunctionBlock",
+            "InfluxDB",
+            "MQTT",
+            "MQTTnet",
+            "NuGet",
+            "PostgreSQL",
+            "SQLite",
+            "ViciOne"
+        ],
+        "code_blocks": false
+    }
+}

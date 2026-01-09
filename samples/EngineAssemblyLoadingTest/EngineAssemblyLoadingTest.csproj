@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AssemblyName>ViciOne.EngineHost.EngineAssemblyLoadingTest</AssemblyName>
+    <RootNamespace>ViciOne.EngineHost.EngineAssemblyLoadingTest</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Spectre.Console" />
+    <PackageReference Include="System.CommandLine" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\EngineHost\EngineHost.csproj" />
+  </ItemGroup>
+
+</Project>

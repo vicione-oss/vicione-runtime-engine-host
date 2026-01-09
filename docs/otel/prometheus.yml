@@ -1,0 +1,16 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  # scrape the Collector’s Prometheus exporter (your app metrics land here)
+  - job_name: "otelcol-exported"
+    static_configs:
+      - targets: ["otelcol:8889"]
+
+  # scrape the Collector’s own process metrics
+  - job_name: "otelcol-self"
+    static_configs:
+      - targets: ["otelcol:8888"]
+
+  - job_name: "tempo"
+    static_configs: [{ targets: ["tempo:3200"] }]
