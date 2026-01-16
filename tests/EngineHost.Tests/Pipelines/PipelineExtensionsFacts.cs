@@ -48,7 +48,8 @@ public class PipelineExtensions_
                 .AddSingleton(Substitute.For<IContextPool>())
                 .AddSingleton(Substitute.For<IEngineChain>())
                 .AddSingleton<TransactionContext>()
-                .AddTransient<IRequestHandler<TestRequest, bool>>(s => new TestHandler(resetEvent, s.GetRequiredService<TransactionContext>()))
+                .AddSingleton(resetEvent)
+                .AddTransient<IRequestHandler<TestRequest, bool>, TestHandler>()
                 .AddSingleton(typeof(ILogger<>), typeof(Logger<>))
                 .AddSingleton<ILoggerFactory>(loggerFactory)
                 .AddSingleton<IFileSystem>(new MockFileSystem());
@@ -64,7 +65,7 @@ public class PipelineExtensions_
         {
             var task1 = Task.Run(() => mediator.Send<TestRequest, bool>(new() { DeploymentIdentifier = id, }));
             var task2 = Task.Run(() => mediator.Send<TestRequest, bool>(new() { DeploymentIdentifier = id, }));
-            await Task.Delay(100);
+            await Task.Delay(200);
             return Task.WhenAll(task1, task2);
         }
 
@@ -117,6 +118,7 @@ public class PipelineExtensions_
         public string DeploymentIdentifier { get; set; } = string.Empty;
     }
 
+#pragma warning disable CA1812
     internal sealed class TestHandler(ManualResetEventSlim resetEvent, TransactionContext transactionContext)
         : IRequestHandler<TestRequest, bool>
     {
@@ -127,6 +129,7 @@ public class PipelineExtensions_
             return true;
         }
     }
+#pragma warning restore CA1812
 
     internal sealed class TestLoggerProvider(ILogger logger) : ILoggerProvider
     {

@@ -1,7 +1,7 @@
 include:
-  - project: 'acx/tooling/templates'
+  - project: 'vicione-oss/tooling/templates'
     file: '/CI-Templates/v2/dotnet.yml'
-  - project: 'acx/tooling/ci-templates'
+  - project: 'vicione-oss/tooling/ci-templates'
     file: '/project/v1/dotnet.yml'
 
 default:
@@ -30,7 +30,7 @@ markdown:
   variables: null
   artifacts: null
   image:
-    name: jfrog.i40.ifm-datalink.net:443/docker-remote/davidanson/markdownlint-cli2:latest
+    name: davidanson/markdownlint-cli2:v0.20.0
     entrypoint: ["/bin/sh", "-c"]
   script:
     - markdownlint-cli2 "/builds/**/*.md"
@@ -81,8 +81,6 @@ Release EngineHost Raw:
   variables:
     GIT_STRATEGY: fetch
     GIT_DEPTH: 0
-  tags:
-    - docker
 
 Get version:
   stage: .pre
@@ -119,8 +117,6 @@ Confirm next version:
     - job: Get next version
   variables:
     Version: $NEXTVERSION
-  tags:
-    - linux
   script:
     - echo "NEXTVERSION=${Version}" > nextversion.env
   artifacts:
@@ -131,8 +127,6 @@ Get changelog:
   <<: *release_job
   needs:
     - job: Confirm next version
-  tags:
-    - linux
   script:
     - sed "0,/^## ${NEXTVERSION}/d;/^## /Q" CHANGELOG.md | sed '1d;$d' > changelog.md
   artifacts:
@@ -146,9 +140,6 @@ Create release:
   needs:
     - job: Confirm next version
     - job: Get changelog
-  tags:
-    - docker
-    - x64
   # https://docs.gitlab.com/ee/ci/yaml/index.html#release
   script:
     - echo "" # unfortunately mandatory and addressed in https://gitlab.com/gitlab-org/gitlab/-/issues/223856

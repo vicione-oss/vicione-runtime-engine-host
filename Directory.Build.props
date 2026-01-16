@@ -28,7 +28,7 @@
   <!-- NuGet packages publish information -->
   <PropertyGroup>
     <!-- https://docs.microsoft.com/de-de/nuget/reference/msbuild-targets -->
-    <PackageProjectUrl>https://gitlab.i40.ifm-datalink.net/acx/vicione/runtime/engine-host</PackageProjectUrl>
+    <PackageProjectUrl>https://gitlab.com/vicione-oss/vicione/runtime/engine-host</PackageProjectUrl>
     <Authors>$(Company)</Authors>
   </PropertyGroup>
 
