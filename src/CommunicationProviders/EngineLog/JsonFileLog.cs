@@ -49,15 +49,13 @@ public class JsonFileLog
                 Options = FileOptions.Asynchronous,
             });
             using var reader = new StreamReader(stream);
-            while (!reader.EndOfStream)
+            string? line;
+
+            while ((line = await reader.ReadLineAsync().ConfigureAwait(false)) is not null)
             {
-                var line = await reader.ReadLineAsync().ConfigureAwait(false);
-                if (line is not null)
-                {
-                    var logEntry = JsonSerializer.Deserialize<LogEntry>(line, _options);
-                    if (logEntry is not null)
-                        logEntries.Add(logEntry);
-                }
+                var logEntry = JsonSerializer.Deserialize<LogEntry>(line, _options);
+                if (logEntry is not null)
+                    logEntries.Add(logEntry);
             }
         }
 
