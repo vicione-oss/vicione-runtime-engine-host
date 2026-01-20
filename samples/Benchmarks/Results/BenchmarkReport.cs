@@ -59,9 +59,9 @@ internal static class BenchmarkReport
         Dictionary<string, string> inputs = [];
         using (StreamReader reader = new(additionalInformationFilePath))
         {
-            while (!reader.EndOfStream)
+            string? line;
+            while ((line = await reader.ReadLineAsync()) is not null)
             {
-                var line = await reader.ReadLineAsync();
                 if (!string.IsNullOrWhiteSpace(line))
                 {
                     var index = line.IndexOf(Separator, StringComparison.Ordinal);
