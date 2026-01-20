@@ -55,9 +55,9 @@ The example text `Hello World` must be transferred in the payload as a string en
 | Start | string | bool |
 | Stop | string | bool |
 | TearDown | string | - |
-| GetState | string | [EngineState](https://gitlab.i40.ifm-datalink.net/acx/vicione/runtime/managed-engine/-/blob/master/src/ManagedEngine.Contracts/EngineState.cs) |
-| GetDeploymentStates | - | IReadOnlyDictionary<string, [EngineState](https://gitlab.i40.ifm-datalink.net/acx/vicione/runtime/managed-engine/-/blob/master/src/ManagedEngine.Contracts/EngineState.cs)> |
-| GetPackages | string | IReadOnlyList<[PackageReference](https://gitlab.i40.ifm-datalink.net/acx/vicione/runtime/engine-host/-/blob/master/src/PackageResolvers/PackageReference.cs)> |
+| GetState | string | [EngineState](https://gitlab.com/vicione-oss/vicione/runtime/managed-engine/-/blob/master/src/ManagedEngine.Contracts/EngineState.cs) |
+| GetDeploymentStates | - | IReadOnlyDictionary<string, [EngineState](https://gitlab.com/vicione-oss/vicione/runtime/managed-engine/-/blob/master/src/ManagedEngine.Contracts/EngineState.cs)> |
+| GetPackages | string | IReadOnlyList<[PackageReference](src/PackageResolvers/PackageReference.cs)> |
 
 ### Response Status
 
