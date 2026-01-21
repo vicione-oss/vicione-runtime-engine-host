@@ -93,7 +93,7 @@ public class DeploymentsService_StartAsync
         var contextPool = Substitute.For<IContextPool>();
         var mediator = Substitute.For<IMediator>();
         DirectoryMock tempDirectory = new();
-        var deploymentsDirectory = Path.Combine(tempDirectory.Path, Guid.NewGuid().ToString());
+        var deploymentsDirectory = tempDirectory.FileSystem.Path.Combine(tempDirectory.Path, Guid.NewGuid().ToString());
         options.Value.Returns(new HostConfig { DeploymentsDirectory = deploymentsDirectory, });
 
         DeploymentsService service = new(options, deploymentPool, contextPool, engineChain, mediator, logger, tempDirectory.FileSystem);

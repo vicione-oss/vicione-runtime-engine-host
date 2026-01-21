@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using AwesomeAssertions;
 using AwesomeAssertions.Extensions;
 using Microsoft.Extensions.Hosting;
 using NSubstitute;
@@ -25,25 +26,29 @@ public sealed class TerminateFileObserver_StartAsync
     [Fact]
     public async Task Stops_application_on_file_creation()
     {
+        var callCount = 0;
+        _lifetime.When(x => x.StopApplication()).Do(_ => Interlocked.Increment(ref callCount));
         using TerminateFileObserver observer = new(_lifetime, _environment, _directory.FileSystem);
         await observer.StartAsync(CancellationToken.None);
 
         _directory.CreateFile("terminate");
 
-        await Task.Delay(100.Milliseconds());
+        await FluentActions.Invoking(() => Volatile.Read(ref callCount) >= 2).WaitForTrue();
         _lifetime.Received(2).StopApplication();
     }
 
     [Fact]
     public async Task Stops_application_on_file_recreation()
     {
+        var callCount = 0;
+        _lifetime.When(x => x.StopApplication()).Do(_ => Interlocked.Increment(ref callCount));
         _directory.CreateFile("terminate");
         using TerminateFileObserver observer = new(_lifetime, _environment, _directory.FileSystem);
         await observer.StartAsync(CancellationToken.None);
 
         _directory.CreateFile("terminate");
 
-        await Task.Delay(200.Milliseconds());
+        await FluentActions.Invoking(() => Volatile.Read(ref callCount) >= 1).WaitForTrue();
         _lifetime.Received(1).StopApplication();
     }
 
