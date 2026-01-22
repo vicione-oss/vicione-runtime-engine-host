@@ -29,7 +29,7 @@ public class DeploymentsService_StartAsync
         var contextPool = Substitute.For<IContextPool>();
         var mediator = Substitute.For<IMediator>();
         var id = Guid.NewGuid().ToString();
-        using TemporaryDirectoryDeployment deployment = new(id, ContextPool.GetUniqueHash([]));
+        TemporaryDirectoryDeployment deployment = new(id, ContextPool.GetUniqueHash([]));
         deployment.PlaceAssemblies();
         deployment.WriteStartParameter();
         deployment.WriteDeployParameter(new()
@@ -64,7 +64,7 @@ public class DeploymentsService_StartAsync
         var contextPool = Substitute.For<IContextPool>();
         var mediator = Substitute.For<IMediator>();
         var id = Guid.NewGuid().ToString();
-        using TemporaryDirectoryDeployment deployment = new(id, ContextPool.GetUniqueHash([]));
+        TemporaryDirectoryDeployment deployment = new(id, ContextPool.GetUniqueHash([]));
         deployment.PlaceAssemblies();
         deployment.WriteStartParameter();
         options.Value.Returns(new HostConfig { DeploymentsDirectory = deployment.Path, });
@@ -92,7 +92,7 @@ public class DeploymentsService_StartAsync
         var engineChain = Substitute.For<IEngineChain>();
         var contextPool = Substitute.For<IContextPool>();
         var mediator = Substitute.For<IMediator>();
-        using TemporaryDirectory tempDirectory = new();
+        DirectoryMock tempDirectory = new();
         var deploymentsDirectory = Path.Combine(tempDirectory.Path, Guid.NewGuid().ToString());
         options.Value.Returns(new HostConfig { DeploymentsDirectory = deploymentsDirectory, });
 

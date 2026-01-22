@@ -14,12 +14,10 @@ using Xunit;
 
 namespace ViciOne.ManagedEngine.Runtime;
 
-public sealed class CreateDeploymentAsync : IDisposable
+public sealed class CreateDeploymentAsync
 {
     private readonly DeploymentPoolContext _context = new();
     private readonly JsonSerializerOptions _serializerOptions = JsonSetup.CreatePreserveTypeOptions();
-
-    public void Dispose() => _context.Dispose();
 
     [Fact]
     public async Task Deploys_engine_Async()
@@ -46,10 +44,9 @@ public sealed class CreateDeploymentAsync : IDisposable
     }
 }
 
-public sealed class RecoverDeploymentAsync : IDisposable
+public sealed class RecoverDeploymentAsync
 {
     private readonly DeploymentPoolContext _context = new();
-    public void Dispose() => _context.Dispose();
 
     [Fact]
     public async Task Recognizes_missing_start_parameter_file_Async()
@@ -136,7 +133,7 @@ public sealed class RemoveDeployment
     [Fact]
     public async Task Can_remove_deployment_Async()
     {
-        using DeploymentPoolContext context = new();
+        DeploymentPoolContext context = new();
         context.Deployment.WriteStartParameter(DeploymentPoolContext.StartParameter);
         var deployment = Substitute.For<IDeployment>();
         context.EnginePool._deployments.TryAdd("1", deployment).Should().BeTrue();
@@ -150,10 +147,9 @@ public sealed class RemoveDeployment
     }
 }
 
-public sealed class TryGetDeployment : IDisposable
+public sealed class TryGetDeployment
 {
     private readonly DeploymentPoolContext _context = new();
-    public void Dispose() => _context.Dispose();
 
     [Fact]
     public void Returns_true_with_deployment()
@@ -178,7 +174,7 @@ public sealed class TryGetDeployment : IDisposable
     }
 }
 
-internal sealed class DeploymentPoolContext : IDisposable
+internal sealed class DeploymentPoolContext
 {
     internal static StartParameter StartParameter { get; } = new()
     {
@@ -205,6 +201,4 @@ internal sealed class DeploymentPoolContext : IDisposable
         Config.Value.Returns(new HostConfig { DeploymentsDirectory = Deployment.Path, });
         EnginePool = new(Config, Deployment.FileSystem);
     }
-
-    public void Dispose() => Deployment.Dispose();
 }

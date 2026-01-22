@@ -16,7 +16,7 @@ public class JsonFileLog_AppendLogEntryAsync
     [Fact]
     public async Task Writes_entry_to_missing_file_Async()
     {
-        using var directory = new TemporaryDirectory();
+        DirectoryMock directory = new();
         var engineId = "2303-01";
         LogEntry entry = new() { Timestamp = new DateTime(1, 1, 5), Type = LogLevel.Information, Text = "Start", };
         var log = new JsonFileLog(directory.Path, engineId, directory.FileSystem);
@@ -36,7 +36,7 @@ public class JsonFileLog_AppendLogEntryAsync
     [Fact]
     public async Task Appends_entry_to_existing_file_Async()
     {
-        using var directory = new TemporaryDirectory();
+        DirectoryMock directory = new();
         LogEntry existingEntry = new() { Timestamp = new DateTime(1, 1, 5), Type = LogLevel.Information, Text = "Start", };
         var engineId = "2303-01";
         var file = directory.CreateFile(string.Concat(engineId, ".json"));
@@ -62,7 +62,7 @@ public class JsonFileLog_ReadLogEntriesAsync
     [Fact]
     public async Task Reads_entries_Async()
     {
-        using var directory = new TemporaryDirectory();
+        DirectoryMock directory = new();
         var engineId = "2303-01";
         var entries = new[]
         {
@@ -86,7 +86,7 @@ public class JsonFileLog_ReadLogEntriesAsync
     [Fact]
     public async Task Returns_empty_list_if_file_does_not_exists_Async()
     {
-        using var directory = new TemporaryDirectory();
+        DirectoryMock directory = new();
         var log = new JsonFileLog(directory.Path, "2303-01", directory.FileSystem);
 
         var entries = await log.ReadLogEntriesAsync();
@@ -97,10 +97,10 @@ public class JsonFileLog_ReadLogEntriesAsync
     [Fact]
     public async Task Returns_empty_list_if_file_is_empty_Async()
     {
-        using var directory = new TemporaryDirectory();
+        DirectoryMock directory = new();
         var engineId = "2303-01";
         var log = new JsonFileLog(directory.Path, engineId, directory.FileSystem);
-        var file = directory.CreateFile(engineId);
+        _ = directory.CreateFile(engineId);
 
         var entries = await log.ReadLogEntriesAsync();
 
@@ -111,7 +111,7 @@ public class JsonFileLog_ReadLogEntriesAsync
     public async Task Throws_exception_on_read_error_Async()
     {
         var engineId = "2303";
-        using var directory = new TemporaryDirectory();
+        DirectoryMock directory = new();
         var file = directory.CreateFile(string.Concat(engineId, ".json"));
         var log = new JsonFileLog(directory.Path, engineId, directory.FileSystem);
         await using var stream = directory.FileSystem.FileStream.New(file, FileMode.Open, FileAccess.Read, FileShare.None);

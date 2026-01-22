@@ -53,9 +53,5 @@ public sealed class StopEngineHandler_ : IDisposable
         _deploymentPool.DidNotReceive().DeploymentStopped(Arg.Any<string>());
     }
 
-    public void Dispose()
-    {
-        _transactionContext.Dispose();
-        _temporaryDirectoryDeployment.Dispose();
-    }
+    public void Dispose() => _transactionContext.Dispose();
 }

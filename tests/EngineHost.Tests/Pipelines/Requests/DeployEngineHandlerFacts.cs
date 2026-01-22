@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Runtime.Loader;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,7 +14,6 @@ namespace ViciOne.ManagedEngine.Pipelines.Requests;
 
 public sealed class DeployEngineHandler_ : IDisposable
 {
-    private readonly TemporaryDirectory _temporaryDirectory;
     private readonly IDeploymentPool _deploymentPool;
     private readonly IContextPool _contextPool;
     private readonly IEngineChain _engineChain;
@@ -24,7 +22,6 @@ public sealed class DeployEngineHandler_ : IDisposable
 
     public DeployEngineHandler_()
     {
-        _temporaryDirectory = new TemporaryDirectory();
         _deploymentPool = Substitute.For<IDeploymentPool>();
         _contextPool = Substitute.For<IContextPool>();
         _engineChain = Substitute.For<IEngineChain>();
@@ -65,9 +62,5 @@ public sealed class DeployEngineHandler_ : IDisposable
         await _contextPool.Received().UnregisterDeploymentAsync(Arg.Any<string>());
     }
 
-    public void Dispose()
-    {
-        _transactionContext.Dispose();
-        _temporaryDirectory.Dispose();
-    }
+    public void Dispose() => _transactionContext.Dispose();
 }

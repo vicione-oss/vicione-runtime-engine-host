@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using AwesomeAssertions.Extensions;
@@ -9,9 +8,9 @@ using Xunit;
 
 namespace ViciOne.ManagedEngine.Runtime;
 
-public sealed class TerminateFileObserver_StartAsync : IDisposable
+public sealed class TerminateFileObserver_StartAsync
 {
-    private readonly TemporaryDirectory _directory;
+    private readonly DirectoryMock _directory;
     private readonly IHostApplicationLifetime _lifetime;
     private readonly IHostEnvironment _environment;
 
@@ -23,8 +22,6 @@ public sealed class TerminateFileObserver_StartAsync : IDisposable
         _environment.ContentRootPath.Returns(_directory.Path);
     }
 
-    public void Dispose() => _directory.Dispose();
-
     [Fact]
     public async Task Stops_application_on_file_creation()
     {
@@ -34,7 +31,6 @@ public sealed class TerminateFileObserver_StartAsync : IDisposable
         _directory.CreateFile("terminate");
 
         await Task.Delay(100.Milliseconds());
-
         _lifetime.Received(2).StopApplication();
     }
 
@@ -46,8 +42,8 @@ public sealed class TerminateFileObserver_StartAsync : IDisposable
         await observer.StartAsync(CancellationToken.None);
 
         _directory.CreateFile("terminate");
-        await Task.Delay(200.Milliseconds());
 
+        await Task.Delay(200.Milliseconds());
         _lifetime.Received(1).StopApplication();
     }
 
@@ -64,9 +60,9 @@ public sealed class TerminateFileObserver_StartAsync : IDisposable
     }
 }
 
-public sealed class TerminateFileObserver_StopAsync : IDisposable
+public sealed class TerminateFileObserver_StopAsync
 {
-    private readonly TemporaryDirectory _directory;
+    private readonly DirectoryMock _directory;
     private readonly IHostApplicationLifetime _lifetime;
     private readonly IHostEnvironment _environment;
 
@@ -77,8 +73,6 @@ public sealed class TerminateFileObserver_StopAsync : IDisposable
         _environment = Substitute.For<IHostEnvironment>();
         _environment.ContentRootPath.Returns(_directory.Path);
     }
-
-    public void Dispose() => _directory.Dispose();
 
     [Fact]
     public async Task Does_not_stop_application_on_file_creation()
