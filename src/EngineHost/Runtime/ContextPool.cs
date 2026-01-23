@@ -134,14 +134,12 @@ internal class ContextPool : IContextPool, IDisposable
     {
         return HashToString(CreateHash(packageReferences));
 
-#pragma warning disable CA5350 // Keine schwachen kryptografischen Algorithmen verwenden
         static Span<byte> CreateHash(IEnumerable<PackageReference> references)
-            => SHA1.HashData(
+            => SHA256.HashData(
                 Encoding.UTF8.GetBytes(
                     string.Join(string.Empty, references
                         .Select(r => r.Name + r.Version)
                         .Order()).ToUpperInvariant()));
-#pragma warning restore CA5350 // Keine schwachen kryptografischen Algorithmen verwenden
 
         static string HashToString(Span<byte> hash)
         {
