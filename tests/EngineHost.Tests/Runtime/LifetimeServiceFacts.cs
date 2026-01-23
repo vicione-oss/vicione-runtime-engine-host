@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,7 +18,7 @@ public sealed class LifetimeService_StartAsync
     [Fact]
     public async Task Connects_MQTT_client()
     {
-        using LifetimeServiceContext context = new();
+        LifetimeServiceContext context = new();
 
         await context.Service.StartAsync(CancellationToken.None);
 
@@ -32,7 +31,7 @@ public sealed class LifetimeService_StartedAsync
     [Fact]
     public async Task Sends_up_and_running_state_on_application_started()
     {
-        using LifetimeServiceContext context = new();
+        LifetimeServiceContext context = new();
         await context.Service.StartAsync(CancellationToken.None);
         var messages = new List<MqttApplicationMessage>();
         await context.MqttClient.Publish(Arg.Do<MqttApplicationMessage>(messages.Add));
@@ -64,7 +63,7 @@ public sealed class LifetimeService_ConfigureLastWill
     [Fact]
     public void Configures_last_will()
     {
-        using LifetimeServiceContext context = new();
+        LifetimeServiceContext context = new();
         CommunicationInfo communicationInfo = new();
 
         LifetimeService.ConfigureLastWill(context.HostConfig, communicationInfo);
@@ -82,7 +81,7 @@ public sealed class LifetimeService_StopAsync
     [Fact]
     public async Task Disconnects_MQTT_client()
     {
-        using LifetimeServiceContext context = new();
+        LifetimeServiceContext context = new();
 
         await context.Service.StopAsync(CancellationToken.None);
 
@@ -90,7 +89,7 @@ public sealed class LifetimeService_StopAsync
     }
 }
 
-internal sealed class LifetimeServiceContext : IDisposable
+internal sealed class LifetimeServiceContext
 {
     internal HostConfig HostConfig { get; } = new() { Id = "test", };
     internal IVirtualMqttClient MqttClient { get; } = Substitute.For<IVirtualMqttClient>();
@@ -103,6 +102,4 @@ internal sealed class LifetimeServiceContext : IDisposable
         options.Value.Returns(HostConfig);
         Service = new(options, MqttClient, Logger);
     }
-
-    public void Dispose() => Service.Dispose();
 }

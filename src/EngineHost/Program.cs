@@ -4,7 +4,6 @@ using System.IO.Abstractions;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MQTTnet.Extensions;
 using Serilog;
 using Serilog.Settings.Configuration;
 using Serilog.Sinks.Journal;

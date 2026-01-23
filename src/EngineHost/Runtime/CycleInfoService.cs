@@ -5,52 +5,36 @@ using System.Net.Mime;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MQTTnet;
 using MQTTnet.Extensions;
 using MQTTnet.Protocol;
+using ViciOne.ManagedEngine.Communication;
 
 namespace ViciOne.ManagedEngine.Runtime;
 
-internal sealed class CycleInfoService : IHostedLifecycleService, IDisposable
+internal sealed class CycleInfoService(IOptions<HostConfig> options, [FromKeyedServices(MqttConnectionKeys.Monitoring)] IVirtualMqttClient mqttClient,
+    IEngineChain engineChain) : IHostedLifecycleService
 {
-    private readonly IVirtualMqttClient _mqttClient;
-    private readonly string _reportTopic;
-    private readonly string _crashReportTopic;
-    private readonly IEngineChain _engineChain;
-
-    public CycleInfoService(IOptions<HostConfig> options, MqttOptimizer mqttOptimizer, IEngineChain engineChain, ILoggerFactory loggerFactory)
-        : this(options, mqttOptimizer.Register(options.Value.Monitoring, loggerFactory), engineChain)
-    {
-    }
-
-    /// <summary>
-    /// For tests
-    /// </summary>
-    internal CycleInfoService(IOptions<HostConfig> options, IVirtualMqttClient mqttClient, IEngineChain engineChain)
-    {
-        _engineChain = engineChain;
-        _mqttClient = mqttClient;
-        _reportTopic = $"{options.Value.Id}/cycle/info";
-        _crashReportTopic = $"{options.Value.Id}/cycle/crash";
-    }
+    private readonly string _reportTopic = $"{options.Value.Id}/cycle/info";
+    private readonly string _crashReportTopic = $"{options.Value.Id}/cycle/crash";
 
     public Task StartingAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        await _mqttClient.Connect().ConfigureAwait(false);
-        _engineChain.CycleReport += SendCycleReportAsync;
-        _engineChain.CrashReport += SendCrashReportAsync;
+        await mqttClient.Connect().ConfigureAwait(false);
+        engineChain.CycleReport += SendCycleReportAsync;
+        engineChain.CrashReport += SendCrashReportAsync;
     }
 
     private async Task SendCycleReportAsync(EngineChainCycleReport report)
     {
         using MemoryStream payloadStream = new();
         await ReportToMessageAsync(report, payloadStream);
-        await _mqttClient.Publish(new MqttApplicationMessageBuilder()
+        await mqttClient.Publish(new MqttApplicationMessageBuilder()
             .WithTopic(_reportTopic)
             .WithPayload(payloadStream)
             .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
@@ -62,7 +46,7 @@ internal sealed class CycleInfoService : IHostedLifecycleService, IDisposable
     {
         using MemoryStream payloadStream = new();
         await ReportToMessageAsync(report, payloadStream);
-        await _mqttClient.Publish(new MqttApplicationMessageBuilder()
+        await mqttClient.Publish(new MqttApplicationMessageBuilder()
             .WithTopic(_crashReportTopic)
             .WithPayload(payloadStream)
             .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
@@ -89,12 +73,10 @@ internal sealed class CycleInfoService : IHostedLifecycleService, IDisposable
 
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-        _engineChain.CycleReport -= SendCycleReportAsync;
-        _engineChain.CrashReport -= SendCrashReportAsync;
-        await _mqttClient.Disconnect().ConfigureAwait(false);
+        engineChain.CycleReport -= SendCycleReportAsync;
+        engineChain.CrashReport -= SendCrashReportAsync;
+        await mqttClient.Disconnect().ConfigureAwait(false);
     }
 
     public Task StoppedAsync(CancellationToken cancellationToken) => Task.CompletedTask;
-
-    public void Dispose() => _mqttClient.Dispose();
 }
