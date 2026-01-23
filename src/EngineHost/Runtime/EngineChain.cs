@@ -142,6 +142,7 @@ internal sealed class EngineChain(ILogger<EngineChain> logger) : IEngineChain, I
                     result.CrashedChainLinks.Add(id);
 
                     linkActivity?.SetStatus(ActivityStatusCode.Error);
+                    linkActivity?.AddException(ex);
                     Telemetry.IncreaseChainLinkCrashCount(id);
                 }
 
