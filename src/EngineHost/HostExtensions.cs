@@ -3,6 +3,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using MQTTnet.Extensions;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -72,6 +74,29 @@ internal static class HostExtensions
         services
             .AddOptions<HostConfig>()
             .Configure<IConfiguration>((hostConfig, configuration) => HostConfig.Apply(hostConfig, configuration, connectionName));
+        return services;
+    }
+
+    internal static IServiceCollection AddMqttClients(this IServiceCollection services)
+    {
+        services.AddKeyedSingleton(
+            MqttConnectionKeys.CommandBus,
+            (sp, _) =>
+            {
+                var config = sp.GetRequiredService<IOptions<HostConfig>>();
+                var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
+                return MqttOptimizer.Instance.Register(config.Value.CommandBus, loggerFactory);
+            });
+
+        services.AddKeyedSingleton(
+            MqttConnectionKeys.Monitoring,
+            (sp, _) =>
+            {
+                var config = sp.GetRequiredService<IOptions<HostConfig>>();
+                var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
+                return MqttOptimizer.Instance.Register(config.Value.Monitoring, loggerFactory);
+            });
+
         return services;
     }
 

@@ -62,7 +62,7 @@ static IHost CreateHost(string[] args)
 
     builder.Services
         .AddHostConfig("mqtt")
-        .AddSingleton(MqttOptimizer.Instance)
+        .AddMqttClients()
         .AddSingleton<IContextPool, ContextPool>()
         .AddSingleton<IDeploymentPool, DeploymentPool>()
         .AddSingleton<IEngineChain, EngineChain>()
