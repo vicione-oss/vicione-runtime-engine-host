@@ -16,7 +16,7 @@ public class AssemblyLoadContextObserver_Observe
         CreateAndObserveContext(() => alive = true, () => alive = false);
         TryToClearCache();
 
-        await Task.Delay(150);
+        await Task.Delay(150, TestContext.Current.CancellationToken);
 
         alive.Should().BeFalse();
 

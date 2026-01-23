@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <RootNamespace></RootNamespace>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
 
   <ItemGroup>

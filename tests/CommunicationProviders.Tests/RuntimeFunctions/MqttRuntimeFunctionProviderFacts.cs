@@ -192,7 +192,7 @@ public sealed class MqttRuntimeFunctionProvider_MessageReceived : IDisposable
     {
         var messages = new List<MqttApplicationMessage>();
         await _context.MqttClient.Publish(Arg.Do<MqttApplicationMessage>(messages.Add));
-        _context.Handler.Handle<ChangeLogLevelCommand, CommandStatus>(default!, default).ReturnsForAnyArgs(new Failure() { Message = "Could not set log level.", });
+        _context.Handler.Handle<ChangeLogLevelCommand, CommandStatus>(default!, TestContext.Current.CancellationToken).ReturnsForAnyArgs(new Failure() { Message = "Could not set log level.", });
 
         var builder = new MqttApplicationMessageBuilder()
             .WithRpc($"{_context.Engine}/request", "changeloglevel", "responsetopic")

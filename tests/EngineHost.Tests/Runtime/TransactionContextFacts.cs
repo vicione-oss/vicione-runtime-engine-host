@@ -15,7 +15,7 @@ public class TransactionContext_
         var transaction1 = await transactionContext.WaitAsync(string.Empty, 0);
         var transaction2Task = transactionContext.WaitAsync(string.Empty, 3_000);
 
-        await Task.Delay(1000);
+        await Task.Delay(1000, TestContext.Current.CancellationToken);
 
         transaction2Task.Status.Should().Be(TaskStatus.WaitingForActivation);
 

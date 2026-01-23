@@ -67,11 +67,11 @@ public class DefaultTimer_Stop
             },
             _ => Task.CompletedTask);
         timer.Start();
-        var reached = actionCalled.Wait(TimeSpan.FromSeconds(1));
+        var reached = actionCalled.Wait(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken);
 
         await timer.StopAsync();
         var countAfterStop = callCount;
-        await Task.Delay(50);
+        await Task.Delay(50, TestContext.Current.CancellationToken);
 
         reached.Should().BeTrue();
         callCount.Should().Be(countAfterStop);
@@ -124,7 +124,7 @@ public class DefaultTimer_Action
             _ => Task.CompletedTask);
 
         timer.Start();
-        var reached = secondCallReached.Wait(TimeSpan.FromSeconds(2));
+        var reached = secondCallReached.Wait(TimeSpan.FromSeconds(2), TestContext.Current.CancellationToken);
         await timer.StopAsync();
 
         reached.Should().BeTrue();
@@ -147,7 +147,7 @@ public class DefaultTimer_Action
             _ => Task.CompletedTask);
 
         timer.Start();
-        actionCalled.Wait(TimeSpan.FromSeconds(1));
+        actionCalled.Wait(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken);
         await timer.StopAsync();
 
         receivedToken.CanBeCanceled.Should().BeTrue();
@@ -176,7 +176,7 @@ public class DefaultTimer_Report
             });
 
         timer.Start();
-        var received = reportReceived.Wait(TimeSpan.FromSeconds(2));
+        var received = reportReceived.Wait(TimeSpan.FromSeconds(2), TestContext.Current.CancellationToken);
         await timer.StopAsync();
 
         received.Should().BeTrue();
@@ -204,8 +204,8 @@ public class DefaultTimer_Report
             });
 
         timer.Start();
-        actionCalled.Wait(TimeSpan.FromSeconds(1));
-        await Task.Delay(50);
+        actionCalled.Wait(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken);
+        await Task.Delay(50, TestContext.Current.CancellationToken);
         await timer.StopAsync();
 
         reportCalled.Should().BeFalse();
@@ -232,9 +232,9 @@ public class DefaultTimer_Report
             });
 
         timer.Start();
-        reportStarted.Wait(TimeSpan.FromSeconds(1));
+        reportStarted.Wait(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken);
         // Second action call should not be blocked by slow report handler
-        var secondActionReached = secondActionCalled.Wait(TimeSpan.FromMilliseconds(100));
+        var secondActionReached = secondActionCalled.Wait(TimeSpan.FromMilliseconds(100), TestContext.Current.CancellationToken);
         await timer.StopAsync();
 
         secondActionReached.Should().BeTrue();

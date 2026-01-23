@@ -24,7 +24,7 @@ public class JsonFileLog_AppendLogEntryAsync
         await log.AppendLogEntryAsync(entry, CancellationToken.None);
 
         var file = directory.FileSystem.Path.Combine(directory.Path, string.Concat(engineId, ".json"));
-        var lines = await directory.FileSystem.File.ReadAllLinesAsync(file);
+        var lines = await directory.FileSystem.File.ReadAllLinesAsync(file, TestContext.Current.CancellationToken);
         var actual = lines.Select(e => JsonSerializer.Deserialize<LogEntry>(e, JsonFileLogContext.Options)!).ToList();
         var expected = new[]
         {
@@ -46,7 +46,7 @@ public class JsonFileLog_AppendLogEntryAsync
 
         await log.AppendLogEntryAsync(newEntry, CancellationToken.None);
 
-        var lines = await directory.FileSystem.File.ReadAllLinesAsync(file);
+        var lines = await directory.FileSystem.File.ReadAllLinesAsync(file, TestContext.Current.CancellationToken);
         var actual = lines.Select(e => JsonSerializer.Deserialize<LogEntry>(e, JsonFileLogContext.Options)!).ToList();
         var expected = new[]
         {

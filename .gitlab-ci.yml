@@ -1,29 +1,54 @@
+.rules: &rules
+  - if: "$CI_COMMIT_TAG"
+    when: manual
+    allow_failure: true
+  - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
+  - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  - if: $CI_PIPELINE_SOURCE == "web"
+
 include:
   - project: 'vicione-oss/tooling/templates'
     file: '/CI-Templates/v2/dotnet.yml'
   - project: 'vicione-oss/tooling/ci-templates'
     file: '/project/v1/dotnet.yml'
+  - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-restore@2.0.0
+    inputs:
+      rules: *rules
+      before_script:
+        - dotnet nuget update source JFrogNuGetProxy --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
+        - dotnet nuget update source JFrogViciOne --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
+  - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-build@2.0.0
+    inputs:
+      rules: *rules
+      before_script:
+        - dotnet nuget update source JFrogNuGetProxy --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
+  - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-test@2.0.0
+    inputs:
+      rules: *rules
+      before_script:
+        - dotnet nuget update source JFrogNuGetProxy --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
+        - dotnet nuget remove source JFrogViciOne
+      coverage: true
+
+.set-nuget-push-credentials: &set-nuget-push-credentials
+  - dotnet nuget update source JFrogViciOne --configfile NuGet.Config -u $NuGet_User_RW_JFrog -p $NuGet_PW_RW_JFrog --store-password-in-clear-text
 
 default:
   image: mcr.microsoft.com/dotnet/sdk:10.0
-
-Build:
-  extends: .dotnet-build
-
-xUnit:
-  extends: .dotnet-test-xunit
 
 Prerelease CommunicationContracts NuGet:
   extends: .dotnet-deploy-nuget
   variables:
     PROJECT: 'src/CommunicationContracts/CommunicationContracts.csproj'
     REPO: 'JFrogViciOne'
+  before_script: *set-nuget-push-credentials
 
 Release CommunicationContracts NuGet:
   extends: .dotnet-release-nuget
   variables:
     PROJECT: 'src/CommunicationContracts/CommunicationContracts.csproj'
     REPO: 'JFrogViciOne'
+  before_script: *set-nuget-push-credentials
 
 markdown:
   extends: .dotnet-test-xunit
@@ -33,7 +58,7 @@ markdown:
     name: davidanson/markdownlint-cli2:v0.20.0
     entrypoint: ["/bin/sh", "-c"]
   script:
-    - markdownlint-cli2 "/builds/**/*.md"
+    - markdownlint-cli2 "${CI_PROJECT_DIR}/**/*.md" "!${CI_PROJECT_DIR}/packages"
 
 Prerelease EngineHost Raw:
   extends: .dotnet-deploy-raw-rids
@@ -66,6 +91,9 @@ Release EngineHost Raw:
     METADATA_MIN_VERSION_KEY: 'MinCoreVersion'
   after_script:
     - !reference [.push-metadata]
+
+Public Release Raw:
+  extends: .dotnet-release-public
 
 .release_job: &release_job
   stage: release
@@ -148,7 +176,3 @@ Create release:
     tag_message: 'Version $NEXTVERSION'
     name: 'v$NEXTVERSION'
     description: './changelog.md'
-
-# Public Release
-Public Release Raw:
-  extends: .dotnet-release-public
