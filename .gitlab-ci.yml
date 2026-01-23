@@ -5,7 +5,7 @@ include:
     file: '/project/v1/dotnet.yml'
 
 default:
-  image: mcr.microsoft.com/dotnet/sdk:9.0
+  image: mcr.microsoft.com/dotnet/sdk:10.0
 
 Build:
   extends: .dotnet-build
@@ -76,7 +76,7 @@ Release EngineHost Raw:
 
 .git_version: &git_version
   image:
-    name: gittools/gitversion:6.4.0-alpine.3.21-9.0
+    name: gittools/gitversion:6.5.1-alpine.3.22-10.0
     entrypoint: [""]
   variables:
     GIT_STRATEGY: fetch
