@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -189,7 +188,7 @@ internal sealed class EngineChain(ILogger<EngineChain> logger) : IEngineChain, I
     {
         StringBuilder builder = new();
         builder.AppendJoin(Environment.NewLine, chainLinkDurations
-            .Select(l => $"{l.Key}: {l.Value.Duration.TotalMilliseconds.ToString("0.00", CultureInfo.InvariantCulture)}ms (cycle {l.Value.Cycle})"));
+            .Select(l => FormattableString.Invariant($"{l.Key}: {l.Value.Duration.TotalMilliseconds:N2}ms (cycle {l.Value.Cycle})")));
 
         if (builder.Length > 0)
             builder.Insert(0, Environment.NewLine);
