@@ -17,6 +17,29 @@ using Xunit;
 
 namespace ViciOne.ManagedEngine.Runtime;
 
+public class DeploymentsService_StartingAsync
+{
+    [Fact]
+    public async Task Creates_deployments_directory()
+    {
+        var logger = Substitute.For<ILogger<DeploymentsService>>();
+        var options = Substitute.For<IOptions<HostConfig>>();
+        var deploymentPool = Substitute.For<IDeploymentPool>();
+        var engineChain = Substitute.For<IEngineChain>();
+        var contextPool = Substitute.For<IContextPool>();
+        var mediator = Substitute.For<IMediator>();
+        DirectoryMock tempDirectory = new();
+        var deploymentsDirectory = tempDirectory.FileSystem.Path.Combine(tempDirectory.Path, Guid.NewGuid().ToString());
+        options.Value.Returns(new HostConfig { DeploymentsDirectory = deploymentsDirectory, });
+
+        DeploymentsService service = new(options, deploymentPool, contextPool, engineChain, mediator, logger, tempDirectory.FileSystem);
+
+        await service.StartingAsync(CancellationToken.None);
+
+        tempDirectory.FileSystem.Directory.Exists(deploymentsDirectory).Should().BeTrue();
+    }
+}
+
 public class DeploymentsService_StartAsync
 {
     [Fact]
@@ -81,26 +104,6 @@ public class DeploymentsService_StartAsync
         logger.Exception.Should().BeOfType<InvalidOperationException>();
         logger.LogLevel.Should().Be(LogLevel.Error);
         logger.Message.Should().MatchEquivalentOf($"*deployment*'{id}'*not*recovered*");
-    }
-
-    [Fact]
-    public async Task Creates_deployments_directory()
-    {
-        var logger = Substitute.For<ILogger<DeploymentsService>>();
-        var options = Substitute.For<IOptions<HostConfig>>();
-        var deploymentPool = Substitute.For<IDeploymentPool>();
-        var engineChain = Substitute.For<IEngineChain>();
-        var contextPool = Substitute.For<IContextPool>();
-        var mediator = Substitute.For<IMediator>();
-        DirectoryMock tempDirectory = new();
-        var deploymentsDirectory = tempDirectory.FileSystem.Path.Combine(tempDirectory.Path, Guid.NewGuid().ToString());
-        options.Value.Returns(new HostConfig { DeploymentsDirectory = deploymentsDirectory, });
-
-        DeploymentsService service = new(options, deploymentPool, contextPool, engineChain, mediator, logger, tempDirectory.FileSystem);
-
-        await service.StartAsync(CancellationToken.None);
-
-        tempDirectory.FileSystem.Directory.Exists(deploymentsDirectory).Should().BeTrue();
     }
 }
 

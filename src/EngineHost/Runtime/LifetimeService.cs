@@ -11,7 +11,7 @@ using MQTTnet.Protocol;
 
 namespace ViciOne.ManagedEngine.Runtime;
 
-internal sealed class LifetimeService : IHostedService, IDisposable
+internal sealed class LifetimeService : IHostedLifecycleService, IDisposable
 {
     private const string UpAndRunningPayload = "upandrunning";
     private const string InterruptionPayload = "interruption";
@@ -20,18 +20,16 @@ internal sealed class LifetimeService : IHostedService, IDisposable
     private readonly string _topic;
     private readonly ILogger<LifetimeService> _logger;
 
-    public LifetimeService(IOptions<HostConfig> options, ILoggerFactory loggerFactory, ILogger<LifetimeService> logger, IHostApplicationLifetime applicationLifetime, MqttOptimizer mqttOptimizer)
-        : this(options, mqttOptimizer.Register(options.Value.CommandBus, loggerFactory), logger, applicationLifetime)
+    public LifetimeService(IOptions<HostConfig> options, ILoggerFactory loggerFactory, ILogger<LifetimeService> logger, MqttOptimizer mqttOptimizer)
+        : this(options, mqttOptimizer.Register(options.Value.CommandBus, loggerFactory), logger)
     {
     }
 
-    internal LifetimeService(IOptions<HostConfig> options, IVirtualMqttClient mqttClient, ILogger<LifetimeService> logger, IHostApplicationLifetime applicationLifetime)
+    internal LifetimeService(IOptions<HostConfig> options, IVirtualMqttClient mqttClient, ILogger<LifetimeService> logger)
     {
         _logger = logger;
         _topic = GetTopic(options.Value);
         _client = mqttClient;
-
-        applicationLifetime.ApplicationStarted.Register(SendUpAndRunning);
     }
 
     internal static void ConfigureLastWill(HostConfig hostConfig, CommunicationInfo communication)
@@ -43,20 +41,24 @@ internal sealed class LifetimeService : IHostedService, IDisposable
 
     private static string GetTopic(HostConfig hostConfig) => $"{hostConfig.Id}/state";
 
-    private void SendUpAndRunning()
+    public Task StartingAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+    public Task StartAsync(CancellationToken cancellationToken) => _client.Connect();
+    public Task StartedAsync(CancellationToken cancellationToken) => SendUpAndRunning();
+
+    private async Task SendUpAndRunning()
     {
-        _client.Publish(new MqttApplicationMessageBuilder()
+        _logger.UpAndRunning(EngineHost.InformationalVersion);
+        await _client.Publish(new MqttApplicationMessageBuilder()
             .WithTopic(_topic)
             .WithPayload(UpAndRunningPayload)
             .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
             .WithContentType(MediaTypeNames.Text.Plain)
             .WithUserProperty(nameof(EngineHost.Version), EngineHost.InformationalVersion)
-            .Build()).GetAwaiter().GetResult();
-
-        _logger.UpAndRunning(EngineHost.InformationalVersion);
+            .Build());
     }
 
-    public Task StartAsync(CancellationToken cancellationToken) => _client.Connect();
+    public Task StoppingAsync(CancellationToken cancellationToken) => Task.CompletedTask;
     public Task StopAsync(CancellationToken cancellationToken) => _client.Disconnect();
+    public Task StoppedAsync(CancellationToken cancellationToken) => Task.CompletedTask;
     public void Dispose() => _client.Dispose();
 }

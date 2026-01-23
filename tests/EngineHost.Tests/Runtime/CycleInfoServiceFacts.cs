@@ -14,7 +14,7 @@ using Xunit;
 
 namespace ViciOne.ManagedEngine.Runtime;
 
-public sealed class CycleInfoService_Start
+public sealed class CycleInfoService_StartAsync
 {
     [Fact]
     public async Task Connects_MQTT_client()
@@ -73,7 +73,7 @@ public sealed class CycleInfoService_Start
     }
 }
 
-public sealed class CycleInfoService_Stop
+public sealed class CycleInfoService_StopAsync
 {
     [Fact]
     public async Task Disconnects_MQTT_client()

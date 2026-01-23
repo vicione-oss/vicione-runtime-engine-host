@@ -9,13 +9,13 @@ using Xunit;
 
 namespace ViciOne.ManagedEngine.Runtime;
 
-public sealed class TerminateFileObserver_StartAsync
+public sealed class TerminateFileObserver_StartingAsync
 {
     private readonly DirectoryMock _directory;
     private readonly IHostApplicationLifetime _lifetime;
     private readonly IHostEnvironment _environment;
 
-    public TerminateFileObserver_StartAsync()
+    public TerminateFileObserver_StartingAsync()
     {
         _directory = new();
         _lifetime = Substitute.For<IHostApplicationLifetime>();
@@ -29,8 +29,8 @@ public sealed class TerminateFileObserver_StartAsync
         var callCount = 0;
         _lifetime.When(x => x.StopApplication()).Do(_ => Interlocked.Increment(ref callCount));
         using TerminateFileObserver observer = new(_lifetime, _environment, _directory.FileSystem);
-        await observer.StartAsync(CancellationToken.None);
 
+        await observer.StartingAsync(CancellationToken.None);
         _directory.CreateFile("terminate");
 
         await FluentActions.Invoking(() => Volatile.Read(ref callCount) >= 2).WaitForTrue();
@@ -44,8 +44,8 @@ public sealed class TerminateFileObserver_StartAsync
         _lifetime.When(x => x.StopApplication()).Do(_ => Interlocked.Increment(ref callCount));
         _directory.CreateFile("terminate");
         using TerminateFileObserver observer = new(_lifetime, _environment, _directory.FileSystem);
-        await observer.StartAsync(CancellationToken.None);
 
+        await observer.StartingAsync(CancellationToken.None);
         _directory.CreateFile("terminate");
 
         await FluentActions.Invoking(() => Volatile.Read(ref callCount) >= 1).WaitForTrue();
@@ -57,21 +57,20 @@ public sealed class TerminateFileObserver_StartAsync
     {
         _directory.CreateFile("terminate");
         using TerminateFileObserver observer = new(_lifetime, _environment, _directory.FileSystem);
-        await observer.StartAsync(CancellationToken.None);
 
-        await Task.Delay(100.Milliseconds());
+        await observer.StartingAsync(CancellationToken.None);
 
         _lifetime.DidNotReceive().StopApplication();
     }
 }
 
-public sealed class TerminateFileObserver_StopAsync
+public sealed class TerminateFileObserver_StoppingAsync
 {
     private readonly DirectoryMock _directory;
     private readonly IHostApplicationLifetime _lifetime;
     private readonly IHostEnvironment _environment;
 
-    public TerminateFileObserver_StopAsync()
+    public TerminateFileObserver_StoppingAsync()
     {
         _directory = new();
         _lifetime = Substitute.For<IHostApplicationLifetime>();
@@ -83,11 +82,10 @@ public sealed class TerminateFileObserver_StopAsync
     public async Task Does_not_stop_application_on_file_creation()
     {
         using TerminateFileObserver observer = new(_lifetime, _environment, _directory.FileSystem);
-        await observer.StartAsync(CancellationToken.None);
-        await observer.StopAsync(CancellationToken.None);
+        await observer.StartingAsync(CancellationToken.None);
 
+        await observer.StoppingAsync(CancellationToken.None);
         _directory.CreateFile("terminate");
-        await Task.Delay(100.Milliseconds());
 
         _lifetime.DidNotReceive().StopApplication();
     }
@@ -97,11 +95,10 @@ public sealed class TerminateFileObserver_StopAsync
     {
         _directory.CreateFile("terminate");
         using TerminateFileObserver observer = new(_lifetime, _environment, _directory.FileSystem);
-        await observer.StartAsync(CancellationToken.None);
-        await observer.StopAsync(CancellationToken.None);
+        await observer.StartingAsync(CancellationToken.None);
 
+        await observer.StoppingAsync(CancellationToken.None);
         _directory.CreateFile("terminate");
-        await Task.Delay(100.Milliseconds());
 
         _lifetime.DidNotReceive().StopApplication();
     }

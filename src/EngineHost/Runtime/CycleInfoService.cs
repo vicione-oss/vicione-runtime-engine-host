@@ -14,7 +14,7 @@ using MQTTnet.Protocol;
 
 namespace ViciOne.ManagedEngine.Runtime;
 
-internal sealed class CycleInfoService : IHostedService, IDisposable
+internal sealed class CycleInfoService : IHostedLifecycleService, IDisposable
 {
     private readonly IVirtualMqttClient _mqttClient;
     private readonly string _reportTopic;
@@ -36,6 +36,8 @@ internal sealed class CycleInfoService : IHostedService, IDisposable
         _reportTopic = $"{options.Value.Id}/cycle/info";
         _crashReportTopic = $"{options.Value.Id}/cycle/crash";
     }
+
+    public Task StartingAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
@@ -81,12 +83,18 @@ internal sealed class CycleInfoService : IHostedService, IDisposable
         stream.Position = 0;
     }
 
+    public Task StartedAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+
+    public Task StoppingAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+
     public async Task StopAsync(CancellationToken cancellationToken)
     {
         _engineChain.CycleReport -= SendCycleReportAsync;
         _engineChain.CrashReport -= SendCrashReportAsync;
         await _mqttClient.Disconnect().ConfigureAwait(false);
     }
+
+    public Task StoppedAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
     public void Dispose() => _mqttClient.Dispose();
 }

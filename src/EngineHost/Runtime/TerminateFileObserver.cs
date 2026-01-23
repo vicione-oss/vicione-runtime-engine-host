@@ -7,7 +7,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace ViciOne.ManagedEngine.Runtime;
 
-internal sealed class TerminateFileObserver : IHostedService, IDisposable
+internal sealed class TerminateFileObserver : IHostedLifecycleService, IDisposable
 {
     private readonly IFileSystemWatcher _watcher;
     private readonly IHostApplicationLifetime _lifetime;
@@ -21,17 +21,25 @@ internal sealed class TerminateFileObserver : IHostedService, IDisposable
         _lifetime = lifetime;
     }
 
-    public Task StartAsync(CancellationToken cancellationToken)
+    public Task StartingAsync(CancellationToken cancellationToken)
     {
         _watcher.EnableRaisingEvents = true;
         return Task.CompletedTask;
     }
 
-    public Task StopAsync(CancellationToken cancellationToken)
+    public Task StartAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+
+    public Task StartedAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+
+    public Task StoppingAsync(CancellationToken cancellationToken)
     {
         _watcher.EnableRaisingEvents = false;
         return Task.CompletedTask;
     }
+
+    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+
+    public Task StoppedAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
     private void TerminateFileCreatedOrRecreated(object sender, FileSystemEventArgs e)
         => _lifetime.StopApplication();

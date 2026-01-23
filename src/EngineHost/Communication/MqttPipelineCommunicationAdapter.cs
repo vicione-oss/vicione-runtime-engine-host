@@ -8,7 +8,7 @@ using MQTTnet.Extensions;
 
 namespace ViciOne.ManagedEngine.Communication;
 
-internal sealed class MqttPipelineCommunicationAdapter : IHostedService
+internal sealed class MqttPipelineCommunicationAdapter : IHostedLifecycleService
 {
     private readonly IOptions<HostConfig> _config;
     private readonly MqttRpcRegistrations _rpcRegistrations;
@@ -42,6 +42,8 @@ internal sealed class MqttPipelineCommunicationAdapter : IHostedService
         _mqttOptimizer = null!;
     }
 
+    public Task StartingAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         _mqttClient ??= _mqttOptimizer.Register(_config.Value.CommandBus, _loggerFactory);
@@ -59,6 +61,10 @@ internal sealed class MqttPipelineCommunicationAdapter : IHostedService
         }
     }
 
+    public Task StartedAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+
+    public Task StoppingAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+
     public async Task StopAsync(CancellationToken cancellationToken)
     {
         if (_server is not null)
@@ -72,4 +78,6 @@ internal sealed class MqttPipelineCommunicationAdapter : IHostedService
             _mqttClient = null;
         }
     }
+
+    public Task StoppedAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 }

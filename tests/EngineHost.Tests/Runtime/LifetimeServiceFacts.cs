@@ -4,7 +4,6 @@ using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
 using AwesomeAssertions;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MQTTnet;
@@ -15,7 +14,7 @@ using Xunit;
 
 namespace ViciOne.ManagedEngine.Runtime;
 
-public sealed class LifetimeService_Start
+public sealed class LifetimeService_StartAsync
 {
     [Fact]
     public async Task Connects_MQTT_client()
@@ -28,7 +27,7 @@ public sealed class LifetimeService_Start
     }
 }
 
-public sealed class LifetimeService_ApplicationStarted
+public sealed class LifetimeService_StartedAsync
 {
     [Fact]
     public async Task Sends_up_and_running_state_on_application_started()
@@ -38,7 +37,7 @@ public sealed class LifetimeService_ApplicationStarted
         var messages = new List<MqttApplicationMessage>();
         await context.MqttClient.Publish(Arg.Do<MqttApplicationMessage>(messages.Add));
 
-        await context.CancellationTokenSource.CancelAsync();
+        await context.Service.StartedAsync(CancellationToken.None);
 
         var message = messages.Should().ContainSingle().Subject;
         message.ConvertPayloadToString().Should().Be("upandrunning");
@@ -78,7 +77,7 @@ public sealed class LifetimeService_ConfigureLastWill
     }
 }
 
-public sealed class LifetimeService_Stop
+public sealed class LifetimeService_StopAsync
 {
     [Fact]
     public async Task Disconnects_MQTT_client()
@@ -95,17 +94,14 @@ internal sealed class LifetimeServiceContext : IDisposable
 {
     internal HostConfig HostConfig { get; } = new() { Id = "test", };
     internal IVirtualMqttClient MqttClient { get; } = Substitute.For<IVirtualMqttClient>();
-    internal IHostApplicationLifetime HostApplicationLifetime { get; } = Substitute.For<IHostApplicationLifetime>();
     internal LifetimeService Service { get; }
-    internal CancellationTokenSource CancellationTokenSource { get; } = new();
     internal TestLogger<LifetimeService> Logger { get; } = new();
 
     internal LifetimeServiceContext()
     {
         var options = Substitute.For<IOptions<HostConfig>>();
         options.Value.Returns(HostConfig);
-        HostApplicationLifetime.ApplicationStarted.Returns(CancellationTokenSource.Token);
-        Service = new(options, MqttClient, Logger, HostApplicationLifetime);
+        Service = new(options, MqttClient, Logger);
     }
 
     public void Dispose() => Service.Dispose();
