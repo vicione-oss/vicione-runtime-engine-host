@@ -1,0 +1,35 @@
+<Solution>
+  <Folder Name="/samples/">
+    <Project Path="samples/Aspire.Hosting.Mosquitto/Aspire.Hosting.Mosquitto.csproj" />
+    <Project Path="samples/Benchmarks/Benchmarks.csproj" />
+    <Project Path="samples/CLI/CLI.csproj" />
+    <Project Path="samples/CycleTimeAnalyzer/CycleTimeAnalyzer.csproj" />
+    <Project Path="samples/EngineAssemblyLoadingTest/EngineAssemblyLoadingTest.csproj" />
+    <Project Path="samples/EngineHost.AppHost/EngineHost.AppHost.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitlab-ci.yml" />
+    <File Path="CHANGELOG.md" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="NuGet.Config" />
+    <File Path="README.md" />
+    <File Path="tests.runsettings" />
+    <File Path="THIRD-PARTY-NOTICES.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/CommunicationContracts/CommunicationContracts.csproj" />
+    <Project Path="src/CommunicationProviders/CommunicationProviders.csproj" />
+    <Project Path="src/EngineHost/EngineHost.csproj" />
+    <Project Path="src/PackageResolvers.NuGet/PackageResolvers.NuGet.csproj" />
+    <Project Path="src/PackageResolvers/PackageResolvers.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Common.Tests/Common.Tests.csproj" />
+    <Project Path="tests/CommunicationProviders.Tests/CommunicationProviders.Tests.csproj" />
+    <Project Path="tests/EngineHost.Tests/EngineHost.Tests.csproj" />
+    <Project Path="tests/PackageResolvers.NuGet.Tests/PackageResolvers.NuGet.Tests.csproj" />
+    <Project Path="tests/PackageResolvers.Tests/PackageResolvers.Tests.csproj" />
+  </Folder>
+</Solution>
