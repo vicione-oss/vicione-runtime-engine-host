@@ -77,7 +77,7 @@ internal sealed class MqttNetRpcClient : IMqttRpcClient, IDisposable
         catch { }
         if (_waitingCalls.TryRemove(correlationData, out var awaitable))
         {
-            var status = eventArgs.ApplicationMessage.UserProperties.Find(_ => string.CompareOrdinal(_.Name, "Status") == 0)?.Value;
+            var status = eventArgs.ApplicationMessage.UserProperties.Find(_ => StringComparer.InvariantCulture.Equals(_.Name, "Status"))?.Value;
             if (status is null)
             {
                 awaitable.TrySetException(new InvalidOperationException("Response does not contain status."));
