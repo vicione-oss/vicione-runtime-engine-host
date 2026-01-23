@@ -17,7 +17,7 @@ public sealed class NuGetPackageResolver(
     ILogger? logger = null) : IPackageResolver
 {
     private readonly IEnumerable<NuGetPackageSource>? _packageSources = packageSources;
-    private readonly NuGetFramework _tfm = FrameworkConstants.CommonFrameworks.Net60;
+    private readonly NuGetFramework _tfm = FrameworkConstants.CommonFrameworks.Net10_0;
 
     public NuGetPackageResolver(NuGetPackageSource packageSource, string? outputDirectory = null, bool warningAsError = true, bool noCache = false, ILogger? logger = null) : this([packageSource,], outputDirectory, warningAsError, noCache, logger)
     { }

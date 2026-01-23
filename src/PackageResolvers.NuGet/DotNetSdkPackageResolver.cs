@@ -18,7 +18,7 @@ public sealed class DotNetSdkPackageResolver(string outputDirectory, IFileSystem
     private readonly string _outputDirectory = outputDirectory;
     private readonly ILogger<DotNetSdkPackageResolver>? _logger = logger;
     private readonly IFileSystem _fileSystem = fileSystem;
-    private const string TFM = "net6.0";
+    private const string TFM = "net10.0";
 
     public DotNetSdkPackageResolver(string outputDirectory, IFileSystem fileSystem, NuGetPackageSource packageSource, ILogger<DotNetSdkPackageResolver>? logger = null)
         : this(outputDirectory, fileSystem, [packageSource,], logger)
@@ -34,7 +34,7 @@ public sealed class DotNetSdkPackageResolver(string outputDirectory, IFileSystem
             {
                 var projectFilePath = await CreateProjectFileAsync(projectDirectory, packageReferences).ConfigureAwait(false);
                 await CreateNuGetConfigAsync(projectDirectory, _packageSources).ConfigureAwait(false);
-                PublishProject(projectFilePath, _outputDirectory);
+                await PublishProject(projectFilePath, _outputDirectory, cancellationToken);
                 return new([.. CreatePackages(_outputDirectory, _fileSystem)], new(await ReadDependencyFileAsync(_outputDirectory, _fileSystem).ConfigureAwait(false)));
             }
             finally
@@ -127,9 +127,9 @@ public sealed class DotNetSdkPackageResolver(string outputDirectory, IFileSystem
         _logger?.NuGetConfigCreated(packageSources?.Count ?? 0);
     }
 
-    private void PublishProject(string projectFilePath, string outputDirectory)
+    private async Task PublishProject(string projectFilePath, string outputDirectory, CancellationToken cancellationToken)
     {
-        var arguments = new StringBuilder("publish --nologo -c Release -o ")
+        var arguments = new StringBuilder("publish --nologo -o ")
             .Append(outputDirectory)
             .Append(' ')
             .Append(projectFilePath);
@@ -151,7 +151,7 @@ public sealed class DotNetSdkPackageResolver(string outputDirectory, IFileSystem
         process.OutputDataReceived += (_, e) => processOutput.Append(e.Data);
         process.Start();
         process.BeginOutputReadLine();
-        process.WaitForExit();
+        await process.WaitForExitAsync(cancellationToken);
         if (process.ExitCode != 0)
             throw new InvalidOperationException(processOutput.ToString());
         _logger?.ProjectPublished();
