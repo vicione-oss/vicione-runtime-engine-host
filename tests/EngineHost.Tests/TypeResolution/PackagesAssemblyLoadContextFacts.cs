@@ -44,7 +44,7 @@ public class PackagesAssemblyLoadContext_Load // can not be abstracted
     {
         var loadContextMethods = Substitute.For<ILoadContextMethods>();
         TestLogger<PackagesAssemblyLoadContext> logger = new();
-        using TemporaryDirectory directory = new(false);
+        using TemporaryDirectory directory = new();
         var componentDirectory = directory.CreateDirectory("Component1");
         var file = directory.CreateFile("Component1", "System.Drawing.Point.dll");
         IAssemblyLoadContext context = new PackagesAssemblyLoadContext("my-engine", [], logger,
@@ -63,7 +63,7 @@ public class PackagesAssemblyLoadContext_Load // can not be abstracted
     {
         var loadContextMethods = Substitute.For<ILoadContextMethods>();
         TestLogger<PackagesAssemblyLoadContext> logger = new();
-        using TemporaryDirectory directory = new(false);
+        using TemporaryDirectory directory = new();
         var componentDirectory = directory.CreateDirectory("Component1");
         var file = directory.CreateFile("Component1", "System.Drawing.Point.dll");
         IAssemblyLoadContext context = new PackagesAssemblyLoadContext("my-engine", [], logger,
@@ -100,7 +100,7 @@ public class PackagesAssemblyLoadContext_LoadUnmanagedDll
     {
         var loadContextMethods = Substitute.For<ILoadContextMethods>();
         TestLogger<PackagesAssemblyLoadContext> logger = new();
-        using TemporaryDirectory directory = new(false);
+        using TemporaryDirectory directory = new();
         var componentDirectory = directory.CreateDirectory("Component1");
         var file = directory.CreateFile("Component1", "libc");
         loadContextMethods.TryLoadNativeLibrary(Arg.Any<string>(), out Arg.Any<nint>())
@@ -167,7 +167,7 @@ public class PackagesAssemblyLoadContext_LoadUnmanagedDll
     {
         var loadContextMethods = Substitute.For<ILoadContextMethods>();
         TestLogger<PackagesAssemblyLoadContext> logger = new();
-        using TemporaryDirectory directory = new(false);
+        using TemporaryDirectory directory = new();
         var componentDirectory = directory.CreateDirectory("Component1");
         var file = directory.CreateFile("Component1", filename);
         loadContextMethods.TryLoadNativeLibrary(Path.GetFullPath(file), out Arg.Any<nint>())
@@ -191,7 +191,7 @@ public class PackagesAssemblyLoadContext_LoadUnmanagedDll
     {
         var loadContextMethods = Substitute.For<ILoadContextMethods>();
         TestLogger<PackagesAssemblyLoadContext> logger = new();
-        using TemporaryDirectory directory = new(false);
+        using TemporaryDirectory directory = new();
         var componentDirectory = directory.CreateDirectory("Component1");
         var file = directory.CreateFile("Component1", filename);
         loadContextMethods.TryLoadNativeLibrary(Path.GetFullPath(file), out Arg.Any<nint>())
@@ -216,7 +216,7 @@ public class PackagesAssemblyLoadContext_GetResolverMap
     [Fact]
     public void Returns_same_resolver_for_equal_components()
     {
-        using TemporaryDirectory directory = new(false);
+        using TemporaryDirectory directory = new();
         var equalMainComponent = directory.CreateFile("A", "Main.dll");
         var differentMainComponent = directory.CreateFile("B", "Main.dll");
         AssemblyHelper.CreateAssembly(equalMainComponent, "Main.dll", "1.0.0", directory.FileSystem);

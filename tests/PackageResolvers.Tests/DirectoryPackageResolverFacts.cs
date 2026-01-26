@@ -8,18 +8,16 @@ using Xunit;
 
 namespace ViciOne.ManagedEngine.PackageResolver;
 
-public sealed class DirectoryPackageResolver_ResolveAsync : IPackageResolverFacts.IResolveAsync, IDisposable
+public sealed class DirectoryPackageResolver_ResolveAsync : IPackageResolverFacts.IResolveAsync
 {
-    private readonly TemporaryDirectory _directory;
+    private readonly DirectoryMock _directory;
     private readonly DirectoryPackageResolver _packageResolver;
 
     public DirectoryPackageResolver_ResolveAsync()
     {
-        _directory = new TemporaryDirectory();
+        _directory = new();
         _packageResolver = new DirectoryPackageResolver(_directory.Path, _directory.FileSystem);
     }
-
-    public void Dispose() => _directory.Dispose();
 
     [Fact]
     public async Task Returns_content_of_packages_Async()

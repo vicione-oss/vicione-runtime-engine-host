@@ -65,7 +65,7 @@ public class PipelineExtensions_
         {
             var task1 = Task.Run(() => mediator.Send<TestRequest, bool>(new() { DeploymentIdentifier = id, }));
             var task2 = Task.Run(() => mediator.Send<TestRequest, bool>(new() { DeploymentIdentifier = id, }));
-            await Task.Delay(200);
+            await FluentActions.Invoking(() => testLogger.Entries.Count >= 2).WaitForTrue();
             return Task.WhenAll(task1, task2);
         }
 

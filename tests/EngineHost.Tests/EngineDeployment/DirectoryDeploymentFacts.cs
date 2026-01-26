@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
-using System.IO.Abstractions;
 using System.IO.Compression;
 using System.Threading;
 using System.Threading.Tasks;
 using AwesomeAssertions;
+using Testably.Abstractions.Testing;
 using Xunit;
 
 namespace ViciOne.ManagedEngine.EngineDeployment;
@@ -16,7 +16,7 @@ public class DirectoryDeployment_ConfigureDeployment
     [Fact]
     public async Task Writes_deploy_parameter()
     {
-        using var directory = new TemporaryDirectory();
+        DirectoryMock directory = new();
         DeployParameter deployParameter = new()
         {
             CycleTime = 100,
@@ -41,7 +41,7 @@ public class DirectoryDeployment_ConfigureDeployment
     [Fact]
     public async Task Writes_start_parameter()
     {
-        using var directory = new TemporaryDirectory();
+        DirectoryMock directory = new();
 
         await DirectoryDeployment.ConfigureDeployment(directory.Path, DeploymentIdentifier, "{}",
             new(), directory.FileSystem, CancellationToken.None);
@@ -49,7 +49,7 @@ public class DirectoryDeployment_ConfigureDeployment
         (await ReadCompressedJsonFile(FileNameHelper.GetStartParameterFileName(directory.FileSystem.Path.Combine(directory.Path, DeploymentIdentifier), directory.FileSystem), directory.FileSystem)).Should().Be("{}");
     }
 
-    private static async Task<string> ReadCompressedJsonFile(string path, IFileSystem fileSystem)
+    private static async Task<string> ReadCompressedJsonFile(string path, MockFileSystem fileSystem)
     {
         await using var file = fileSystem.FileStream.New(path, new FileStreamOptions()
         {
@@ -71,7 +71,7 @@ public class DirectoryDeployment_ReadDeployParameter
     [Fact]
     public async Task Returns_data_from_file()
     {
-        using TemporaryDirectoryDeployment deployment = new(DeploymentIdentifier, string.Empty);
+        TemporaryDirectoryDeployment deployment = new(DeploymentIdentifier, string.Empty);
         DeployParameter expected = new() { CycleTime = 123, };
         deployment.WriteDeployParameter(expected);
 
@@ -83,7 +83,7 @@ public class DirectoryDeployment_ReadDeployParameter
     [Fact]
     public async Task Can_handle_missing_files()
     {
-        using TemporaryDirectoryDeployment deployment = new(DeploymentIdentifier, string.Empty);
+        TemporaryDirectoryDeployment deployment = new(DeploymentIdentifier, string.Empty);
 
         var call = FluentActions.Awaiting(() => DirectoryDeployment.ReadDeployParameter(deployment.Path, DeploymentIdentifier, deployment.FileSystem, default));
 
@@ -93,7 +93,7 @@ public class DirectoryDeployment_ReadDeployParameter
     [Fact]
     public async Task Can_handle_read_failures()
     {
-        using TemporaryDirectoryDeployment deployment = new(DeploymentIdentifier, string.Empty);
+        TemporaryDirectoryDeployment deployment = new(DeploymentIdentifier, string.Empty);
         deployment.WriteDeployParameter();
 
         using var _ = deployment.FileSystem.File.Open(deployment.DeployParameterFile, FileMode.Open, FileAccess.ReadWrite);
@@ -111,7 +111,7 @@ public class DirectoryDeployment_ReadStartParameter
     [Fact]
     public async Task Returns_data_from_file()
     {
-        using TemporaryDirectoryDeployment deployment = new(DeploymentIdentifier, string.Empty);
+        TemporaryDirectoryDeployment deployment = new(DeploymentIdentifier, string.Empty);
         var engineName = nameof(Returns_data_from_file);
         deployment.WriteStartParameter(new() { Engine = new() { Name = engineName, } });
 
@@ -123,7 +123,7 @@ public class DirectoryDeployment_ReadStartParameter
     [Fact]
     public async Task Can_handle_missing_files()
     {
-        using TemporaryDirectoryDeployment deployment = new(DeploymentIdentifier, string.Empty);
+        TemporaryDirectoryDeployment deployment = new(DeploymentIdentifier, string.Empty);
 
         var call = FluentActions.Awaiting(() => DirectoryDeployment.ReadStartParameter(deployment.Path, DeploymentIdentifier, deployment.FileSystem, default));
 
@@ -133,7 +133,7 @@ public class DirectoryDeployment_ReadStartParameter
     [Fact]
     public async Task Can_handle_read_failures()
     {
-        using TemporaryDirectoryDeployment deployment = new(DeploymentIdentifier, string.Empty);
+        TemporaryDirectoryDeployment deployment = new(DeploymentIdentifier, string.Empty);
         deployment.WriteStartParameter();
         using var _ = deployment.FileSystem.File.Open(deployment.StartParameterFile, FileMode.Open, FileAccess.ReadWrite);
 
@@ -150,7 +150,7 @@ public class DirectoryDeployment_DeleteDeployment
     [Fact]
     public void Removes_the_entire_deployment()
     {
-        using var directory = new TemporaryDirectory();
+        DirectoryMock directory = new();
         directory.CreateDirectory(DeploymentIdentifier, "sampleDir");
         directory.CreateFile(DeploymentIdentifier, "foo", "bar");
 

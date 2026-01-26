@@ -14,7 +14,7 @@ public class JsonFileLoggerProvider_
     [Fact]
     public void Acceptance()
     {
-        using var directory = new TemporaryDirectory();
+        DirectoryMock directory = new();
         using var factory = new LoggerFactory();
         factory.AddProvider(new JsonFileLoggerProvider(new()
         {
@@ -38,7 +38,7 @@ public class JsonFileLoggerProvider_
         [Fact]
         public void Empties_old_log_file()
         {
-            using var directory = new TemporaryDirectory();
+            DirectoryMock directory = new();
             var logFile = directory.FileSystem.Path.Combine(directory.Path, "engine-A.json");
             directory.FileSystem.File.WriteAllText(logFile, "alt");
 

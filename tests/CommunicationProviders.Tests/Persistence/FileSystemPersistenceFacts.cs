@@ -46,7 +46,7 @@ public sealed class FileSystemPersistence_Connect
     public async Task Creates_directory_Async()
     {
         var fileSystem = new MockFileSystem();
-        using FileSystemPersistenceContext context = new();
+        FileSystemPersistenceContext context = new();
         var subDirectory = fileSystem.Path.Combine(context.Directory.Path, "subDir1", "subDir2");
         var persistence = new FileSystemPersistence(new() { Directory = subDirectory, }, context.Logger, context.NameResolver, AssemblyLoadContext.Default, context.Ids, fileSystem);
         fileSystem.Directory.Exists(subDirectory).Should().BeFalse();
@@ -57,10 +57,9 @@ public sealed class FileSystemPersistence_Connect
     }
 }
 
-public sealed class FileSystemPersistence_Load : IDisposable
+public sealed class FileSystemPersistence_Load
 {
     private readonly FileSystemPersistenceContext _context = new();
-    public void Dispose() => _context.Dispose();
 
     [Theory]
     [InlineData("00000000-0000-0000-000000000001", 1, 2)]
@@ -168,10 +167,9 @@ public sealed class FileSystemPersistence_Load : IDisposable
     }
 }
 
-public sealed class FileSystemPersistence_Save : IDisposable
+public sealed class FileSystemPersistence_Save
 {
     private readonly FileSystemPersistenceContext _context = new();
-    public void Dispose() => _context.Dispose();
 
     [Fact]
     public async Task Creates_new_file_for_unsaved_entry_Async()
@@ -234,9 +232,9 @@ public sealed class FileSystemPersistence_Save : IDisposable
 }
 
 
-internal sealed class FileSystemPersistenceContext : IDisposable
+internal sealed class FileSystemPersistenceContext
 {
-    internal TemporaryDirectory Directory { get; } = new();
+    internal DirectoryMock Directory { get; } = new();
     internal FileSystemPersistence Persistence { get; }
     internal TestLogger<FileSystemPersistence> Logger { get; } = new();
     internal INameResolver NameResolver { get; } = Substitute.For<INameResolver>();
@@ -246,8 +244,6 @@ internal sealed class FileSystemPersistenceContext : IDisposable
 
     internal FileSystemPersistenceContext()
         => Persistence = new(new() { Directory = Directory.Path, }, Logger, NameResolver, AssemblyLoadContext.Default, Ids, Directory.FileSystem);
-
-    public void Dispose() => Directory.Dispose();
 
     internal void Given_is_persistence_entry_file_with_invalid_content(string id, short number)
     {
@@ -268,7 +264,6 @@ internal sealed class FileSystemPersistenceContext : IDisposable
         var filename = Directory.CreateFile([.. pathParts, .. new[] { $"{id}@{number}" }]);
         Directory.FileSystem.File.WriteAllText(filename, content is null ? "null" : JsonSerializer.Serialize(content));
         Ids.Add(id);
-        Thread.Sleep(10);
     }
 
     internal void Given_is_persistence_entry(string id, string description)

@@ -405,7 +405,7 @@ public sealed class ContextPool_AreEqualOrSubsetOfPackageReferences
 internal sealed class ContextPoolContext : IDisposable
 {
     internal ContextPool ContextPool { get; }
-    internal TemporaryDirectory Directory { get; } = new();
+    internal DirectoryMock Directory { get; } = new();
     internal IOptions<HostConfig> Config { get; } = Substitute.For<IOptions<HostConfig>>();
     internal TestLogger<ContextPool> Logger { get; } = new();
 
@@ -415,9 +415,5 @@ internal sealed class ContextPoolContext : IDisposable
         ContextPool = new(Config, Substitute.For<ILoggerFactory>(), Directory.FileSystem, Logger);
     }
 
-    public void Dispose()
-    {
-        ContextPool.Dispose();
-        Directory.Dispose();
-    }
+    public void Dispose() => ContextPool.Dispose();
 }

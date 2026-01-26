@@ -49,7 +49,7 @@ public class PackageInstaller_Resolve
     [Fact]
     public void Ignores_the_file_hierarchy()
     {
-        using var directory = new TemporaryDirectory();
+        DirectoryMock directory = new();
         Package packageA = new(directory.CreateDirectory("A", "0.1.0"),
         [
             new(Path.Combine(directory.Path, "A", "0.1.0", "Assembly.dll")),

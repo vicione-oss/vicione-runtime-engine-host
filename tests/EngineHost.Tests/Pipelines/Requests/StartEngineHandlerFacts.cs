@@ -52,9 +52,5 @@ public sealed class StartEngineHandler_ : IDisposable
         _deploymentPool.DidNotReceive().DeploymentStarted(Arg.Any<string>());
     }
 
-    public void Dispose()
-    {
-        _transactionContext.Dispose();
-        _temporaryDirectoryDeployment.Dispose();
-    }
+    public void Dispose() => _transactionContext.Dispose();
 }

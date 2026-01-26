@@ -1,13 +1,12 @@
-﻿using Testably.Abstractions;
+﻿using Testably.Abstractions.Testing;
 
 namespace System.IO;
 
-public sealed class TemporaryDirectory : IDisposable
+public sealed class DirectoryMock
 {
-    private bool _disposedValue;
-    private readonly RealFileSystem _fileSystem;
+    private readonly MockFileSystem _fileSystem;
 
-    public TemporaryDirectory()
+    public DirectoryMock()
     {
         _fileSystem = new();
         Path = _fileSystem.Path.GetRandomFileName();
@@ -16,7 +15,7 @@ public sealed class TemporaryDirectory : IDisposable
 
     public string Path { get; }
 
-    public RealFileSystem FileSystem => _fileSystem;
+    public MockFileSystem FileSystem => _fileSystem;
 
     public string CreateDirectory(params string[] pathParts)
     {
@@ -31,24 +30,10 @@ public sealed class TemporaryDirectory : IDisposable
         _fileSystem.Directory.CreateDirectory(directoryPath);
         var filePath = _fileSystem.Path.Combine(Path, _fileSystem.Path.Combine(pathParts));
         _fileSystem.File.Create(filePath).Dispose();
-        return filePath;
-    }
 
-    public void Dispose()
-    {
-        if (!_disposedValue)
-        {
-            if (_fileSystem.Directory.Exists(Path))
-            {
-                try
-                {
-                    _fileSystem.Directory.Delete(Path, true);
-                }
-                catch
-                {
-                }
-            }
-            _disposedValue = true;
-        }
+        // Advance mock time to ensure unique timestamps
+        ((MockTimeSystem)_fileSystem.TimeSystem).TimeProvider.AdvanceBy(TimeSpan.FromSeconds(1));
+
+        return filePath;
     }
 }
