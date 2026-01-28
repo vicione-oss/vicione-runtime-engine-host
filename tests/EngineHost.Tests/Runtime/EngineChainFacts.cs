@@ -1,23 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using AwesomeAssertions;
 using AwesomeAssertions.Extensions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Xunit;
 
 namespace ViciOne.ManagedEngine.Runtime;
 
-public class EngineChain_
+public class EngineChain_ProcessChainLinks
 {
-    private readonly TestLogger<EngineChain> _logger = new(LogLevel.Warning);
-
     [Fact]
     public void Does_not_execute_disabled_chain_links()
     {
-        using EngineChain engineChain = new(_logger);
+        using EngineChain engineChain = new(Substitute.For<ITimer>(), NullLogger<EngineChain>.Instance);
         var calls = 0u;
 
         engineChain.AddChainLink("1", () => calls++, 0);
@@ -29,7 +29,7 @@ public class EngineChain_
     [Fact]
     public void Executes_enabled_chain_links()
     {
-        using EngineChain engineChain = new(_logger);
+        using EngineChain engineChain = new(Substitute.For<ITimer>(), NullLogger<EngineChain>.Instance);
         var calls = 0u;
 
         engineChain.AddChainLink("1", () => calls++, 0);
@@ -42,7 +42,7 @@ public class EngineChain_
     [Fact]
     public void Executes_chain_links_in_order()
     {
-        using EngineChain engineChain = new(_logger);
+        using EngineChain engineChain = new(Substitute.For<ITimer>(), NullLogger<EngineChain>.Instance);
         List<uint> calls = [];
 
         engineChain.AddChainLink("1", () => { calls.Add(1); return 0; }, 10);
@@ -58,7 +58,7 @@ public class EngineChain_
     [Fact]
     public void Can_handle_enabled_change()
     {
-        using EngineChain engineChain = new(_logger);
+        using EngineChain engineChain = new(Substitute.For<ITimer>(), NullLogger<EngineChain>.Instance);
         var calls = 0u;
 
         engineChain.AddChainLink("1", () => calls++, 0);
@@ -77,71 +77,16 @@ public class EngineChain_
     }
 
     [Fact]
-    public async Task Stop_will_wait_until_processing_finish()
+    public void Skips_disabled_chain_link_while_executing()
     {
-        using EngineChain engineChain = new(_logger);
-        using AutoResetEvent tick = new(false);
-        engineChain.AddChainLink("1", () =>
-        {
-            tick.Set();
-            Thread.Sleep(250);
-            return 0;
-        }, 0);
-        engineChain.EnableChainLink("1");
-
-        await engineChain.SetUpCycleTimeAsync(100.Milliseconds());
-        tick.WaitOne();
-        var stop = engineChain.Awaiting(_ => _.StopAsync());
-
-        stop.ExecutionTime().Should().BeCloseTo(250.Milliseconds(), 50.Milliseconds());
-    }
-
-    [Fact]
-    public async Task Stop_can_cancel_processing()
-    {
-        using EngineChain engineChain = new(_logger);
+        using EngineChain engineChain = new(Substitute.For<ITimer>(), NullLogger<EngineChain>.Instance);
         List<uint> calls = [];
-        engineChain.AddChainLink("1", () => { Thread.Sleep(100); calls.Add(1); return 0; }, 0);
-        engineChain.AddChainLink("2", () => { Thread.Sleep(100); calls.Add(2); return 0; }, 1);
+        engineChain.AddChainLink("1", () => { engineChain.DisableChainLink("2"); calls.Add(1); return 0; }, 0);
+        engineChain.AddChainLink("2", () => { calls.Add(2); return 0; }, 1);
         engineChain.EnableChainLink("1");
         engineChain.EnableChainLink("2");
 
-        await engineChain.SetUpCycleTimeAsync(100.Milliseconds());
-        await Task.Delay(150.Milliseconds());
-        await engineChain.StopAsync();
-
-        calls.Should().ContainSingle().Which.Should().Be(1);
-    }
-
-    [Fact]
-    public async Task Stops_execution()
-    {
-        using EngineChain engineChain = new(_logger);
-        var calls = 0u;
-        engineChain.AddChainLink("1", () => calls++, 0);
-        engineChain.EnableChainLink("1");
-
-        await engineChain.SetUpCycleTimeAsync(100.Milliseconds());
-        await engineChain.StopAsync();
-        await Task.Delay(120);
-
-        calls.Should().Be(0);
-    }
-
-    [Fact]
-    public async Task Skips_disabled_chain_link_while_executing()
-    {
-        using EngineChain engineChain = new(_logger);
-        List<uint> calls = [];
-        engineChain.AddChainLink("1", () => { Thread.Sleep(100.Milliseconds()); calls.Add(1); return 0; }, 0);
-        engineChain.AddChainLink("2", () => { Thread.Sleep(100.Milliseconds()); calls.Add(2); return 0; }, 1);
-        engineChain.EnableChainLink("1");
-        engineChain.EnableChainLink("2");
-
-        var process = Task.Run(() => engineChain.ProcessChainLinks());
-        await Task.Delay(50.Milliseconds());
-        engineChain.DisableChainLink("2");
-        await process;
+        _ = engineChain.ProcessChainLinks();
 
         calls.Should().ContainSingle().Which.Should().Be(1);
     }
@@ -149,7 +94,7 @@ public class EngineChain_
     [Fact]
     public async Task Does_not_execute_removed_chain_link()
     {
-        using EngineChain engineChain = new(_logger);
+        using EngineChain engineChain = new(Substitute.For<ITimer>(), NullLogger<EngineChain>.Instance);
         var calls = 0u;
 
         engineChain.AddChainLink("1", () => calls++, 0);
@@ -163,31 +108,27 @@ public class EngineChain_
     }
 
     [Fact]
-    public async Task Logs_cycle_time_exceeded()
+    public void Can_be_stopped()
     {
-        var timer = Substitute.For<ITimer>();
-        using EngineChain engineChain = new(timer, _logger);
-
-        timer.Interval.Returns(1.Milliseconds());
-        engineChain.AddChainLink("1", () => 0, 0);
+        using EngineChain engineChain = new(Substitute.For<ITimer>(), NullLogger<EngineChain>.Instance);
+        List<uint> calls = [];
+        using CancellationTokenSource cts = new();
+        engineChain.AddChainLink("1", () => { cts.CancelAsync(); calls.Add(1); return 0; }, 0);
+        engineChain.AddChainLink("2", () => { calls.Add(2); return 0; }, 1);
         engineChain.EnableChainLink("1");
+        engineChain.EnableChainLink("2");
 
-        var tick = engineChain.ProcessChainLinks();
-        await engineChain.ReportChainResults(new TimerTick<EngineChainExecutionResult>(10.Milliseconds(), tick!));
+        _ = engineChain.ProcessChainLinks(cts.Token);
 
-        _logger.Entries.Should().ContainSingle();
-        _logger.EventId.Id.Should().Be(3);
-        _logger.Exception.Should().BeNull();
-        _logger.LogLevel.Should().Be(LogLevel.Warning);
-        _logger.Message.Should().MatchEquivalentOf("*cycle*took*10*skip*10*cycles*");
+        calls.Should().ContainSingle().Which.Should().Be(1);
     }
 
     [Fact]
     public async Task Does_not_skip_empty_cycle()
     {
-        using EngineChain engineChain = new(_logger);
+        TestLogger<EngineChain> logger = new(LogLevel.Warning);
+        using EngineChain engineChain = new(Substitute.For<ITimer>(), logger);
         var calls = 0u;
-
         engineChain.AddChainLink("1", () => { Thread.Sleep(150.Milliseconds()); return calls++; }, 0);
         engineChain.EnableChainLink("1");
 
@@ -198,49 +139,13 @@ public class EngineChain_
         await cycle1;
 
         calls.Should().Be(1);
-        _logger.Calls.Should().Be(0);
-    }
-
-    [Fact]
-    public async Task Reports_durations_correctly()
-    {
-        using EngineChain engineChain = new(_logger);
-        EngineChainCycleReport? report = null;
-        engineChain.CycleReport += r => { report = r; return Task.CompletedTask; };
-
-        engineChain.AddChainLink("1", () => { Thread.Sleep(700); return 0; }, 0);
-        engineChain.AddChainLink("2", () => { Thread.Sleep(300); return 1; }, 1);
-        engineChain.EnableChainLink("1");
-        engineChain.EnableChainLink("2");
-
-        var tick = engineChain.ProcessChainLinks();
-        await engineChain.ReportChainResults(new TimerTick<EngineChainExecutionResult>(1.Seconds(), tick!));
-
-        report.Should().NotBeNull();
-        report!.Duration.Should().BeCloseTo(1.Seconds(), 40.Milliseconds());
-        report.ChainLinkReports["1"].Duration.Should().BeCloseTo(700.Milliseconds(), 30.Milliseconds());
-        report.ChainLinkReports["2"].Duration.Should().BeCloseTo(300.Milliseconds(), 30.Milliseconds());
-        report.ChainLinkReports["1"].Cycle.Should().Be(0);
-        report.ChainLinkReports["2"].Cycle.Should().Be(1);
-    }
-
-    [Fact]
-    public void Reports_nothing_without_enabled_chain_links()
-    {
-        using EngineChain engineChain = new(_logger);
-        var call = false;
-        engineChain.CycleReport += _ => { call = true; return Task.CompletedTask; };
-        engineChain.AddChainLink("1", () => 0, 0);
-
-        engineChain.ProcessChainLinks();
-
-        call.Should().BeFalse();
+        logger.Calls.Should().Be(0);
     }
 
     [Fact]
     public async Task Can_handle_violation_of_cycle_time()
     {
-        using EngineChain engineChain = new(_logger);
+        using EngineChain engineChain = new(Substitute.For<ITimer>(), NullLogger<EngineChain>.Instance);
         var calls = 0u;
 
         engineChain.AddChainLink("1", () =>
@@ -251,19 +156,22 @@ public class EngineChain_
         }, 0);
         engineChain.EnableChainLink("1");
 
-        await engineChain.SetUpCycleTimeAsync(100.Milliseconds());
-        await Task.Delay(300);
-        await engineChain.StopAsync();
+        // First call is being processed
+        var firstProcess = Task.Run(() => engineChain.ProcessChainLinks());
+        // Second call returns null because first is still running
+        await Task.Delay(50);
+        var secondResult = engineChain.ProcessChainLinks();
+        await firstProcess;
 
         calls.Should().Be(1);
+        secondResult.Should().BeNull();
     }
 
     [Fact]
-    public async Task Internal_processing_works_like_expected()
+    public void Internal_processing_works_like_expected()
     {
-        using EngineChain engineChain = new(_logger);
+        using EngineChain engineChain = new(Substitute.For<ITimer>(), NullLogger<EngineChain>.Instance);
         Dictionary<string, int> calls = new() { { "1", 0 }, { "2", 0 }, };
-        using AutoResetEvent tick = new(false);
 
         engineChain.AddChainLink("1", () =>
         {
@@ -273,43 +181,27 @@ public class EngineChain_
         }, 0);
         engineChain.AddChainLink("2", () =>
         {
-            if (++calls["2"] == 3)
-                tick.Set();
+            calls["2"]++;
             Thread.Sleep(10);
             return 0;
         }, 1);
         engineChain.EnableChainLink("1");
         engineChain.EnableChainLink("2");
 
-        await engineChain.SetUpCycleTimeAsync(100.Milliseconds());
-        tick.WaitOne();
-        await engineChain.StopAsync();
+        // Simulate 3 cycles
+        engineChain.ProcessChainLinks();
+        engineChain.ProcessChainLinks();
+        engineChain.ProcessChainLinks();
 
         calls.Values.Should().HaveCount(2).And.AllSatisfy(v => v.Should().Be(3));
-    }
-
-    [Fact]
-    public async Task Report_handling_does_not_block_processing()
-    {
-        using EngineChain engineChain = new(_logger);
-        var calls = 0u;
-        engineChain.CycleReport += async _ => await Task.Delay(300);
-
-        engineChain.AddChainLink("1", () => calls++, 0);
-        engineChain.EnableChainLink("1");
-
-        await engineChain.SetUpCycleTimeAsync(100.Milliseconds());
-        await Task.Delay(325);
-        await engineChain.StopAsync();
-
-        calls.Should().Be(3);
     }
 
     [Fact]
     public void Can_handle_execution_failures()
     {
         var calls = 0;
-        using EngineChain engineChain = new(_logger);
+        TestLogger<EngineChain> logger = new(LogLevel.Warning);
+        using EngineChain engineChain = new(Substitute.For<ITimer>(), logger);
         engineChain.AddChainLink("1",
             () =>
             {
@@ -322,49 +214,138 @@ public class EngineChain_
         engineChain.ProcessChainLinks();
 
         calls.Should().Be(2);
-        _logger.EventId.Id.Should().Be(2);
-        _logger.Exception.Should().BeOfType<InvalidOperationException>().Which.Message.Should().Be("error");
-        _logger.LogLevel.Should().Be(LogLevel.Error);
-        _logger.Message.Should().Match("*chain*link*fail*0*");
+        logger.EventId.Id.Should().Be(2);
+        logger.Exception.Should().BeOfType<InvalidOperationException>().Which.Message.Should().Be("error");
+        logger.LogLevel.Should().Be(LogLevel.Error);
+        logger.Message.Should().Match("*chain*link*fail*0*");
+    }
+
+}
+
+public class EngineChain_StopAsync
+{
+    [Fact]
+    public async Task Waits_until_processing_finishes()
+    {
+        using EngineChain engineChain = new(Substitute.For<ITimer>(), NullLogger<EngineChain>.Instance);
+        using AutoResetEvent tick = new(false);
+        engineChain.AddChainLink("1", () =>
+        {
+            tick.Set();
+            Thread.Sleep(250);
+            return 0;
+        }, 0);
+        engineChain.EnableChainLink("1");
+
+        var processTask = Task.Run(() => engineChain.ProcessChainLinks());
+        tick.WaitOne();
+        var stopWatch = Stopwatch.StartNew();
+        await engineChain.StopAsync();
+        await processTask;
+        stopWatch.Stop();
+
+        stopWatch.Elapsed.Should().BeCloseTo(250.Milliseconds(), 100.Milliseconds());
+    }
+
+    [Fact]
+    public async Task Stops_timer()
+    {
+        var timer = Substitute.For<ITimer>();
+        using EngineChain engineChain = new(timer, NullLogger<EngineChain>.Instance);
+
+        await engineChain.StopAsync();
+
+        await timer.Received(1).StopAsync();
+    }
+
+    [Fact]
+    public async Task Disposes_timer()
+    {
+        var timer = Substitute.For<ITimer, IDisposable>();
+        using EngineChain engineChain = new(timer, NullLogger<EngineChain>.Instance);
+
+        await engineChain.StopAsync();
+
+        ((IDisposable)timer).Received(1).Dispose();
+    }
+}
+
+public class EngineChain_ReportChainResults
+{
+    [Fact]
+    public async Task Logs_cycle_time_exceeded()
+    {
+        var timer = Substitute.For<ITimer>();
+        timer.Interval.Returns(1.Milliseconds());
+        TestLogger<EngineChain> logger = new(LogLevel.Warning);
+        using EngineChain engineChain = new(timer, logger);
+        EngineChainExecutionResult tick = new();
+        tick.ChainLinkDurations.Add("1", new(0, 10.Milliseconds()));
+
+        await engineChain.ReportChainResults(new TimerTick<EngineChainExecutionResult>(10.Milliseconds(), tick));
+
+        logger.Entries.Should().ContainSingle();
+        logger.EventId.Id.Should().Be(3);
+        logger.Exception.Should().BeNull();
+        logger.LogLevel.Should().Be(LogLevel.Warning);
+        logger.Message.Should().MatchEquivalentOf("*cycle*took*10*skip*10*cycles*");
+    }
+
+    [Fact]
+    public async Task Reports_durations_correctly()
+    {
+        using EngineChain engineChain = new(Substitute.For<ITimer>(), NullLogger<EngineChain>.Instance);
+        EngineChainCycleReport? report = null;
+        engineChain.CycleReport += r => { report = r; return Task.CompletedTask; };
+        EngineChainExecutionResult tick = new();
+        tick.ChainLinkDurations.Add("1", new(0, 700.Milliseconds()));
+        tick.ChainLinkDurations.Add("2", new(1, 300.Milliseconds()));
+
+        await engineChain.ReportChainResults(new TimerTick<EngineChainExecutionResult>(1.Seconds(), tick));
+
+        report.Should().NotBeNull();
+        report!.Duration.Should().Be(1.Seconds());
+        report.ChainLinkReports["1"].Duration.Should().Be(700.Milliseconds());
+        report.ChainLinkReports["2"].Duration.Should().Be(300.Milliseconds());
+        report.ChainLinkReports["1"].Cycle.Should().Be(0);
+        report.ChainLinkReports["2"].Cycle.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task Reports_nothing_without_enabled_chain_links()
+    {
+        using EngineChain engineChain = new(Substitute.For<ITimer>(), NullLogger<EngineChain>.Instance);
+        var call = false;
+        engineChain.CycleReport += _ => { call = true; return Task.CompletedTask; };
+        EngineChainExecutionResult tick = new();
+
+        await engineChain.ReportChainResults(new TimerTick<EngineChainExecutionResult>(TimeSpan.Zero, tick));
+
+        call.Should().BeFalse();
     }
 
     [Fact]
     public async Task Reports_crashed_chain_links()
     {
-        using EngineChain engineChain = new(_logger);
+        using EngineChain engineChain = new(Substitute.For<ITimer>(), NullLogger<EngineChain>.Instance);
         EngineChainCrashReport? report = null;
         engineChain.CrashReport += r => { report = r; return Task.CompletedTask; };
+        EngineChainExecutionResult tick = new();
+        tick.CrashedChainLinks.Add("1");
 
-        engineChain.AddChainLink("1", () => throw new InvalidOperationException("error"), 0);
-        engineChain.EnableChainLink("1");
+        await engineChain.ReportChainResults(new TimerTick<EngineChainExecutionResult>(TimeSpan.Zero, tick));
 
-        var tick = engineChain.ProcessChainLinks();
-        await engineChain.ReportChainResults(new TimerTick<EngineChainExecutionResult>(TimeSpan.Zero, tick!));
-
+        report.Should().NotBeNull();
         report!.CrashedChainLinks.Should().ContainSingle("1");
-    }
-
-    [Fact]
-    public async Task Resets_chain_after_removing_the_last_chain_link()
-    {
-        using EngineChain engineChain = new(_logger);
-        await engineChain.SetUpCycleTimeAsync(100.Milliseconds());
-        await engineChain.RemoveChainLinkAsync("1");
-
-        var act = () => engineChain.SetUpCycleTimeAsync(10.Milliseconds());
-
-        await act.Should().NotThrowAsync();
     }
 }
 
 public class EngineChain_AddChainLink
 {
-    private readonly TestLogger<EngineChain> _logger = new(LogLevel.Warning);
-
     [Fact]
     public void Throws_if_chain_link_already_exists()
     {
-        using EngineChain engineChain = new(_logger);
+        using EngineChain engineChain = new(Substitute.For<ITimer>(), NullLogger<EngineChain>.Instance);
         engineChain.AddChainLink("1", () => 0, 1);
 
         var act = FluentActions.Invoking(() => engineChain.AddChainLink("1", () => 0, 0));
@@ -375,7 +356,7 @@ public class EngineChain_AddChainLink
     [Fact]
     public void Throws_if_chain_link_with_same_index_already_exists()
     {
-        using EngineChain engineChain = new(_logger);
+        using EngineChain engineChain = new(Substitute.For<ITimer>(), NullLogger<EngineChain>.Instance);
         engineChain.AddChainLink("1", () => 0, 0);
 
         var act = FluentActions.Invoking(() => engineChain.AddChainLink("1", () => 0, 0));
@@ -384,13 +365,29 @@ public class EngineChain_AddChainLink
     }
 }
 
+public class EngineChain_RemoveChainLinkAsync
+{
+    [Fact]
+    public async Task Resets_chain_after_removing_the_last_chain_link()
+    {
+        using EngineChain engineChain = new(Substitute.For<ITimer>(), NullLogger<EngineChain>.Instance);
+
+        await engineChain.RemoveChainLinkAsync("1");
+
+        // After removing all chain links, the timer should be reset
+        // and we should be able to set up a new cycle time
+        var act = () => engineChain.SetUpCycleTimeAsync(10.Milliseconds());
+
+        await act.Should().NotThrowAsync();
+    }
+}
+
 public class EngineChain_EnableChainLink
 {
     [Fact]
     public void Throws_if_chain_link_does_not_exist()
     {
-        TestLogger<EngineChain> logger = new(LogLevel.Warning);
-        using EngineChain engineChain = new(logger);
+        using EngineChain engineChain = new(Substitute.For<ITimer>(), NullLogger<EngineChain>.Instance);
 
         var act = FluentActions.Invoking(() => engineChain.EnableChainLink("1"));
 
@@ -403,8 +400,7 @@ public class EngineChain_DisableChainLink
     [Fact]
     public void Throws_if_chain_link_does_not_exist()
     {
-        TestLogger<EngineChain> logger = new(LogLevel.Warning);
-        using EngineChain engineChain = new(logger);
+        using EngineChain engineChain = new(Substitute.For<ITimer>(), NullLogger<EngineChain>.Instance);
 
         var act = FluentActions.Invoking(() => engineChain.DisableChainLink("1"));
 
@@ -417,9 +413,9 @@ public class EngineChain_SetUpCycleTime
     [Fact]
     public async Task Throws_if_cycle_time_does_not_match_to_chain()
     {
-        TestLogger<EngineChain> logger = new(LogLevel.Warning);
-        using EngineChain engineChain = new(logger);
-        await engineChain.SetUpCycleTimeAsync(100.Milliseconds());
+        var timer = Substitute.For<ITimer>();
+        timer.Interval.Returns(100.Milliseconds());
+        using EngineChain engineChain = new(timer, NullLogger<EngineChain>.Instance);
 
         var act = FluentActions.Invoking(() => engineChain.SetUpCycleTimeAsync(10.Milliseconds()));
 
