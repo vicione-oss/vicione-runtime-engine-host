@@ -154,7 +154,8 @@ internal sealed class MqttPipelineCommunicationAdapterContext
     public MqttPipelineCommunicationAdapterContext()
     {
         Methods = new(Mediator);
-        Adapter = new(HostConfig, Methods, Substitute.For<ILogger<MqttPipelineCommunicationAdapter>>(), MqttClient, TimeProvider);
+        Adapter = new(HostConfig, Methods, MqttClient, Substitute.For<ILogger<MqttPipelineCommunicationAdapter>>(),
+            TimeProvider);
     }
 
     internal void SubscribeRequestTopicSuccessful()

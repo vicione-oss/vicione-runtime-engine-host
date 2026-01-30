@@ -14,12 +14,12 @@ using Xunit;
 
 namespace ViciOne.ManagedEngine.Runtime;
 
-public sealed class CycleInfoService_Start
+public sealed class CycleInfoService_StartAsync
 {
     [Fact]
     public async Task Connects_MQTT_client()
     {
-        using CycleInfoServiceContext context = new();
+        CycleInfoServiceContext context = new();
 
         await context.Service.StartAsync(CancellationToken.None);
 
@@ -29,7 +29,7 @@ public sealed class CycleInfoService_Start
     [Fact]
     public async Task Starts_sending_cycle_reports()
     {
-        using CycleInfoServiceContext context = new();
+        CycleInfoServiceContext context = new();
         await context.Service.StartAsync(CancellationToken.None);
         var messages = new List<MqttApplicationMessage>();
         await context.MqttClient.Publish(Arg.Do<MqttApplicationMessage>(messages.Add));
@@ -52,7 +52,7 @@ public sealed class CycleInfoService_Start
     [Fact]
     public async Task Starts_sending_crash_reports()
     {
-        using CycleInfoServiceContext context = new();
+        CycleInfoServiceContext context = new();
         await context.Service.StartAsync(CancellationToken.None);
         var messages = new List<MqttApplicationMessage>();
         await context.MqttClient.Publish(Arg.Do<MqttApplicationMessage>(messages.Add));
@@ -73,12 +73,12 @@ public sealed class CycleInfoService_Start
     }
 }
 
-public sealed class CycleInfoService_Stop
+public sealed class CycleInfoService_StopAsync
 {
     [Fact]
     public async Task Disconnects_MQTT_client()
     {
-        using CycleInfoServiceContext context = new();
+        CycleInfoServiceContext context = new();
 
         await context.Service.StopAsync(CancellationToken.None);
 
@@ -88,7 +88,7 @@ public sealed class CycleInfoService_Stop
     [Fact]
     public async Task Stops_sending_reports()
     {
-        using CycleInfoServiceContext context = new();
+        CycleInfoServiceContext context = new();
         await context.Service.StartAsync(CancellationToken.None);
 
         await context.Service.StopAsync(CancellationToken.None);
@@ -97,7 +97,7 @@ public sealed class CycleInfoService_Stop
     }
 }
 
-internal sealed class CycleInfoServiceContext : IDisposable
+internal sealed class CycleInfoServiceContext
 {
     internal HostConfig HostConfig { get; } = new() { Id = "test", };
     internal IVirtualMqttClient MqttClient { get; } = Substitute.For<IVirtualMqttClient>();
@@ -110,6 +110,4 @@ internal sealed class CycleInfoServiceContext : IDisposable
         options.Value.Returns(HostConfig);
         Service = new(options, MqttClient, EngineChain);
     }
-
-    public void Dispose() => Service.Dispose();
 }

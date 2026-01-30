@@ -18,7 +18,7 @@ internal class DeploymentsService(
     IEngineChain engineChain,
     IMediator mediator,
     ILogger<DeploymentsService> logger,
-    IFileSystem fileSystem) : IHostedService
+    IFileSystem fileSystem) : IHostedLifecycleService
 {
     private readonly IFileSystem _fileSystem = fileSystem;
     private readonly HostConfig _config = options.Value;
@@ -28,14 +28,15 @@ internal class DeploymentsService(
     private readonly IMediator _mediator = mediator;
     private readonly ILogger<DeploymentsService> _logger = logger;
 
-
-    public async Task StartAsync(CancellationToken cancellationToken)
+    public Task StartingAsync(CancellationToken cancellationToken)
     {
         EnsureDeploymentDirectory();
-        await RecoverDeployments(cancellationToken);
+        return Task.CompletedTask;
     }
 
     private void EnsureDeploymentDirectory() => _fileSystem.Directory.CreateDirectory(_config.DeploymentsDirectory);
+
+    public Task StartAsync(CancellationToken cancellationToken) => RecoverDeployments(cancellationToken);
 
     private async Task RecoverDeployments(CancellationToken cancellationToken)
     {
@@ -79,6 +80,10 @@ internal class DeploymentsService(
         }
     }
 
+    public Task StartedAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+
+    public Task StoppingAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+
     public async Task StopAsync(CancellationToken cancellationToken)
     {
         await _engineChain.StopAsync().ConfigureAwait(false);
@@ -100,4 +105,6 @@ internal class DeploymentsService(
         }
         _logger.StoppedDeployments(stoppedDeployments, startedDeployments.Count - stoppedDeployments, startedDeployments.Count);
     }
+
+    public Task StoppedAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 }
