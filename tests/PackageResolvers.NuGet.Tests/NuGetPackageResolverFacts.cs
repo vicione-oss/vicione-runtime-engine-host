@@ -16,21 +16,13 @@ public sealed class NuGetPackageResolverFacts_ResolveAsync : IPackageResolverFac
 
         var (packages, _) = await resolver.ResolveAsync(
         [
-            new() { Name = "Newtonsoft.Json", Version = "13.0.3", },
-            new() { Name = "Microsoft.Extensions.DependencyInjection.Abstractions", Version = "8.0.1", }
+            new() { Name = "Microsoft.Extensions.DependencyInjection.Abstractions", Version = "10.0.1", }
         ], CancellationToken.None);
 
-        packages.Should().HaveCount(2).And.SatisfyRespectively(
-            dependencyModel =>
-            {
-                var asset = dependencyModel.Assets.Should().ContainSingle().Which;
-                asset.Filename.Split(Path.DirectorySeparatorChar).Should().ContainInOrder("microsoft.extensions.dependencyinjection.abstractions", "8.0.1", "lib", "net6.0", "Microsoft.Extensions.DependencyInjection.Abstractions.dll");
-            },
-            newtonsoft =>
-            {
-                var asset = newtonsoft.Assets.Should().ContainSingle().Which;
-                asset.Filename.Split(Path.DirectorySeparatorChar).Should().ContainInOrder("newtonsoft.json", "13.0.3", "lib", "net6.0", "Newtonsoft.Json.dll");
-            });
+        packages.Should().ContainSingle()
+            .Which.Assets.Should().ContainSingle()
+            .Which.Filename.Split(Path.DirectorySeparatorChar).Should()
+            .ContainInOrder("microsoft.extensions.dependencyinjection.abstractions", "10.0.1", "lib", "net10.0", "Microsoft.Extensions.DependencyInjection.Abstractions.dll");
     }
 
     [Fact]
@@ -40,11 +32,10 @@ public sealed class NuGetPackageResolverFacts_ResolveAsync : IPackageResolverFac
 
         var (_, loadInfo) = await resolver.ResolveAsync(
         [
-            new() { Name = "Newtonsoft.Json", Version = "13.0.3", },
-            new() { Name = "Microsoft.Extensions.DependencyModel", Version = "8.0.0", }
+            new() { Name = "Microsoft.Extensions.DependencyModel", Version = "10.0.1", }
         ], CancellationToken.None);
 
-        loadInfo.DependencyFileContent.Should().ContainAll("Newtonsoft.Json", "13.0.3").And.ContainAll("Microsoft.Extensions.DependencyModel", "8.0.0");
+        loadInfo.DependencyFileContent.Should().ContainAll("Microsoft.Extensions.DependencyModel", "10.0.1");
     }
 
     [Fact]

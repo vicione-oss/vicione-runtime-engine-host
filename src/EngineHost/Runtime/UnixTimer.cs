@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace ViciOne.ManagedEngine.Runtime;
 /// <summary>
 /// Unix specific timer implementation using timerfd.
 /// </summary>
-[SupportedOSPlatform("linux")]
+[SupportedOSPlatform(nameof(OSPlatform.Linux))]
 internal sealed class UnixTimer<T> : ITimer, IDisposable
 {
     private readonly Func<CancellationToken, T?> _action;

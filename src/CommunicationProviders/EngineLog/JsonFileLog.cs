@@ -50,7 +50,6 @@ public class JsonFileLog
             });
             using var reader = new StreamReader(stream);
             string? line;
-
             while ((line = await reader.ReadLineAsync().ConfigureAwait(false)) is not null)
             {
                 var logEntry = JsonSerializer.Deserialize<LogEntry>(line, _options);

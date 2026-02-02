@@ -57,7 +57,7 @@ public class AssemblyLoadingFacts
         {
             GC.Collect();
             GC.WaitForPendingFinalizers();
-            await Task.Delay(10);
+            await Task.Delay(10, TestContext.Current.CancellationToken);
         }
 
         contextReference.IsAlive.Should().BeFalse();

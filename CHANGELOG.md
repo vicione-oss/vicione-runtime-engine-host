@@ -7,6 +7,10 @@
 - Add GetPackages command
 - Support OpenTelemetry
 
+### Changed
+
+- Update `.NET` to `10.0`
+
 ## 0.30.0 - 2025-11-06
 
 ### Added

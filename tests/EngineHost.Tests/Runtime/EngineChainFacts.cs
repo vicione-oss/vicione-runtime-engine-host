@@ -21,7 +21,7 @@ public class EngineChain_ProcessChainLinks
         var calls = 0u;
 
         engineChain.AddChainLink("1", () => calls++, 0);
-        engineChain.ProcessChainLinks();
+        engineChain.ProcessChainLinks(TestContext.Current.CancellationToken);
 
         calls.Should().Be(0);
     }
@@ -34,7 +34,7 @@ public class EngineChain_ProcessChainLinks
 
         engineChain.AddChainLink("1", () => calls++, 0);
         engineChain.EnableChainLink("1");
-        engineChain.ProcessChainLinks();
+        engineChain.ProcessChainLinks(TestContext.Current.CancellationToken);
 
         calls.Should().Be(1);
     }
@@ -50,7 +50,7 @@ public class EngineChain_ProcessChainLinks
         engineChain.EnableChainLink("1");
         engineChain.EnableChainLink("2");
 
-        engineChain.ProcessChainLinks();
+        engineChain.ProcessChainLinks(TestContext.Current.CancellationToken);
 
         calls.Should().HaveCount(2).And.ContainInOrder(2, 1);
     }
@@ -64,15 +64,15 @@ public class EngineChain_ProcessChainLinks
         engineChain.AddChainLink("1", () => calls++, 0);
 
         engineChain.EnableChainLink("1");
-        engineChain.ProcessChainLinks();
+        engineChain.ProcessChainLinks(TestContext.Current.CancellationToken);
         calls.Should().Be(1);
 
         engineChain.DisableChainLink("1");
-        engineChain.ProcessChainLinks();
+        engineChain.ProcessChainLinks(TestContext.Current.CancellationToken);
         calls.Should().Be(1);
 
         engineChain.EnableChainLink("1");
-        engineChain.ProcessChainLinks();
+        engineChain.ProcessChainLinks(TestContext.Current.CancellationToken);
         calls.Should().Be(2);
     }
 
@@ -86,7 +86,7 @@ public class EngineChain_ProcessChainLinks
         engineChain.EnableChainLink("1");
         engineChain.EnableChainLink("2");
 
-        _ = engineChain.ProcessChainLinks();
+        _ = engineChain.ProcessChainLinks(TestContext.Current.CancellationToken);
 
         calls.Should().ContainSingle().Which.Should().Be(1);
     }
@@ -99,11 +99,11 @@ public class EngineChain_ProcessChainLinks
 
         engineChain.AddChainLink("1", () => calls++, 0);
         engineChain.EnableChainLink("1");
-        engineChain.ProcessChainLinks();
+        engineChain.ProcessChainLinks(TestContext.Current.CancellationToken);
         calls.Should().Be(1);
 
         await engineChain.RemoveChainLinkAsync("1");
-        engineChain.ProcessChainLinks();
+        engineChain.ProcessChainLinks(TestContext.Current.CancellationToken);
         calls.Should().Be(1);
     }
 
@@ -132,10 +132,10 @@ public class EngineChain_ProcessChainLinks
         engineChain.AddChainLink("1", () => { Thread.Sleep(150.Milliseconds()); return calls++; }, 0);
         engineChain.EnableChainLink("1");
 
-        var cycle1 = Task.Run(() => engineChain.ProcessChainLinks());
-        await Task.Delay(50.Milliseconds());
+        var cycle1 = Task.Run(() => engineChain.ProcessChainLinks(TestContext.Current.CancellationToken), TestContext.Current.CancellationToken);
+        await Task.Delay(50.Milliseconds(), TestContext.Current.CancellationToken);
         engineChain.DisableChainLink("1");
-        engineChain.ProcessChainLinks();
+        engineChain.ProcessChainLinks(TestContext.Current.CancellationToken);
         await cycle1;
 
         calls.Should().Be(1);
@@ -157,10 +157,10 @@ public class EngineChain_ProcessChainLinks
         engineChain.EnableChainLink("1");
 
         // First call is being processed
-        var firstProcess = Task.Run(() => engineChain.ProcessChainLinks());
+        var firstProcess = Task.Run(() => engineChain.ProcessChainLinks(TestContext.Current.CancellationToken), TestContext.Current.CancellationToken);
         // Second call returns null because first is still running
-        await Task.Delay(50);
-        var secondResult = engineChain.ProcessChainLinks();
+        await Task.Delay(50, TestContext.Current.CancellationToken);
+        var secondResult = engineChain.ProcessChainLinks(TestContext.Current.CancellationToken);
         await firstProcess;
 
         calls.Should().Be(1);
@@ -189,9 +189,9 @@ public class EngineChain_ProcessChainLinks
         engineChain.EnableChainLink("2");
 
         // Simulate 3 cycles
-        engineChain.ProcessChainLinks();
-        engineChain.ProcessChainLinks();
-        engineChain.ProcessChainLinks();
+        engineChain.ProcessChainLinks(TestContext.Current.CancellationToken);
+        engineChain.ProcessChainLinks(TestContext.Current.CancellationToken);
+        engineChain.ProcessChainLinks(TestContext.Current.CancellationToken);
 
         calls.Values.Should().HaveCount(2).And.AllSatisfy(v => v.Should().Be(3));
     }
@@ -210,8 +210,8 @@ public class EngineChain_ProcessChainLinks
             }, 0);
         engineChain.EnableChainLink("1");
 
-        engineChain.ProcessChainLinks();
-        engineChain.ProcessChainLinks();
+        engineChain.ProcessChainLinks(TestContext.Current.CancellationToken);
+        engineChain.ProcessChainLinks(TestContext.Current.CancellationToken);
 
         calls.Should().Be(2);
         logger.EventId.Id.Should().Be(2);
@@ -237,7 +237,7 @@ public class EngineChain_StopAsync
         }, 0);
         engineChain.EnableChainLink("1");
 
-        var processTask = Task.Run(() => engineChain.ProcessChainLinks());
+        var processTask = Task.Run(() => engineChain.ProcessChainLinks(TestContext.Current.CancellationToken), TestContext.Current.CancellationToken);
         tick.WaitOne();
         var stopWatch = Stopwatch.StartNew();
         await engineChain.StopAsync();

@@ -99,7 +99,7 @@ public sealed class DotNetSdkPackageResolverFacts_ResolveAsync : IPackageResolve
         ], CancellationToken.None));
 
         (await act.Should().ThrowAsync<InvalidOperationException>()).WithMessage("*resolve*package*")
-            .WithInnerException<InvalidOperationException>().WithMessage("*Newtonsoft.Json*not*lower bound*");
+            .WithInnerException<InvalidOperationException>().WithMessage("*no*version*specified*Newtonsoft.Json*");
     }
 
     [Fact(Skip = "Version conflict detection can not be tested. But it is tested by the creators of .NET.")]

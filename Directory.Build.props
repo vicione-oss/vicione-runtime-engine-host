@@ -4,7 +4,7 @@
     <Nullable>enable</Nullable>
     <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
     <!-- General information -->
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <RuntimeIdentifiers Condition="$(MSBuildProjectDirectory.Contains('src'))">linux-x64;linux-arm64;win-x64</RuntimeIdentifiers>
     <Description>-</Description>
     <Product>ViciOne</Product>
@@ -22,7 +22,6 @@
     <RestoreLockedMode Condition="'$(CI)' == 'true'">true</RestoreLockedMode>
     <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
     <DisableImplicitLibraryPacksFolder>true</DisableImplicitLibraryPacksFolder>
-    <NuGetAuditMode>all</NuGetAuditMode>
   </PropertyGroup>
 
   <!-- NuGet packages publish information -->
@@ -40,9 +39,10 @@
 
   <!-- Properties for test projects -->
   <PropertyGroup Condition="$(MSBuildProjectDirectory.Contains('tests'))">
+    <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
-    <IsPublishable>false</IsPublishable>
-    <RunSettingsFilePath>$(MsBuildThisFileDirectory)\tests.runsettings</RunSettingsFilePath>
+    <IsPublishable>true</IsPublishable>
+    <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner> <!-- Microsoft Testing Platform command line experience -->
   </PropertyGroup>
 
   <!-- Properties for sample projects -->

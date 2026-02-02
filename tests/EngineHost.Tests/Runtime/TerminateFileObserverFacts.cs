@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using AwesomeAssertions;
-using AwesomeAssertions.Extensions;
 using Microsoft.Extensions.Hosting;
 using NSubstitute;
 using Xunit;
@@ -58,7 +57,7 @@ public sealed class TerminateFileObserver_StartingAsync
         _directory.CreateFile("terminate");
         using TerminateFileObserver observer = new(_lifetime, _environment, _directory.FileSystem);
 
-        await observer.StartingAsync(CancellationToken.None);
+        await observer.StartingAsync(TestContext.Current.CancellationToken);
 
         _lifetime.DidNotReceive().StopApplication();
     }

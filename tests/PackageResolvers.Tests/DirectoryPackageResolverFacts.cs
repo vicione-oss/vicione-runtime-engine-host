@@ -131,7 +131,7 @@ public sealed class DirectoryPackageResolver_ResolveAsync : IPackageResolverFact
                         ""hashPath"": ""mediatr.9.0.0.nupkg.sha512""
                 }
             }
-        }");
+        }", TestContext.Current.CancellationToken);
         await _directory.FileSystem.File.WriteAllTextAsync(file2, @"
         {
             ""targets"": {
@@ -148,7 +148,7 @@ public sealed class DirectoryPackageResolver_ResolveAsync : IPackageResolverFact
                         ""hashPath"": ""system.reflection.4.3.0.nupkg.sha512""
                 }
             }
-        }");
+        }", TestContext.Current.CancellationToken);
 
         var (_, loadInfo) = await _packageResolver.ResolveAsync([new() { Name = "FB1", Version = "0.2.0" }, new() { Name = "FB2", Version = "2.2.0" }], CancellationToken.None);
 

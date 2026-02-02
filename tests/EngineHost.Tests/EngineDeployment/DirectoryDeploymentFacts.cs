@@ -75,7 +75,7 @@ public class DirectoryDeployment_ReadDeployParameter
         DeployParameter expected = new() { CycleTime = 123, };
         deployment.WriteDeployParameter(expected);
 
-        var actual = await DirectoryDeployment.ReadDeployParameter(deployment.Path, DeploymentIdentifier, deployment.FileSystem, default);
+        var actual = await DirectoryDeployment.ReadDeployParameter(deployment.Path, DeploymentIdentifier, deployment.FileSystem, TestContext.Current.CancellationToken);
 
         actual.Should().BeEquivalentTo(expected);
     }
@@ -85,7 +85,7 @@ public class DirectoryDeployment_ReadDeployParameter
     {
         TemporaryDirectoryDeployment deployment = new(DeploymentIdentifier, string.Empty);
 
-        var call = FluentActions.Awaiting(() => DirectoryDeployment.ReadDeployParameter(deployment.Path, DeploymentIdentifier, deployment.FileSystem, default));
+        var call = FluentActions.Awaiting(() => DirectoryDeployment.ReadDeployParameter(deployment.Path, DeploymentIdentifier, deployment.FileSystem, TestContext.Current.CancellationToken));
 
         await call.Should().ThrowAsync<InvalidOperationException>().WithMessage("*not*find*deploy*parameter*json.gz'*");
     }
@@ -98,7 +98,7 @@ public class DirectoryDeployment_ReadDeployParameter
 
         using var _ = deployment.FileSystem.File.Open(deployment.DeployParameterFile, FileMode.Open, FileAccess.ReadWrite);
 
-        var call = FluentActions.Awaiting(() => DirectoryDeployment.ReadDeployParameter(deployment.Path, DeploymentIdentifier, deployment.FileSystem, default));
+        var call = FluentActions.Awaiting(() => DirectoryDeployment.ReadDeployParameter(deployment.Path, DeploymentIdentifier, deployment.FileSystem, TestContext.Current.CancellationToken));
 
         await call.Should().ThrowAsync<InvalidOperationException>().WithMessage($"*not*read*deploy*parameter*json.gz'*");
     }
@@ -115,7 +115,7 @@ public class DirectoryDeployment_ReadStartParameter
         var engineName = nameof(Returns_data_from_file);
         deployment.WriteStartParameter(new() { Engine = new() { Name = engineName, } });
 
-        var startParameter = await DirectoryDeployment.ReadStartParameter(deployment.Path, DeploymentIdentifier, deployment.FileSystem, default);
+        var startParameter = await DirectoryDeployment.ReadStartParameter(deployment.Path, DeploymentIdentifier, deployment.FileSystem, TestContext.Current.CancellationToken);
 
         startParameter.Should().Contain(engineName);
     }
@@ -125,7 +125,7 @@ public class DirectoryDeployment_ReadStartParameter
     {
         TemporaryDirectoryDeployment deployment = new(DeploymentIdentifier, string.Empty);
 
-        var call = FluentActions.Awaiting(() => DirectoryDeployment.ReadStartParameter(deployment.Path, DeploymentIdentifier, deployment.FileSystem, default));
+        var call = FluentActions.Awaiting(() => DirectoryDeployment.ReadStartParameter(deployment.Path, DeploymentIdentifier, deployment.FileSystem, TestContext.Current.CancellationToken));
 
         await call.Should().ThrowAsync<InvalidOperationException>().WithMessage("*not*find*start*parameter*json.gz'*");
     }
@@ -137,7 +137,7 @@ public class DirectoryDeployment_ReadStartParameter
         deployment.WriteStartParameter();
         using var _ = deployment.FileSystem.File.Open(deployment.StartParameterFile, FileMode.Open, FileAccess.ReadWrite);
 
-        var call = FluentActions.Awaiting(() => DirectoryDeployment.ReadStartParameter(deployment.Path, DeploymentIdentifier, deployment.FileSystem, default));
+        var call = FluentActions.Awaiting(() => DirectoryDeployment.ReadStartParameter(deployment.Path, DeploymentIdentifier, deployment.FileSystem, TestContext.Current.CancellationToken));
 
         await call.Should().ThrowAsync<InvalidOperationException>().WithMessage($"*not*read*start*parameter*json.gz'*");
     }

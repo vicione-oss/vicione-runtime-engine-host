@@ -73,13 +73,13 @@ public sealed class MqttPipelineCommunicationAdapter_OnMessageReceivedAsync : IA
 {
     private readonly MqttPipelineCommunicationAdapterContext _context = new();
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         _context.SubscribeRequestTopicSuccessful();
         await _context.Adapter.StartAsync(CancellationToken.None);
     }
 
-    public Task DisposeAsync() => _context.Adapter.StopAsync(CancellationToken.None);
+    public async ValueTask DisposeAsync() => await _context.Adapter.StopAsync(CancellationToken.None);
 
     [Fact]
     public async Task Can_handle_query_Async()

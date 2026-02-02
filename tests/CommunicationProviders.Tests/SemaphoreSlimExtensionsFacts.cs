@@ -23,9 +23,9 @@ public sealed class SemaphoreSlimExtension_Lock
             {
                 using (mutex.Lock())
                     results.Add(2);
-            });
+            }, TestContext.Current.CancellationToken);
 
-            await Task.Delay(50);
+            await Task.Delay(50, TestContext.Current.CancellationToken);
             results.Add(1);
         }
 
@@ -50,9 +50,9 @@ public sealed class SemaphoreSlimExtension_LockAsync
             {
                 using (await mutex.LockAsync())
                     results.Add(2);
-            });
+            }, TestContext.Current.CancellationToken);
 
-            await Task.Delay(50);
+            await Task.Delay(50, TestContext.Current.CancellationToken);
             results.Add(1);
         }
 

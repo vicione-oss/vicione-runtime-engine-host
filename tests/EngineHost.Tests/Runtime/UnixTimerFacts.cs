@@ -10,9 +10,10 @@ using Xunit;
 namespace ViciOne.ManagedEngine.Runtime;
 
 [SupportedOSPlatform(nameof(OSPlatform.Linux))]
+[OSTest(Supported = [nameof(OSPlatform.Linux)])]
 public class UnixTimer_Constructor
 {
-    [SkippableFact]
+    [Fact]
     public void Stores_interval()
     {
         var interval = TimeSpan.FromMilliseconds(100);
@@ -22,7 +23,7 @@ public class UnixTimer_Constructor
         timer.Interval.Should().Be(interval);
     }
 
-    [SkippableFact]
+    [Fact]
     public void Throws_when_interval_below_minimum()
     {
         var act = () => new UnixTimer<int>(TimeSpan.FromMilliseconds(5), _ => 0, _ => Task.CompletedTask, NullLogger.Instance);
@@ -31,7 +32,7 @@ public class UnixTimer_Constructor
             .WithParameterName("interval");
     }
 
-    [SkippableFact]
+    [Fact]
     public void Throws_when_interval_above_maximum()
     {
         var act = () => new UnixTimer<int>(TimeSpan.FromSeconds(10), _ => 0, _ => Task.CompletedTask, NullLogger.Instance);
@@ -42,9 +43,10 @@ public class UnixTimer_Constructor
 }
 
 [SupportedOSPlatform(nameof(OSPlatform.Linux))]
+[OSTest(Supported = [nameof(OSPlatform.Linux)])]
 public class UnixTimer_Start
 {
-    [SkippableFact]
+    [Fact]
     public void Does_not_call_action_immediately()
     {
         var actionCalled = false;
@@ -59,7 +61,7 @@ public class UnixTimer_Start
         actionCalled.Should().BeFalse();
     }
 
-    [SkippableFact]
+    [Fact]
     public void Can_be_called_multiple_times()
     {
         using UnixTimer<int> timer = new(
@@ -76,9 +78,10 @@ public class UnixTimer_Start
 }
 
 [SupportedOSPlatform(nameof(OSPlatform.Linux))]
+[OSTest(Supported = [nameof(OSPlatform.Linux)])]
 public class UnixTimer_Stop
 {
-    [SkippableFact]
+    [Fact]
     public async Task Cancels_worker()
     {
         var callCount = 0;
@@ -94,17 +97,17 @@ public class UnixTimer_Stop
             _ => Task.CompletedTask,
             NullLogger.Instance);
         timer.Start();
-        var reached = actionCalled.Wait(TimeSpan.FromSeconds(1));
+        var reached = actionCalled.Wait(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken);
 
         await timer.StopAsync();
         var countAfterStop = callCount;
-        await Task.Delay(50);
+        await Task.Delay(50, TestContext.Current.CancellationToken);
 
         reached.Should().BeTrue();
         callCount.Should().Be(countAfterStop);
     }
 
-    [SkippableFact]
+    [Fact]
     public async Task Does_not_throw_without_start()
     {
         using UnixTimer<int> timer = new(
@@ -118,7 +121,7 @@ public class UnixTimer_Stop
         await act.Should().NotThrowAsync();
     }
 
-    [SkippableFact]
+    [Fact]
     public async Task Can_be_called_multiple_times()
     {
         using UnixTimer<int> timer = new(
@@ -136,9 +139,10 @@ public class UnixTimer_Stop
 }
 
 [SupportedOSPlatform(nameof(OSPlatform.Linux))]
+[OSTest(Supported = [nameof(OSPlatform.Linux)])]
 public class UnixTimer_Action
 {
-    [SkippableFact]
+    [Fact]
     public async Task Calls_action_on_each_tick()
     {
         var callCount = 0;
@@ -155,14 +159,14 @@ public class UnixTimer_Action
             NullLogger.Instance);
 
         timer.Start();
-        var reached = secondCallReached.Wait(TimeSpan.FromSeconds(2));
+        var reached = secondCallReached.Wait(TimeSpan.FromSeconds(2), TestContext.Current.CancellationToken);
         await timer.StopAsync();
 
         reached.Should().BeTrue();
         callCount.Should().BeGreaterThanOrEqualTo(2);
     }
 
-    [SkippableFact]
+    [Fact]
     public async Task Passes_cancellation_token_to_action()
     {
         CancellationToken receivedToken = default;
@@ -179,7 +183,7 @@ public class UnixTimer_Action
             NullLogger.Instance);
 
         timer.Start();
-        actionCalled.Wait(TimeSpan.FromSeconds(1));
+        actionCalled.Wait(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken);
         await timer.StopAsync();
 
         receivedToken.CanBeCanceled.Should().BeTrue();
@@ -187,9 +191,10 @@ public class UnixTimer_Action
 }
 
 [SupportedOSPlatform(nameof(OSPlatform.Linux))]
+[OSTest(Supported = [nameof(OSPlatform.Linux)])]
 public class UnixTimer_Report
 {
-    [SkippableFact]
+    [Fact]
     public async Task Measures_action_duration()
     {
         TimerTick<int>? reportedTick = null;
@@ -210,7 +215,7 @@ public class UnixTimer_Report
             NullLogger.Instance);
 
         timer.Start();
-        var received = reportReceived.Wait(TimeSpan.FromSeconds(2));
+        var received = reportReceived.Wait(TimeSpan.FromSeconds(2), TestContext.Current.CancellationToken);
         await timer.StopAsync();
 
         received.Should().BeTrue();
@@ -219,7 +224,7 @@ public class UnixTimer_Report
         reportedTick.Duration.Should().BeGreaterThanOrEqualTo(TimeSpan.FromMilliseconds(40));
     }
 
-    [SkippableFact]
+    [Fact]
     public async Task Does_not_report_null_output()
     {
         var reportCalled = false;
@@ -240,14 +245,14 @@ public class UnixTimer_Report
             NullLogger.Instance);
 
         timer.Start();
-        actionCalled.Wait(TimeSpan.FromSeconds(1));
-        await Task.Delay(50);
+        actionCalled.Wait(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken);
+        await Task.Delay(50, TestContext.Current.CancellationToken);
         await timer.StopAsync();
 
         reportCalled.Should().BeFalse();
     }
 
-    [SkippableFact]
+    [Fact]
     public async Task Report_handling_does_not_block_action()
     {
         var actionCallCount = 0;
@@ -269,9 +274,9 @@ public class UnixTimer_Report
             NullLogger.Instance);
 
         timer.Start();
-        reportStarted.Wait(TimeSpan.FromSeconds(1));
+        reportStarted.Wait(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken);
         // Second action call should not be blocked by slow report handler
-        var secondActionReached = secondActionCalled.Wait(TimeSpan.FromMilliseconds(100));
+        var secondActionReached = secondActionCalled.Wait(TimeSpan.FromMilliseconds(100), TestContext.Current.CancellationToken);
         await timer.StopAsync();
 
         secondActionReached.Should().BeTrue();
@@ -280,9 +285,10 @@ public class UnixTimer_Report
 }
 
 [SupportedOSPlatform(nameof(OSPlatform.Linux))]
+[OSTest(Supported = [nameof(OSPlatform.Linux)], Unsupported = [nameof(OSPlatform.Windows)])]
 public class UnixTimer_Dispose
 {
-    [SkippableFact]
+    [Fact]
     public void Cleans_up_resources()
     {
         using UnixTimer<int> timer = new(
@@ -297,7 +303,7 @@ public class UnixTimer_Dispose
         act.Should().NotThrow();
     }
 
-    [SkippableFact]
+    [Fact]
     public void Does_not_throw_without_start()
     {
         using UnixTimer<int> timer = new(
@@ -311,7 +317,7 @@ public class UnixTimer_Dispose
         act.Should().NotThrow();
     }
 
-    [SkippableFact]
+    [Fact]
     public void Can_be_called_multiple_times()
     {
         using UnixTimer<int> timer = new(
