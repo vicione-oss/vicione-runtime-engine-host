@@ -9,11 +9,16 @@ using ViciOne.ManagedEngine.Communication;
 
 namespace ViciOne.ManagedEngine.EngineLog;
 
+/// <summary>
+/// Factory for creating Serilog file-based engine logging.
+/// </summary>
+/// <param name="logCommunication">The file communication configuration.</param>
 public class SerilogFileEngineLogFactory(SeriLogFileCommunication logCommunication) : IEngineLogFactory<SeriLogFileCommunication>
 {
     private readonly SeriLogFileCommunication _logCommunication = logCommunication;
     private LoggingLevelSwitch? _logLevelSwitch;
 
+    /// <inheritdoc />
     public void AddLogging(IServiceCollection services, LogLevel logLevel)
     {
         _logLevelSwitch = new LoggingLevelSwitch(TranslateLogLevel(logLevel));
@@ -36,6 +41,7 @@ public class SerilogFileEngineLogFactory(SeriLogFileCommunication logCommunicati
         services.AddLogging(c => c.AddSerilog(logger, true));
     }
 
+    /// <inheritdoc />
     public void ChangeLogLevel(LogLevel logLevel)
     {
         if (_logLevelSwitch is null)

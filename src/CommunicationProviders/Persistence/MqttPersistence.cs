@@ -13,6 +13,9 @@ using ViciOne.ManagedEngine.Runtime;
 
 namespace ViciOne.ManagedEngine.Persistence;
 
+/// <summary>
+/// Provides MQTT-based persistence for settings and variables.
+/// </summary>
 public sealed class MqttPersistence : ISettingsPersistence<MqttCommunication>, IVariablesPersistence<MqttCommunication>, IDisposable
 {
     private readonly MqttQualityOfServiceLevel _qos;
@@ -22,11 +25,29 @@ public sealed class MqttPersistence : ISettingsPersistence<MqttCommunication>, I
     private readonly INameResolver _nameResolver;
     private readonly JsonSerializerOptions _serializerOptions;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MqttPersistence"/> class for variables persistence.
+    /// </summary>
+    /// <param name="communication">The MQTT communication configuration.</param>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="loggerFactory">The logger factory.</param>
+    /// <param name="nameResolver">The name resolver for resolving identifiers.</param>
+    /// <param name="_">The variables persistence options.</param>
+    /// <param name="assemblyLoadContext">The assembly load context.</param>
     public MqttPersistence(MqttCommunication communication, ILogger<MqttPersistence> logger, ILoggerFactory loggerFactory, INameResolver nameResolver,
         VariablesPersistenceOptions _, AssemblyLoadContext assemblyLoadContext)
         : this(communication, MqttOptimizer.Instance.Register(communication.ToCommunicationInfo(), loggerFactory), logger, nameResolver, assemblyLoadContext)
     { }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MqttPersistence"/> class for settings persistence.
+    /// </summary>
+    /// <param name="communication">The MQTT communication configuration.</param>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="loggerFactory">The logger factory.</param>
+    /// <param name="nameResolver">The name resolver for resolving identifiers.</param>
+    /// <param name="_">The settings persistence options.</param>
+    /// <param name="assemblyLoadContext">The assembly load context.</param>
     public MqttPersistence(MqttCommunication communication, ILogger<MqttPersistence> logger, ILoggerFactory loggerFactory, INameResolver nameResolver,
         SettingsPersistenceOptions _, AssemblyLoadContext assemblyLoadContext)
         : this(communication, MqttOptimizer.Instance.Register(communication.ToCommunicationInfo(), loggerFactory), logger, nameResolver, assemblyLoadContext)
@@ -42,13 +63,17 @@ public sealed class MqttPersistence : ISettingsPersistence<MqttCommunication>, I
         _serializerOptions = JsonSetup.CreatePreserveTypeOptions(assemblyLoadContext);
     }
 
+    /// <inheritdoc />
     public Task ConnectAsync(CancellationToken cancellationToken) => _client.Connect();
 
+    /// <inheritdoc />
     public Task DisconnectAsync(CancellationToken cancellationToken) => _client.Disconnect();
 
+    /// <inheritdoc />
     public Task<IReadOnlyCollection<PersistenceEntry>> LoadAsync(CancellationToken cancellationToken)
         => Task.FromResult<IReadOnlyCollection<PersistenceEntry>>([]);
 
+    /// <inheritdoc />
     public async Task SaveAsync(IEnumerable<PersistenceEntry> persistenceEntries, CancellationToken cancellationToken)
     {
         foreach (var persistenceEntry in persistenceEntries)
@@ -86,5 +111,6 @@ public sealed class MqttPersistence : ISettingsPersistence<MqttCommunication>, I
             .WithRetainFlag(_communication.Retain)
             .WithMessageExpiryInterval(_communication.MessageExpiryInterval);
 
+    /// <inheritdoc />
     public void Dispose() => _client.Dispose();
 }

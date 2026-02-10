@@ -8,11 +8,16 @@ using ViciOne.ManagedEngine.Communication;
 
 namespace ViciOne.ManagedEngine.EngineLog;
 
+/// <summary>
+/// Factory for creating Serilog-based syslog engine logging.
+/// </summary>
+/// <param name="logCommunication">The syslog communication configuration.</param>
 public class SerilogSyslogEngineLogFactory(SerilogSyslogCommunication logCommunication) : IEngineLogFactory<SerilogSyslogCommunication>
 {
     private readonly SerilogSyslogCommunication _logCommunication = logCommunication;
     private LoggingLevelSwitch? _logLevelSwitch;
 
+    /// <inheritdoc />
     public void AddLogging(IServiceCollection services, LogLevel logLevel)
     {
         _logLevelSwitch = new LoggingLevelSwitch(TranslateLogLevel(logLevel));
@@ -25,6 +30,7 @@ public class SerilogSyslogEngineLogFactory(SerilogSyslogCommunication logCommuni
         services.AddLogging(c => c.AddSerilog(logger, true));
     }
 
+    /// <inheritdoc />
     public void ChangeLogLevel(LogLevel logLevel)
     {
         if (_logLevelSwitch is null)

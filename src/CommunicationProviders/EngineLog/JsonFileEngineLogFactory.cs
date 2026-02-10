@@ -6,6 +6,11 @@ using ViciOne.ManagedEngine.Communication;
 
 namespace ViciOne.ManagedEngine.EngineLog;
 
+/// <summary>
+/// Factory for creating JSON file-based engine logging.
+/// </summary>
+/// <param name="logCommunication">The file system communication configuration.</param>
+/// <param name="engine">The engine identifier.</param>
 public class JsonFileEngineLogFactory(
     FileSystemCommunication logCommunication,
     string engine) : IEngineLogFactory<FileSystemCommunication>
@@ -20,6 +25,7 @@ public class JsonFileEngineLogFactory(
             EngineUniqueIdentifier = engineId,
         };
 
+    /// <inheritdoc />
     public void AddLogging(IServiceCollection services, LogLevel logLevel)
     {
         _loggingProvider = new LoggingConfigurationProvider(logLevel);
@@ -30,6 +36,7 @@ public class JsonFileEngineLogFactory(
             .AddProvider(new JsonFileLoggerProvider(_settings)));
     }
 
+    /// <inheritdoc />
     public void ChangeLogLevel(LogLevel logLevel)
     {
         if (_loggingProvider is null)

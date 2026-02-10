@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace ViciOne.ManagedEngine.EngineLog;
 
+/// <summary>
+/// Provides functionality for reading and writing JSON-formatted log entries to a file.
+/// </summary>
 public class JsonFileLog
 {
     private readonly string _fileName;
@@ -35,6 +38,10 @@ public class JsonFileLog
         await _fileSystem.File.AppendAllLinesAsync(_fileName, [json,], cancellationToken).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Reads all log entries from the JSON log file.
+    /// </summary>
+    /// <returns>A collection of log entries read from the file.</returns>
     public async Task<IReadOnlyCollection<LogEntry>> ReadLogEntriesAsync()
     {
         List<LogEntry> logEntries = [];

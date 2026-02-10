@@ -9,6 +9,14 @@ using ViciOne.ManagedEngine.PackageResolver.NuGet;
 
 namespace ViciOne.ManagedEngine.PackageResolver;
 
+/// <summary>
+/// Resolves NuGet packages using the NuGet client library.
+/// </summary>
+/// <param name="packageSources">The NuGet package sources to use.</param>
+/// <param name="outputDirectory">The output directory for resolved packages.</param>
+/// <param name="warningAsError">Whether to treat warnings as errors.</param>
+/// <param name="noCache">Whether to disable caching.</param>
+/// <param name="logger">The logger instance.</param>
 public sealed class NuGetPackageResolver(
     IEnumerable<NuGetPackageSource>? packageSources = null,
     string? outputDirectory = null,
@@ -19,9 +27,18 @@ public sealed class NuGetPackageResolver(
     private readonly IEnumerable<NuGetPackageSource>? _packageSources = packageSources;
     private readonly NuGetFramework _tfm = FrameworkConstants.CommonFrameworks.Net10_0;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NuGetPackageResolver"/> class with a single package source.
+    /// </summary>
+    /// <param name="packageSource">The NuGet package source to use.</param>
+    /// <param name="outputDirectory">The output directory for resolved packages.</param>
+    /// <param name="warningAsError">Whether to treat warnings as errors.</param>
+    /// <param name="noCache">Whether to disable caching.</param>
+    /// <param name="logger">The logger instance.</param>
     public NuGetPackageResolver(NuGetPackageSource packageSource, string? outputDirectory = null, bool warningAsError = true, bool noCache = false, ILogger? logger = null) : this([packageSource,], outputDirectory, warningAsError, noCache, logger)
     { }
 
+    /// <inheritdoc />
     public async Task<ResolveResult> ResolveAsync(IReadOnlyCollection<PackageReference> packageReferences, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();

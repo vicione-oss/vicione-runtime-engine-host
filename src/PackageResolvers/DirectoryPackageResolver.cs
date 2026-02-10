@@ -9,11 +9,17 @@ using Microsoft.Extensions.DependencyModel;
 
 namespace ViciOne.ManagedEngine.PackageResolver;
 
+/// <summary>
+/// Resolves packages from a local directory.
+/// </summary>
+/// <param name="directory">The directory containing the packages.</param>
+/// <param name="fileSystem">The file system abstraction.</param>
 public sealed class DirectoryPackageResolver(string directory, IFileSystem fileSystem) : IPackageResolver
 {
     private readonly string _directory = directory;
     private readonly IFileSystem _fileSystem = fileSystem;
 
+    /// <inheritdoc />
     public Task<ResolveResult> ResolveAsync(IReadOnlyCollection<PackageReference> packageReferences, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();

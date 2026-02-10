@@ -9,6 +9,9 @@ using ViciOne.ManagedEngine.Runtime;
 
 namespace ViciOne.ManagedEngine.ExternalCommunication;
 
+/// <summary>
+/// Handles direct in-process outgoing external communication.
+/// </summary>
 public sealed class DirectExternalOutgoingCommunication : IExternalOutgoingCommunication<DirectCommunication>
 {
     private readonly ExternalOutgoingCommunicationOptions _options;
@@ -18,6 +21,13 @@ public sealed class DirectExternalOutgoingCommunication : IExternalOutgoingCommu
     private readonly int _contextHash;
     private readonly JsonSerializerOptions _serializerOptions;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DirectExternalOutgoingCommunication"/> class.
+    /// </summary>
+    /// <param name="options">The outgoing communication options.</param>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="nameResolver">The name resolver for resolving identifiers.</param>
+    /// <param name="assemblyLoadContext">The assembly load context.</param>
     public DirectExternalOutgoingCommunication(ExternalOutgoingCommunicationOptions options, ILogger<DirectExternalOutgoingCommunication> logger,
         INameResolver nameResolver, AssemblyLoadContext assemblyLoadContext)
         : this(options, DirectExchange.Instance, logger, nameResolver, assemblyLoadContext)
@@ -34,12 +44,15 @@ public sealed class DirectExternalOutgoingCommunication : IExternalOutgoingCommu
         _serializerOptions = JsonSetup.CreatePreserveTypeOptions(assemblyLoadContext);
     }
 
+    /// <inheritdoc />
     public Task ConnectAsync(CancellationToken cancellationToken)
         => Task.CompletedTask;
 
+    /// <inheritdoc />
     public Task DisconnectAsync(CancellationToken cancellationToken)
         => Task.CompletedTask;
 
+    /// <inheritdoc />
     public async Task SendAsync(ulong engineCycle, IReadOnlyCollection<ExternalValue> values, CancellationToken cancellationToken)
     {
         _logger.SendInformation(

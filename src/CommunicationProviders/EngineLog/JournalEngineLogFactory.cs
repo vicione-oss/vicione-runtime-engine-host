@@ -9,11 +9,16 @@ using ViciOne.ManagedEngine.Communication;
 
 namespace ViciOne.ManagedEngine.EngineLog;
 
+/// <summary>
+/// Factory for creating systemd journal-based engine logging.
+/// </summary>
+/// <param name="logCommunication">The journal communication configuration.</param>
 public sealed class JournalEngineLogFactory(JournalCommunication logCommunication) : IEngineLogFactory<JournalCommunication>
 {
     private LoggingLevelSwitch? _logLevelSwitch;
     private readonly JournalCommunication _communication = logCommunication;
 
+    /// <inheritdoc />
     public void AddLogging(IServiceCollection services, LogLevel logLevel)
     {
         _logLevelSwitch = new LoggingLevelSwitch(TranslateLogLevel(logLevel));
@@ -26,6 +31,7 @@ public sealed class JournalEngineLogFactory(JournalCommunication logCommunicatio
         services.AddLogging(c => c.AddSerilog(logger, true));
     }
 
+    /// <inheritdoc />
     public void ChangeLogLevel(LogLevel logLevel)
     {
         if (_logLevelSwitch is null)
