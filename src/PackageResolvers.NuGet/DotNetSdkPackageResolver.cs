@@ -12,6 +12,13 @@ using Microsoft.Extensions.Logging;
 
 namespace ViciOne.ManagedEngine.PackageResolver;
 
+/// <summary>
+/// Resolves NuGet packages using the .NET SDK tooling.
+/// </summary>
+/// <param name="outputDirectory">The output directory for resolved packages.</param>
+/// <param name="fileSystem">The file system abstraction.</param>
+/// <param name="packageSources">The NuGet package sources to use.</param>
+/// <param name="logger">The logger instance.</param>
 public sealed class DotNetSdkPackageResolver(string outputDirectory, IFileSystem fileSystem, IReadOnlyCollection<NuGetPackageSource>? packageSources = null, ILogger<DotNetSdkPackageResolver>? logger = null) : IPackageResolver
 {
     private readonly IReadOnlyCollection<NuGetPackageSource>? _packageSources = packageSources;
@@ -20,10 +27,18 @@ public sealed class DotNetSdkPackageResolver(string outputDirectory, IFileSystem
     private readonly IFileSystem _fileSystem = fileSystem;
     private const string TFM = "net10.0";
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DotNetSdkPackageResolver"/> class with a single package source.
+    /// </summary>
+    /// <param name="outputDirectory">The output directory for resolved packages.</param>
+    /// <param name="fileSystem">The file system abstraction.</param>
+    /// <param name="packageSource">The NuGet package source to use.</param>
+    /// <param name="logger">The logger instance.</param>
     public DotNetSdkPackageResolver(string outputDirectory, IFileSystem fileSystem, NuGetPackageSource packageSource, ILogger<DotNetSdkPackageResolver>? logger = null)
         : this(outputDirectory, fileSystem, [packageSource,], logger)
     { }
 
+    /// <inheritdoc />
     public async Task<ResolveResult> ResolveAsync(IReadOnlyCollection<PackageReference> packageReferences, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();

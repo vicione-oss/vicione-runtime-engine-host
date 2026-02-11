@@ -15,6 +15,9 @@ using ViciOne.ManagedEngine.Runtime;
 
 namespace ViciOne.ManagedEngine.Persistence;
 
+/// <summary>
+/// Provides file system-based persistence for settings and variables.
+/// </summary>
 public sealed class FileSystemPersistence : ISettingsPersistence<FileSystemCommunication>, IVariablesPersistence<FileSystemCommunication>
 {
     private readonly IFileSystem _fileSystem;
@@ -38,10 +41,26 @@ public sealed class FileSystemPersistence : ISettingsPersistence<FileSystemCommu
         Options = FileOptions.Asynchronous,
     };
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FileSystemPersistence"/> class for settings persistence.
+    /// </summary>
+    /// <param name="communication">The file system communication configuration.</param>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="nameResolver">The name resolver for resolving identifiers.</param>
+    /// <param name="assemblyLoadContext">The assembly load context.</param>
+    /// <param name="options">The settings persistence options.</param>
     public FileSystemPersistence(FileSystemCommunication communication, ILogger<FileSystemPersistence> logger, INameResolver nameResolver, AssemblyLoadContext assemblyLoadContext, SettingsPersistenceOptions options)
         : this(communication, logger, nameResolver, assemblyLoadContext, options.SettingIds, new RealFileSystem())
     { }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FileSystemPersistence"/> class for variables persistence.
+    /// </summary>
+    /// <param name="communication">The file system communication configuration.</param>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="nameResolver">The name resolver for resolving identifiers.</param>
+    /// <param name="assemblyLoadContext">The assembly load context.</param>
+    /// <param name="options">The variables persistence options.</param>
     public FileSystemPersistence(FileSystemCommunication communication, ILogger<FileSystemPersistence> logger, INameResolver nameResolver, AssemblyLoadContext assemblyLoadContext, VariablesPersistenceOptions options)
         : this(communication, logger, nameResolver, assemblyLoadContext, options.VariableIds, new RealFileSystem())
     { }
@@ -56,6 +75,7 @@ public sealed class FileSystemPersistence : ISettingsPersistence<FileSystemCommu
         _serializerOptions = JsonSetup.CreatePreserveTypeOptions(assemblyLoadContext);
     }
 
+    /// <inheritdoc />
     public Task ConnectAsync(CancellationToken cancellationToken)
     {
         if (!_directory.Exists)
@@ -63,8 +83,10 @@ public sealed class FileSystemPersistence : ISettingsPersistence<FileSystemCommu
         return Task.CompletedTask;
     }
 
+    /// <inheritdoc />
     public Task DisconnectAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
+    /// <inheritdoc />
     public async Task<IReadOnlyCollection<PersistenceEntry>> LoadAsync(CancellationToken cancellationToken)
     {
         var files = GetFiles();
@@ -138,6 +160,7 @@ public sealed class FileSystemPersistence : ISettingsPersistence<FileSystemCommu
         return data;
     }
 
+    /// <inheritdoc />
     public async Task SaveAsync(IEnumerable<PersistenceEntry> persistenceEntries, CancellationToken cancellationToken)
     {
         foreach (var persistenceEntry in persistenceEntries)

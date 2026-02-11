@@ -16,6 +16,9 @@ using ViciOne.ManagedEngine.TypeResolution;
 
 namespace ViciOne.ManagedEngine.ExternalCommunication;
 
+/// <summary>
+/// Handles MQTT-based incoming external communication.
+/// </summary>
 public sealed class MqttExternalIncomingCommunication : IExternalIncomingCommunication<MqttCommunication>, IDisposable
 {
     private readonly MqttCommunication _communication;
@@ -27,6 +30,15 @@ public sealed class MqttExternalIncomingCommunication : IExternalIncomingCommuni
     private readonly AssemblyLoadContext _assemblyLoadContext;
     private readonly JsonSerializerOptions _serializerOptions;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MqttExternalIncomingCommunication"/> class.
+    /// </summary>
+    /// <param name="communication">The MQTT communication configuration.</param>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="loggerFactory">The logger factory.</param>
+    /// <param name="options">The incoming communication options.</param>
+    /// <param name="nameResolver">The name resolver for resolving identifiers.</param>
+    /// <param name="assemblyLoadContext">The assembly load context.</param>
     public MqttExternalIncomingCommunication(MqttCommunication communication, ILogger<MqttExternalIncomingCommunication> logger,
         ILoggerFactory loggerFactory, ExternalIncomingCommunicationOptions options, INameResolver nameResolver, AssemblyLoadContext assemblyLoadContext)
         : this(communication, logger, options, MqttOptimizer.Instance.Register(communication.ToCommunicationInfo(), loggerFactory), nameResolver, assemblyLoadContext)
@@ -46,8 +58,10 @@ public sealed class MqttExternalIncomingCommunication : IExternalIncomingCommuni
         _serializerOptions = JsonSetup.CreatePreserveTypeOptions(assemblyLoadContext);
     }
 
+    /// <inheritdoc />
     public event Action<IReadOnlyCollection<ExternalValue>>? Received;
 
+    /// <inheritdoc />
     public async Task ConnectAsync(CancellationToken cancellationToken)
     {
         using (_logger.ConnectionConnect(_options.ConnectionUniqueIdentifier, _nameResolver.ResolveName(_options.ConnectionUniqueIdentifier),
@@ -97,6 +111,7 @@ public sealed class MqttExternalIncomingCommunication : IExternalIncomingCommuni
         return Task.CompletedTask;
     }
 
+    /// <inheritdoc />
     public async Task DisconnectAsync(CancellationToken cancellationToken)
     {
         using (_logger.TopicsUnsubscribe())
@@ -112,6 +127,7 @@ public sealed class MqttExternalIncomingCommunication : IExternalIncomingCommuni
         }
     }
 
+    /// <inheritdoc />
     public void Dispose()
     {
         _client.MessageReceived -= MessageReceivedAsync;
