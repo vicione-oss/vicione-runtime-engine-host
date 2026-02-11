@@ -6,7 +6,6 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Extensions;
 using MQTTnet.Protocol;
@@ -95,7 +94,7 @@ public sealed class MqttExternalIncomingCommunication : IExternalIncomingCommuni
             if (e.ApplicationMessage.PayloadSegment.Count > 0)
             {
                 value.Value = JsonSerializer.Deserialize(
-                    e.ApplicationMessage.ConvertPayloadToString(),
+                    e.ApplicationMessage.PayloadSegment,
                     TypeResolver.GetType(e.ApplicationMessage.UserProperties.FindRequired(MqttUserProperties.Type).Value, _assemblyLoadContext),
                     _serializerOptions);
             }
