@@ -154,8 +154,12 @@ internal class ContextPool : IContextPool, IDisposable
 
     public void Dispose()
     {
-        _mutex.Dispose();
+        foreach (var (_, contextInfo) in _contexts)
+            contextInfo.Context.Unload();
+
         _contexts.Clear();
+        _deploymentContextMap.Clear();
+        _mutex.Dispose();
     }
 
     internal class ContextInfo
