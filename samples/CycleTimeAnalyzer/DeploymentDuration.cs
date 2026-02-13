@@ -6,4 +6,4 @@ namespace CycleTimeAnalyzer;
 /// Contract from engine host
 /// </summary>
 [SuppressMessage("Maintainability", "CA1515:Erwägen Sie, öffentliche Typen intern zu machen.", Justification = "Für JSON Deserialisierung notwendig")]
-public sealed record class DeploymentDuration(string Deployment, double Duration);
+public sealed record class DeploymentDuration(string Deployment, double Duration, ulong? Cycle);

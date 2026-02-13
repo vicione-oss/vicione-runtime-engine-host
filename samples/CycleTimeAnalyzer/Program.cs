@@ -63,7 +63,8 @@ internal static class Program
             await new App().RunAsync(
                 parseResult.GetRequiredValue(engineHost),
                 options,
-                parseResult.GetValue(timeLimit));
+                parseResult.GetValue(timeLimit),
+                cancellationToken);
         });
 
         var parseResult = root.Parse(args);
