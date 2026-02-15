@@ -9,7 +9,7 @@ namespace CycleTimeAnalyzer;
 
 internal sealed class App
 {
-    private readonly ConcurrentBag<ArraySegment<byte>> _messages = [];
+    private readonly ConcurrentBag<byte[]> _messages = [];
 
     internal static ManagedMqttClientOptions CreateClientOptions(string mqttHost, int mqttPort, string? mqttUsername, string? mqttPassword)
         => new ManagedMqttClientOptionsBuilder()
@@ -21,7 +21,7 @@ internal sealed class App
                 .Build())
             .Build();
 
-    internal async Task RunAsync(string enginehost, ManagedMqttClientOptions options, int? timeLimit)
+    internal async Task RunAsync(string enginehost, ManagedMqttClientOptions options, int? timeLimit, CancellationToken cancellationToken = default)
     {
         using var managedClient = new MqttFactory().CreateManagedMqttClient();
         managedClient.ApplicationMessageReceivedAsync += ManagedClient_ApplicationMessageReceivedAsync;
@@ -29,23 +29,27 @@ internal sealed class App
         await managedClient.StartAsync(options).ConfigureAwait(false);
 
         if (timeLimit.HasValue)
-            await WaitAsync(timeLimit.Value).ConfigureAwait(false);
+            await WaitAsync(timeLimit.Value, cancellationToken).ConfigureAwait(false);
         else
-            await WaitAsync().ConfigureAwait(false);
+            await WaitAsync(cancellationToken).ConfigureAwait(false);
 
         await managedClient.StopAsync().ConfigureAwait(false);
 
         var messages = await ParseMessagesAsync().ConfigureAwait(false);
+        var cycleDurations = messages.Select(m => m.CycleDuration).ToList();
         var deploymentDurations = messages
             .SelectMany(m => m.Deployments)
             .GroupBy(e => e.Deployment)
-            .ToDictionary(g => g.Key, g => g.Select(d => d.Duration));
+            .ToDictionary(g => g.Key, g => g.Select(d => d.Duration).ToList());
 
-        WriteStatsToConsole(deploymentDurations);
+        WriteStatsToConsole(cycleDurations, deploymentDurations);
     }
 
-    private static void WriteStatsToConsole(Dictionary<string, IEnumerable<double>> deploymentDurations)
+    private static void WriteStatsToConsole(List<double> cycleDurations, Dictionary<string, List<double>> deploymentDurations)
     {
+        if (cycleDurations.Count > 0)
+            WriteEngineStats("Total Cycle", cycleDurations.Min(), cycleDurations.Max(), cycleDurations.Average());
+
         foreach (var (deployment, durations) in deploymentDurations)
             WriteEngineStats(deployment, durations.Min(), durations.Max(), durations.Average());
 
@@ -70,9 +74,9 @@ internal sealed class App
         {
             try
             {
-                if (data.Count > 0 && data.Array is not null)
+                if (data.Length > 0)
                 {
-                    using var stream = new MemoryStream(data.Array, data.Offset, data.Count, false);
+                    using var stream = new MemoryStream(data, 0, data.Length, false);
                     messages.Add(await JsonSerializer.DeserializeAsync<Message>(stream).ConfigureAwait(false)
                         ?? throw new InvalidOperationException("Message cannot be null."));
                 }
@@ -86,7 +90,7 @@ internal sealed class App
         return messages;
     }
 
-    private static async Task WaitAsync()
+    private static async Task WaitAsync(CancellationToken cancellationToken)
     {
         Console.SetCursorPosition(0, Console.CursorTop + 1);
         Console.Write($"Press Enter to stop ...");
@@ -94,17 +98,17 @@ internal sealed class App
 
         var stopwatch = Stopwatch.StartNew();
 
-        while (!Console.KeyAvailable)
+        while (!Console.KeyAvailable && !cancellationToken.IsCancellationRequested)
         {
             Console.SetCursorPosition(0, Console.CursorTop);
             Console.Write($"{stopwatch.Elapsed.TotalSeconds:0}s");
-            await Task.Delay(1_000).ConfigureAwait(false);
+            await Task.Delay(1_000, cancellationToken).ConfigureAwait(false);
         }
 
         stopwatch.Stop();
     }
 
-    private static async Task WaitAsync(int limit)
+    private static async Task WaitAsync(int limit, CancellationToken cancellationToken)
     {
         var stopwatch = Stopwatch.StartNew();
 
@@ -112,16 +116,16 @@ internal sealed class App
         {
             Console.SetCursorPosition(0, Console.CursorTop);
             Console.Write($"{stopwatch.Elapsed.TotalSeconds:0}s");
-            await Task.Delay(1_000).ConfigureAwait(false);
+            await Task.Delay(1_000, cancellationToken).ConfigureAwait(false);
         }
-        while (stopwatch.Elapsed.TotalSeconds < limit);
+        while (stopwatch.Elapsed.TotalSeconds < limit && !cancellationToken.IsCancellationRequested);
 
         stopwatch.Stop();
     }
 
     private Task ManagedClient_ApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs arg)
     {
-        _messages.Add(arg.ApplicationMessage.PayloadSegment);
+        _messages.Add(arg.ApplicationMessage.PayloadSegment.ToArray());
         return Task.CompletedTask;
     }
 }
