@@ -14,8 +14,8 @@ internal interface IDeploymentPool
     Task<IDeployment> RecoverDeploymentAsync(string deploymentId, AssemblyLoadContext context, CancellationToken cancellationToken);
     Task RemoveDeploymentAsync(string id);
     Task<DeployParameter> GetDeployParameter(string deploymentId, CancellationToken cancellationToken);
-    HashSet<string> GetStartedDeployments();
-    HashSet<string> GetDeployments();
+    IReadOnlyCollection<string> GetStartedDeployments();
+    IReadOnlyCollection<string> GetDeployments();
     void DeploymentStarted(string id);
     void DeploymentStopped(string id);
     bool DeploymentIsStarted(string id);

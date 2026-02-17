@@ -2,7 +2,6 @@
 using System.IO;
 using System.IO.Abstractions;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,27 +13,17 @@ namespace ViciOne.ManagedEngine.EngineLog;
 public class JsonFileLog
 {
     private readonly string _fileName;
-    private readonly JsonSerializerOptions _options;
     private readonly IFileSystem _fileSystem;
 
     internal JsonFileLog(string directory, string engineUniqueIdentifier, IFileSystem fileSystem)
     {
         _fileSystem = fileSystem;
         _fileName = _fileSystem.Path.Combine(directory, $"{engineUniqueIdentifier}.json");
-        _options = new JsonSerializerOptions()
-        {
-            Converters =
-            {
-                new JsonStringEnumConverter(),
-                new TypeJsonConverter(),
-            },
-            NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
-        };
     }
 
     internal async Task AppendLogEntryAsync(LogEntry logEntry, CancellationToken cancellationToken)
     {
-        var json = JsonSerializer.Serialize(logEntry, _options);
+        var json = JsonSerializer.Serialize(logEntry, LogEntrySourceGenerationContext.Default.LogEntry);
         await _fileSystem.File.AppendAllLinesAsync(_fileName, [json,], cancellationToken).ConfigureAwait(false);
     }
 
@@ -59,7 +48,7 @@ public class JsonFileLog
             string? line;
             while ((line = await reader.ReadLineAsync().ConfigureAwait(false)) is not null)
             {
-                var logEntry = JsonSerializer.Deserialize<LogEntry>(line, _options);
+                var logEntry = JsonSerializer.Deserialize(line, LogEntrySourceGenerationContext.Default.LogEntry);
                 if (logEntry is not null)
                     logEntries.Add(logEntry);
             }

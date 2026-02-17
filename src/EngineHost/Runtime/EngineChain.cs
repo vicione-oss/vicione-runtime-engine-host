@@ -15,6 +15,7 @@ internal sealed class EngineChain(ILogger<EngineChain> logger) : IEngineChain, I
 {
     private readonly ConcurrentDictionary<string, ChainLink> _chainLinks = new();
     private readonly SemaphoreSlim _timerSemaphore = new(1, 1);
+    private volatile List<KeyValuePair<string, ChainLink>>? _cachedEnabledChainLinks;
     private ITimer? _timer;
     private long _isRunning;
 
@@ -76,12 +77,14 @@ internal sealed class EngineChain(ILogger<EngineChain> logger) : IEngineChain, I
             throw new InvalidOperationException($"There is already a chain link with index '{index}'.");
         if (!_chainLinks.TryAdd(id, link))
             throw new InvalidOperationException($"There is already a chain link with id '{id}'.");
+        InvalidateChainLinkCache();
         logger.AddedChainLink(id, index);
     }
 
     public async Task RemoveChainLinkAsync(string id)
     {
         _chainLinks.TryRemove(id, out _);
+        InvalidateChainLinkCache();
         logger.RemovedChainLink(id);
 
         if (_chainLinks.IsEmpty)
@@ -94,6 +97,7 @@ internal sealed class EngineChain(ILogger<EngineChain> logger) : IEngineChain, I
             chainLink.Enabled = true;
         else
             throw new InvalidOperationException($"Cannot update enabled state of chain link '{id}' to enabled.");
+        InvalidateChainLinkCache();
         logger.EnabledChainLink(id);
     }
 
@@ -103,12 +107,13 @@ internal sealed class EngineChain(ILogger<EngineChain> logger) : IEngineChain, I
             chainLink.Enabled = false;
         else
             throw new InvalidOperationException($"Cannot update enabled state of chain link '{id}' to disabled.");
+        InvalidateChainLinkCache();
         logger.DisabledChainLink(id);
     }
 
     internal EngineChainExecutionResult? ProcessChainLinks(CancellationToken cancellationToken = default)
     {
-        var chainLinks = _chainLinks.Where(l => l.Value.Enabled).OrderBy(l => l.Value.Index).ToList();
+        var chainLinks = GetEnabledChainLinks();
         if (chainLinks.Count == 0)
             return default;
 
@@ -194,6 +199,19 @@ internal sealed class EngineChain(ILogger<EngineChain> logger) : IEngineChain, I
         if (builder.Length > 0)
             builder.Insert(0, Environment.NewLine);
         return builder.ToString();
+    }
+
+    private void InvalidateChainLinkCache() => _cachedEnabledChainLinks = null;
+
+    private List<KeyValuePair<string, ChainLink>> GetEnabledChainLinks()
+    {
+        var cached = _cachedEnabledChainLinks;
+        if (cached is not null)
+            return cached;
+
+        var chainLinks = _chainLinks.Where(l => l.Value.Enabled).OrderBy(l => l.Value.Index).ToList();
+        _cachedEnabledChainLinks = chainLinks;
+        return chainLinks;
     }
 
     public void Dispose()

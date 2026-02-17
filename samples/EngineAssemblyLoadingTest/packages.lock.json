@@ -389,6 +389,7 @@
         "type": "Project",
         "dependencies": {
           "Microsoft.Extensions.Hosting": "[10.0.2, )",
+          "Microsoft.IO.RecyclableMemoryStream": "[3.0.1, )",
           "OpenTelemetry.Exporter.OpenTelemetryProtocol": "[1.15.0, )",
           "OpenTelemetry.Extensions.Hosting": "[1.15.0, )",
           "OpenTelemetry.Instrumentation.Runtime": "[1.15.0, )",
@@ -469,6 +470,12 @@
           "Microsoft.Extensions.Options": "10.0.2",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "10.0.2"
         }
+      },
+      "Microsoft.IO.RecyclableMemoryStream": {
+        "type": "CentralTransitive",
+        "requested": "[3.0.1, )",
+        "resolved": "3.0.1",
+        "contentHash": "s/s20YTVY9r9TPfTrN5g8zPF1YhwxyqO6PxUkrYTGI2B+OGPe9AdajWZrLhFqXIvqIW23fnUE4+ztrUWNU1+9g=="
       },
       "MQTTnet.Extensions": {
         "type": "CentralTransitive",

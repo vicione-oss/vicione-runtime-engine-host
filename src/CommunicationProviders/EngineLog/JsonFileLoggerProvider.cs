@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.IO.Abstractions;
 using System.Threading;
 using System.Threading.Channels;
@@ -14,7 +15,13 @@ internal sealed class JsonFileLoggerProvider : ILoggerProvider, ISupportExternal
     private readonly ConcurrentDictionary<string, JsonFileLogger> _loggers;
     private readonly JsonFileLog _jsonFileLog;
     private IExternalScopeProvider? _scopeProvider;
-    private readonly Channel<LogEntry> _messageQueue = Channel.CreateUnbounded<LogEntry>();
+    private readonly Channel<LogEntry> _messageQueue = Channel.CreateBounded<LogEntry>(
+        new BoundedChannelOptions(1024)
+        {
+            FullMode = BoundedChannelFullMode.DropOldest,
+            SingleWriter = false,
+            SingleReader = true,
+        });
     private readonly Task _outputTask;
 
 
@@ -54,8 +61,10 @@ internal sealed class JsonFileLoggerProvider : ILoggerProvider, ISupportExternal
             {
                 await _jsonFileLog.AppendLogEntryAsync(logEntry, CancellationToken.None).ConfigureAwait(false);
             }
-            catch
-            { }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Failed to write log entry: {ex.Message}");
+            }
         }
     }
 }

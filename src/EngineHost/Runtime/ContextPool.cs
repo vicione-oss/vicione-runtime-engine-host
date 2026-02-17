@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Runtime.Loader;
@@ -142,14 +141,7 @@ internal class ContextPool : IContextPool, IDisposable
                         .Order()).ToUpperInvariant()));
 
         static string HashToString(Span<byte> hash)
-        {
-            var result = new StringBuilder();
-
-            foreach (var part in hash)
-                result.Append(part.ToString("X2", CultureInfo.InvariantCulture));
-
-            return result.ToString();
-        }
+            => Convert.ToHexString(hash);
     }
 
     internal static bool AreEqualOrSubsetOfPackageReferences(IReadOnlyCollection<PackageReference> mainReferences, IReadOnlyCollection<PackageReference> subReferences)
@@ -162,8 +154,12 @@ internal class ContextPool : IContextPool, IDisposable
 
     public void Dispose()
     {
-        _mutex.Dispose();
+        foreach (var (_, contextInfo) in _contexts)
+            contextInfo.Context.Unload();
+
         _contexts.Clear();
+        _deploymentContextMap.Clear();
+        _mutex.Dispose();
     }
 
     internal class ContextInfo

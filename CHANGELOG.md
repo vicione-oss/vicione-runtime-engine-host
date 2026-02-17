@@ -10,6 +10,7 @@
 ### Changed
 
 - Update `.NET` to `10.0`
+- Use bounded channel with `DropOldest` for log message queue in `JsonFileLoggerProvider`
 
 ## 0.30.0 - 2025-11-06
 

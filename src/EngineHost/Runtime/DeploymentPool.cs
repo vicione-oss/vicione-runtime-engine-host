@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Abstractions;
-using System.Linq;
 using System.Runtime.Loader;
 using System.Threading;
 using System.Threading.Tasks;
@@ -63,11 +62,11 @@ internal class DeploymentPool(IOptions<HostConfig> config, IFileSystem fileSyste
         DirectoryDeployment.Delete(_config.DeploymentsDirectory, id, _fileSystem);
     }
 
-    public HashSet<string> GetStartedDeployments()
-        => [.. _startedDeployments.Select(e => e.Key)];
+    public IReadOnlyCollection<string> GetStartedDeployments()
+        => [.. _startedDeployments.Keys];
 
-    public HashSet<string> GetDeployments()
-        => [.. _deployments.Select(e => e.Key)];
+    public IReadOnlyCollection<string> GetDeployments()
+        => [.. _deployments.Keys];
 
     public void DeploymentStarted(string id)
         => _startedDeployments.TryAdd(id, 0);
