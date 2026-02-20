@@ -21,11 +21,13 @@ include:
     inputs:
       rules: *rules
       before_script:
+        # Aspire.AppHost.Sdk gets restored during build and not during restore
         - dotnet nuget update source JFrogNuGetProxy --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
   - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-test@2.2.0
     inputs:
       rules: *rules
       before_script:
+        # necessary to be able to pass tests in PackageResolvers.NuGet.Tests
         - dotnet nuget update source JFrogNuGetProxy --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
         - dotnet nuget remove source JFrogViciOne
       coverage: true
