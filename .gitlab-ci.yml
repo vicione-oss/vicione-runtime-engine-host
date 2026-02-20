@@ -6,6 +6,30 @@
   - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   - if: $CI_PIPELINE_SOURCE == "web"
 
+.rules_manual: &rules_manual
+  - if: "$CI_COMMIT_TAG"
+    when: manual
+    allow_failure: true
+  - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
+    when: manual
+    allow_failure: true
+  - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    when: manual
+    allow_failure: true
+  - if: $CI_PIPELINE_SOURCE == "web"
+    when: manual
+    allow_failure: true
+
+stages:
+  - .pre
+  - build
+  - test
+  - pack
+  - publish
+  - deploy
+  - release
+  - release-public
+
 include:
   - project: 'vicione-oss/tooling/templates'
     file: '/CI-Templates/v2/dotnet.yml'
@@ -31,26 +55,21 @@ include:
         - dotnet nuget update source JFrogNuGetProxy --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
         - dotnet nuget remove source JFrogViciOne
       coverage: true
-
-.set-nuget-push-credentials: &set-nuget-push-credentials
-  - dotnet nuget update source JFrogViciOne --configfile NuGet.Config -u $NuGet_User_RW_JFrog -p $NuGet_PW_RW_JFrog --store-password-in-clear-text
+  - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-pack@2.1.1
+    inputs:
+      rules: *rules_manual
+      before_script:
+        # Aspire.AppHost.Sdk gets restored during build and not during restore
+        - dotnet nuget update source JFrogNuGetProxy --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
+  - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-nuget-push@2.1.1
+    inputs:
+      rules: *rules_manual
+      source: 'JFrogViciOne'
+      before_script:
+       - dotnet nuget update source JFrogViciOne --configfile NuGet.Config -u $NuGet_User_RW_JFrog -p $NuGet_PW_RW_JFrog --store-password-in-clear-text
 
 default:
   image: mcr.microsoft.com/dotnet/sdk:10.0
-
-Prerelease CommunicationContracts NuGet:
-  extends: .dotnet-deploy-nuget
-  variables:
-    PROJECT: 'src/CommunicationContracts/CommunicationContracts.csproj'
-    REPO: 'JFrogViciOne'
-  before_script: *set-nuget-push-credentials
-
-Release CommunicationContracts NuGet:
-  extends: .dotnet-release-nuget
-  variables:
-    PROJECT: 'src/CommunicationContracts/CommunicationContracts.csproj'
-    REPO: 'JFrogViciOne'
-  before_script: *set-nuget-push-credentials
 
 markdown:
   extends: .dotnet-test-xunit
@@ -116,7 +135,10 @@ Get version:
   stage: .pre
   <<: *git_version
   script:
-    - /tools/dotnet-gitversion /output json /format "VERSION={SemVer}" > version.env
+    - |
+      Version=$(/tools/dotnet-gitversion /output json /showvariable SemVer)
+      echo "VERSION=${Version}" > version.env
+      echo "PACKAGEVERSION=${Version}" > version.env
   artifacts:
     reports:
       dotenv: version.env
@@ -129,7 +151,7 @@ Get next version:
   <<: *git_version
   script:
     - |
-      NextVersion=$(/tools/dotnet-gitversion /output json /format "{MajorMinorPatch}")
+      NextVersion=$(/tools/dotnet-gitversion /output json /showvariable MajorMinorPatch)
       echo "NEXTVERSION=${NextVersion}" > nextversion.env
     - |
       echo -e "🚩"
