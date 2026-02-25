@@ -3,6 +3,7 @@
   <PropertyGroup>
     <AssemblyName>ViciOne.ManagedEngine.CommunicationContracts</AssemblyName>
     <RootNamespace>ViciOne.ManagedEngine.Communication</RootNamespace>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>

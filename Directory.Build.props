@@ -36,6 +36,10 @@
     <InternalsVisibleTo Include="$(MSBuildProjectName).Tests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" /> <!-- NSubstitute -->
   </ItemGroup>
+  <PropertyGroup Condition="$(MSBuildProjectDirectory.Contains('src'))">
+    <!-- IsPackable is individually enabled per project -->
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
 
   <!-- Properties for test projects -->
   <PropertyGroup Condition="$(MSBuildProjectDirectory.Contains('tests'))">
