@@ -12,6 +12,7 @@
 - Update `.NET` to `10.0`
 - Use bounded channel with `DropOldest` for log message queue in `JsonFileLoggerProvider`
 - Skip cycle and crash report publishing when previous report is still in progress
+- Wait for report tasks in StopAsync
 
 ## 0.30.0 - 2025-11-06
 
