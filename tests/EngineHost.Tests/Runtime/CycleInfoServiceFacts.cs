@@ -382,6 +382,66 @@ public sealed class CycleInfoService_StopAsync
 
         await context.MqttClient.DidNotReceiveWithAnyArgs().Publish(default!);
     }
+
+    [Fact]
+    public async Task Waits_for_in_flight_publish_before_disconnect()
+    {
+        ConcurrencyTestContext context = new();
+        await context.Service.StartAsync(CancellationToken.None);
+
+        var publishStarted = new TaskCompletionSource();
+        var publishBlocker = new TaskCompletionSource();
+
+        context.MqttClient.Publish(Arg.Any<MqttApplicationMessage>())
+            .ReturnsForAnyArgs(async _ =>
+            {
+                publishStarted.TrySetResult();
+                await publishBlocker.Task;
+            });
+
+        EngineChainCycleReport report = new(1.Seconds(), new Dictionary<string, ChainLinkReport>() { { "123", new ChainLinkReport(1, 100.Milliseconds()) } });
+        var inFlightReport = context.EngineChain.RaiseCycleReport(report);
+        await publishStarted.Task;
+
+        var stopTask = context.Service.StopAsync(TestContext.Current.CancellationToken);
+        await Task.Delay(100.Milliseconds(), TestContext.Current.CancellationToken);
+
+        stopTask.IsCompleted.Should().BeFalse();
+        await context.MqttClient.DidNotReceive().Disconnect();
+
+        publishBlocker.SetResult();
+        await inFlightReport;
+        await stopTask;
+
+        await context.MqttClient.Received(1).Disconnect();
+    }
+
+    [Fact]
+    public async Task Disconnects_when_stopping_token_is_cancelled_while_report_is_in_flight()
+    {
+        ConcurrencyTestContext context = new();
+        await context.Service.StartAsync(CancellationToken.None);
+
+        var publishStarted = new TaskCompletionSource();
+        var publishBlocker = new TaskCompletionSource();
+
+        context.MqttClient.Publish(Arg.Any<MqttApplicationMessage>())
+            .ReturnsForAnyArgs(async _ =>
+            {
+                publishStarted.TrySetResult();
+                await publishBlocker.Task;
+            });
+
+        EngineChainCycleReport report = new(1.Seconds(), new Dictionary<string, ChainLinkReport>() { { "123", new ChainLinkReport(1, 100.Milliseconds()) } });
+        _ = context.EngineChain.RaiseCycleReport(report);
+        await publishStarted.Task;
+
+        using var cts = new CancellationTokenSource();
+        await cts.CancelAsync();
+        await context.Service.StopAsync(cts.Token);
+
+        await context.MqttClient.Received(1).Disconnect();
+    }
 }
 
 internal sealed class CycleInfoServiceContext

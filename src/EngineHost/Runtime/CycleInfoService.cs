@@ -21,6 +21,7 @@ internal sealed class CycleInfoService(IOptions<HostConfig> options, [FromKeyedS
     IEngineChain engineChain, ILogger<CycleInfoService> logger) : IHostedLifecycleService
 {
     private static readonly RecyclableMemoryStreamManager s_streamManager = new();
+    private static readonly TimeSpan s_publishDrainTimeout = TimeSpan.FromSeconds(2);
     private readonly string _reportTopic = $"{options.Value.Id}/cycle/info";
     private readonly string _crashReportTopic = $"{options.Value.Id}/cycle/crash";
     private int _cycleReportRunning;
@@ -114,7 +115,18 @@ internal sealed class CycleInfoService(IOptions<HostConfig> options, [FromKeyedS
     {
         engineChain.CycleReport -= SendCycleReportAsync;
         engineChain.CrashReport -= SendCrashReportAsync;
+
+        using var drainCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        drainCts.CancelAfter(s_publishDrainTimeout);
+        await WaitForPendingPublishesAsync(drainCts.Token).ConfigureAwait(false);
+
         await mqttClient.Disconnect().ConfigureAwait(false);
+    }
+
+    private async Task WaitForPendingPublishesAsync(CancellationToken cancellationToken)
+    {
+        while ((Volatile.Read(ref _cycleReportRunning) != 0 || Volatile.Read(ref _crashReportRunning) != 0) && !cancellationToken.IsCancellationRequested)
+            await Task.Delay(TimeSpan.FromMilliseconds(10), CancellationToken.None).ConfigureAwait(false);
     }
 
     public Task StoppedAsync(CancellationToken cancellationToken) => Task.CompletedTask;
