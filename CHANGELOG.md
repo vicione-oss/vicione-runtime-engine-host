@@ -13,6 +13,8 @@
 - Use bounded channel with `DropOldest` for log message queue in `JsonFileLoggerProvider`
 - Skip cycle and crash report publishing when previous report is still in progress
 - Wait for report tasks in StopAsync
+- Update `ViciOne.ManagedEngine` to `1.0.0`
+- Update `ViciOne.ManagedEngine.Contracts` to `1.0.0`
 
 ## 0.30.0 - 2025-11-06
 

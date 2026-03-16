@@ -34,9 +34,9 @@
     <PackageVersion Include="System.CommandLine" Version="2.0.2" />
     <PackageVersion Include="Testably.Abstractions" Version="10.0.0" />
     <PackageVersion Include="Testably.Abstractions.Testing" Version="5.0.3" />
-    <PackageVersion Include="ViciOne.Engine.DefaultPoolings" Version="0.51.0" />
-    <PackageVersion Include="ViciOne.ManagedEngine" Version="0.62.0" />
-    <PackageVersion Include="ViciOne.ManagedEngine.Contracts" Version="0.62.0" />
+    <PackageVersion Include="ViciOne.Engine.DefaultPoolings" Version="1.0.0" />
+    <PackageVersion Include="ViciOne.ManagedEngine" Version="1.0.0" />
+    <PackageVersion Include="ViciOne.ManagedEngine.Contracts" Version="1.0.0" />
     <PackageVersion Include="xunit.v3.mtp-v2" Version="3.2.1" />
   </ItemGroup>
 </Project>
