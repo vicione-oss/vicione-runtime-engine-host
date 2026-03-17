@@ -63,7 +63,7 @@ internal sealed class JsonFileLoggerProvider : ILoggerProvider, ISupportExternal
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"Failed to write log entry: {ex.Message}");
+                await Console.Error.WriteLineAsync($"Failed to write log entry: {ex.Message}");
             }
         }
     }
