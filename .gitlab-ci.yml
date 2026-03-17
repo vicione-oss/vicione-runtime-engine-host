@@ -172,13 +172,18 @@ Get next version:
 Confirm next version:
   <<: *release_job
   when: manual
-  manual_confirmation: "Are you sure you want to create a release with the version found in the previous job? If not, run the job with a custom value for variable Version."
+  manual_confirmation: "Are you sure you want to create a release with the version found in `Get next version`? If not, change the input `Version`."
   needs:
-    - job: Get next version
-  variables:
-    Version: $NEXTVERSION
+    - Get next version
+  inputs:
+    Version:
+      default: "0.0.0-default.change-if-required" # This value is never used, but GitLab requires a default value for manual inputs
+      description: "Version to release (default: value from `Get next version`)"
+      regex: ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
   script:
-    - echo "NEXTVERSION=${Version}" > nextversion.env
+    - VERSION=${{ job.inputs.Version }}
+    - if [ "$VERSION" = "0.0.0-default.change-if-required" ]; then VERSION=$NEXTVERSION; fi
+    - echo "NEXTVERSION=${VERSION}" > nextversion.env
   artifacts:
     reports:
       dotenv: nextversion.env
@@ -186,7 +191,7 @@ Confirm next version:
 Get changelog:
   <<: *release_job
   needs:
-    - job: Confirm next version
+    - Confirm next version
   script:
     - sed "0,/^## ${NEXTVERSION}/d;/^## /Q" CHANGELOG.md | sed '1d;$d' > changelog.md
   artifacts:
@@ -198,8 +203,8 @@ Create release:
   <<: *release_job
   image: registry.gitlab.com/gitlab-org/release-cli:latest
   needs:
-    - job: Confirm next version
-    - job: Get changelog
+    - Confirm next version
+    - Get changelog
   # https://docs.gitlab.com/ee/ci/yaml/index.html#release
   script:
     - echo "" # unfortunately mandatory and addressed in https://gitlab.com/gitlab-org/gitlab/-/issues/223856
