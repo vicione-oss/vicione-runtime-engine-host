@@ -125,7 +125,7 @@ internal sealed class App
 
     private Task ManagedClient_ApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs arg)
     {
-        _messages.Add(arg.ApplicationMessage.PayloadSegment.ToArray());
+        _messages.Add([.. arg.ApplicationMessage.PayloadSegment]);
         return Task.CompletedTask;
     }
 }

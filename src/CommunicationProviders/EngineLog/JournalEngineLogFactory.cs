@@ -25,7 +25,7 @@ public sealed class JournalEngineLogFactory(JournalCommunication logCommunicatio
 
         var loggerConfiguration = new LoggerConfiguration()
             .MinimumLevel.ControlledBy(_logLevelSwitch)
-            .WriteTo.Journal(null, _communication.OutputTemplate ?? "{Message:lj}", _communication.MetaDataFields);
+            .WriteTo.Journal(null, _communication.OutputTemplate ?? "{Message:lj}", _communication.MetaDataFields, configureSpamGuard: o => o.Enabled = true);
 
         var logger = loggerConfiguration.CreateLogger();
         services.AddLogging(c => c.AddSerilog(logger, true));
