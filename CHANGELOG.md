@@ -15,6 +15,10 @@
 - Wait for report tasks in StopAsync
 - Update `ViciOne.ManagedEngine` to `1.0.0`
 - Update `ViciOne.ManagedEngine.Contracts` to `1.0.0`
+- Update `Microsoft.Extensions.DependencyModel` to `10.0.5`
+- Update `Microsoft.Extensions.Hosting` to `10.0.5`
+- Update `Microsoft.Extensions.Logging.Abstractions` to `10.0.5`
+- Update `Microsoft.Extensions.Logging.Configuration` to `10.0.5`
 
 ## 0.30.0 - 2025-11-06
 
