@@ -30,6 +30,9 @@ stages:
   - release
   - release-public
 
+variables:
+  IMAGE_NAME: mcr.microsoft.com/dotnet/sdk:10.0.103
+
 include:
   - project: 'vicione-oss/tooling/templates'
     file: '/CI-Templates/v2/dotnet.yml'
@@ -37,18 +40,21 @@ include:
     file: '/project/v1/dotnet.yml'
   - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-restore@2.2.0
     inputs:
+      image: ${IMAGE_NAME}
       rules: *rules
       before_script:
         - dotnet nuget update source JFrogNuGetProxy --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
         - dotnet nuget update source JFrogViciOne --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
   - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-build@2.2.0
     inputs:
+      image: ${IMAGE_NAME}
       rules: *rules
       before_script:
         # Aspire.AppHost.Sdk gets restored during build and not during restore
         - dotnet nuget update source JFrogNuGetProxy --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
   - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-test@2.2.0
     inputs:
+      image: ${IMAGE_NAME}
       rules: *rules
       before_script:
         # necessary to be able to pass tests in PackageResolvers.NuGet.Tests
@@ -57,19 +63,21 @@ include:
       coverage: true
   - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-pack@2.1.1
     inputs:
+      image: ${IMAGE_NAME}
       rules: *rules_manual
       before_script:
         # Aspire.AppHost.Sdk gets restored during build and not during restore
         - dotnet nuget update source JFrogNuGetProxy --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
   - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-nuget-push@2.1.1
     inputs:
+      image: ${IMAGE_NAME}
       rules: *rules_manual
       source: 'JFrogViciOne'
       before_script:
        - dotnet nuget update source JFrogViciOne --configfile NuGet.Config -u $NuGet_User_RW_JFrog -p $NuGet_PW_RW_JFrog --store-password-in-clear-text
 
 default:
-  image: mcr.microsoft.com/dotnet/sdk:10.0
+  image: ${IMAGE_NAME}
 
 markdown:
   extends: .dotnet-test-xunit
