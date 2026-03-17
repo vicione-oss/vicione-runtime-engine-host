@@ -4,9 +4,9 @@
     "net10.0": {
       "AwesomeAssertions": {
         "type": "Direct",
-        "requested": "[9.3.0, )",
-        "resolved": "9.3.0",
-        "contentHash": "8lGLYap2ec2gNLgjf2xKZaKLpQ7j36oJvrYzBVVpNAumqnxRdevqqhEF66qxE92f8y2+zsbQ061DeHG61ZhzaQ=="
+        "requested": "[9.4.0, )",
+        "resolved": "9.4.0",
+        "contentHash": "dJxkWiQ8D+xT6Gr2sSL83+Mar+Vpy2JTcUPxFcckpPJ8VYBfSgnk+zqpS6t7kcGnjz8NLyF14qfuoL4bKzzoew=="
       },
       "AwesomeAssertions.Analyzers": {
         "type": "Direct",
@@ -48,13 +48,13 @@
       },
       "xunit.v3.mtp-v2": {
         "type": "Direct",
-        "requested": "[3.2.1, )",
-        "resolved": "3.2.1",
-        "contentHash": "QnT7C+eEUM7ut6w4/RNPpSxE1Q9epiCNWf8Krc/vqcc+sc3Ejtl8lbf4w5DzBYWLUlkEEUr1u9czG0Qj7QK6IQ==",
+        "requested": "[3.2.2, )",
+        "resolved": "3.2.2",
+        "contentHash": "S0LJpeMIMrmbVLXDCvPVX47OLk28qBYfGU+5SNCbarOEdw8oKLfiVqaACwuYRvLiOqDEB/+VJ8gTSB1ZwheoOQ==",
         "dependencies": {
-          "xunit.analyzers": "1.26.0",
-          "xunit.v3.assert": "[3.2.1]",
-          "xunit.v3.core.mtp-v2": "[3.2.1]"
+          "xunit.analyzers": "1.27.0",
+          "xunit.v3.assert": "[3.2.2]",
+          "xunit.v3.core.mtp-v2": "[3.2.2]"
         }
       },
       "Castle.Core": {
@@ -406,15 +406,15 @@
       },
       "Testably.Abstractions.FileSystem.Interface": {
         "type": "Transitive",
-        "resolved": "10.0.0",
-        "contentHash": "tZOXFLGjkh8TxgMgKeEcM2HAlz9DwndGl6TFLo6ISHcszFX3FkuPMrtVbmqVjhooWNXrgJ/a9cH9ym5MZL1LAg=="
+        "resolved": "10.1.0",
+        "contentHash": "0R+m7DvS2QuDcFOfDGtyGErRrgXOl4/z2tbNLX2RfvlYJjlVcKG+wMIBfZO8vxGtTNwNxffTG4ibFRwd0jkM7w=="
       },
       "Testably.Abstractions.Interface": {
         "type": "Transitive",
-        "resolved": "10.0.0",
-        "contentHash": "58YTG5gM48ioN0Qt+9uStgSE6ytLNobq7ltck09BE127e2KDAuGcsM2zBR59S4flaNdcFq11e4sMFIytBCIEEw==",
+        "resolved": "10.1.0",
+        "contentHash": "syfu5XadpGDjhDWTh1vh/6HUFgamCaU1KhRwsHk6HyMeJLz5Jncm99H87NiEO73JihQ7yE3APlEbAXjlMyKBSg==",
         "dependencies": {
-          "Testably.Abstractions.FileSystem.Interface": "10.0.0"
+          "Testably.Abstractions.FileSystem.Interface": "10.1.0"
         }
       },
       "ViciOne.Core.Contracts": {
@@ -474,67 +474,67 @@
       },
       "xunit.analyzers": {
         "type": "Transitive",
-        "resolved": "1.26.0",
-        "contentHash": "YrWZOfuU1Scg4iGizAlMNALOxVS+HPSVilfscNDEJAyrTIVdF4c+8o+Aerw2RYnrJxafj/F56YkJOKCURUWQmA=="
+        "resolved": "1.27.0",
+        "contentHash": "y/pxIQaLvk/kxAoDkZW9GnHLCEqzwl5TW0vtX3pweyQpjizB9y3DXhb9pkw2dGeUqhLjsxvvJM1k89JowU6z3g=="
       },
       "xunit.v3.assert": {
         "type": "Transitive",
-        "resolved": "3.2.1",
-        "contentHash": "7hGxs+sfgPCiHg7CbWL8Vsmg8WS4vBfipZ7rfE+FEyS7ksU4+0vcV08TQvLIXLPAfinT06zVoK83YjRcMXcXLw=="
+        "resolved": "3.2.2",
+        "contentHash": "BPciBghgEEaJN/JG00QfCYDfEfnLgQhfnYEy+j1izoeHVNYd5+3Wm8GJ6JgYysOhpBPYGE+sbf75JtrRc7jrdA=="
       },
       "xunit.v3.common": {
         "type": "Transitive",
-        "resolved": "3.2.1",
-        "contentHash": "NUh3pPTC3Py4XTnjoCCCIEzvdKTQ9apu0ikDNCrUETBtfHHXcoUmIl5bOfJLQQu7awhu8eaZHjJnG7rx9lUZpg==",
+        "resolved": "3.2.2",
+        "contentHash": "Hj775PEH6GTbbg0wfKRvG2hNspDCvTH9irXhH4qIWgdrOSV1sQlqPie+DOvFeigsFg2fxSM3ZAaaCDQs+KreFA==",
         "dependencies": {
           "Microsoft.Bcl.AsyncInterfaces": "6.0.0"
         }
       },
       "xunit.v3.core.mtp-v2": {
         "type": "Transitive",
-        "resolved": "3.2.1",
-        "contentHash": "EX7lPHnlJQYGj092TE+I7bw/iT9eYA+JcqRg0+31tSPgQqBhmOSxTT7YIfU6zFHo4ak4F/TPz3GjmvweJT1zZw==",
+        "resolved": "3.2.2",
+        "contentHash": "zW82tdCm+T1uUD1JKE+SmhgMq8nCAvcFPRLIVEiRgaxBSjcyJEKopLU3bHGOa416q+N3Dz7m1zLoPR5VJ5OQ+Q==",
         "dependencies": {
           "Microsoft.Testing.Extensions.Telemetry": "2.0.2",
           "Microsoft.Testing.Extensions.TrxReport.Abstractions": "2.0.2",
           "Microsoft.Testing.Platform": "2.0.2",
           "Microsoft.Testing.Platform.MSBuild": "2.0.2",
-          "xunit.v3.extensibility.core": "[3.2.1]",
-          "xunit.v3.runner.inproc.console": "[3.2.1]"
+          "xunit.v3.extensibility.core": "[3.2.2]",
+          "xunit.v3.runner.inproc.console": "[3.2.2]"
         }
       },
       "xunit.v3.extensibility.core": {
         "type": "Transitive",
-        "resolved": "3.2.1",
-        "contentHash": "soZuThF5CwB/ZZ2HY/ivdinyM/6MvmjsHTG0vNw3fRd1ZKcmLzfxVb3fB6R3G5yoaN4Bh+aWzFGjOvYO05OzkA==",
+        "resolved": "3.2.2",
+        "contentHash": "srY8z/oMPvh/t8axtO2DwrHajhFMH7tnqKildvYrVQIfICi8fOn3yIBWkVPAcrKmHMwvXRJ/XsQM3VMR6DOYfQ==",
         "dependencies": {
-          "xunit.v3.common": "[3.2.1]"
+          "xunit.v3.common": "[3.2.2]"
         }
       },
       "xunit.v3.runner.common": {
         "type": "Transitive",
-        "resolved": "3.2.1",
-        "contentHash": "oF0jwl0xH45/RWjDcaCPOeeI6HCoyiEXIT8yvByd37rhJorjL/Ri8S9A/Vql8DBPjCfQWd6Url5JRmeiQ55isA==",
+        "resolved": "3.2.2",
+        "contentHash": "/hkHkQCzGrugelOAehprm7RIWdsUFVmIVaD6jDH/8DNGCymTlKKPTbGokD5czbAfqfex47mBP0sb0zbHYwrO/g==",
         "dependencies": {
           "Microsoft.Win32.Registry": "[5.0.0]",
-          "xunit.v3.common": "[3.2.1]"
+          "xunit.v3.common": "[3.2.2]"
         }
       },
       "xunit.v3.runner.inproc.console": {
         "type": "Transitive",
-        "resolved": "3.2.1",
-        "contentHash": "EC/VLj1E9BPWfmzdEMQEqouxh0rWAdX6SXuiiDRf0yXXsQo3E2PNLKCyJ9V8hmkGH/nBvM7pHLFbuCf00vCynw==",
+        "resolved": "3.2.2",
+        "contentHash": "ulWOdSvCk+bPXijJZ73bth9NyoOHsAs1ZOvamYbCkD4DNLX/Bd29Ve2ZNUwBbK0MqfIYWXHZViy/HKrdEC/izw==",
         "dependencies": {
-          "xunit.v3.extensibility.core": "[3.2.1]",
-          "xunit.v3.runner.common": "[3.2.1]"
+          "xunit.v3.extensibility.core": "[3.2.2]",
+          "xunit.v3.runner.common": "[3.2.2]"
         }
       },
       "common.tests": {
         "type": "Project",
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "[10.0.5, )",
-          "Testably.Abstractions": "[10.0.0, )",
-          "Testably.Abstractions.Testing": "[5.0.3, )"
+          "Testably.Abstractions": "[10.1.0, )",
+          "Testably.Abstractions.Testing": "[5.3.1, )"
         }
       },
       "ViciOne.ManagedEngine.CommunicationContracts": {
@@ -552,7 +552,7 @@
           "Serilog.Sinks.File": "[7.0.0, )",
           "Serilog.Sinks.Journal": "[0.7.0, )",
           "Serilog.Sinks.SyslogMessages": "[4.1.0, )",
-          "Testably.Abstractions": "[10.0.0, )",
+          "Testably.Abstractions": "[10.1.0, )",
           "ViciOne.ManagedEngine.CommunicationContracts": "[1.0.0, )"
         }
       },
@@ -567,7 +567,7 @@
           "Serilog.Extensions.Hosting": "[10.0.0, )",
           "Serilog.Settings.Configuration": "[10.0.0, )",
           "Serilog.Sinks.Console": "[6.1.1, )",
-          "Testably.Abstractions": "[10.0.0, )",
+          "Testably.Abstractions": "[10.1.0, )",
           "ViciOne.Engine.DefaultPoolings": "[1.0.0, )",
           "ViciOne.ManagedEngine": "[1.0.0, )",
           "ViciOne.ManagedEngine.CommunicationProviders": "[1.0.0, )",
@@ -578,7 +578,7 @@
         "type": "Project",
         "dependencies": {
           "Microsoft.Extensions.DependencyModel": "[10.0.5, )",
-          "Testably.Abstractions": "[10.0.0, )"
+          "Testably.Abstractions": "[10.1.0, )"
         }
       },
       "Microsoft.Extensions.DependencyModel": {
@@ -761,21 +761,21 @@
       },
       "Testably.Abstractions": {
         "type": "CentralTransitive",
-        "requested": "[10.0.0, )",
-        "resolved": "10.0.0",
-        "contentHash": "TITBSFn9H5iRntBB+VGfJ1SRq8T3mq3JiqSV340S9InQc+PahLWGmJk1q52AJOrsUzQwyczGr1F0e3NmS3k3ww==",
+        "requested": "[10.1.0, )",
+        "resolved": "10.1.0",
+        "contentHash": "8hjpc/vjNNJpHYrcuZTfKkcojS+pwyQtviTFdVBedqGOMlCrG+X2CjY2lW+ZavDYlw3TCi7zrMVqW674PkAqVQ==",
         "dependencies": {
-          "Testably.Abstractions.Interface": "10.0.0-pre.1"
+          "Testably.Abstractions.Interface": "10.1.0"
         }
       },
       "Testably.Abstractions.Testing": {
         "type": "CentralTransitive",
-        "requested": "[5.0.3, )",
-        "resolved": "5.0.3",
-        "contentHash": "uv9nLvN6OrduA6WyiQFimdoWUGuxVwytW+zcA+yf0vIrMAv5jPoM2hy0FBN45IdgZVzPbEnv75CviBuFow+OyA==",
+        "requested": "[5.3.1, )",
+        "resolved": "5.3.1",
+        "contentHash": "tt8EUKoNfKiDmrUTh1CpLbusMaYCLBmXWHT5eqoJV8YokzYoG1IA/KKo3Gx1tM6sTWSnvzgmqi6NsFQN1gSLYg==",
         "dependencies": {
           "DotNet.Glob": "3.1.3",
-          "Testably.Abstractions.Interface": "10.0.0"
+          "Testably.Abstractions.Interface": "10.1.0"
         }
       },
       "ViciOne.Engine.DefaultPoolings": {

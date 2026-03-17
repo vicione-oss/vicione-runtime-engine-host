@@ -101,11 +101,11 @@
       },
       "Testably.Abstractions": {
         "type": "Direct",
-        "requested": "[10.0.0, )",
-        "resolved": "10.0.0",
-        "contentHash": "TITBSFn9H5iRntBB+VGfJ1SRq8T3mq3JiqSV340S9InQc+PahLWGmJk1q52AJOrsUzQwyczGr1F0e3NmS3k3ww==",
+        "requested": "[10.1.0, )",
+        "resolved": "10.1.0",
+        "contentHash": "8hjpc/vjNNJpHYrcuZTfKkcojS+pwyQtviTFdVBedqGOMlCrG+X2CjY2lW+ZavDYlw3TCi7zrMVqW674PkAqVQ==",
         "dependencies": {
-          "Testably.Abstractions.Interface": "10.0.0-pre.1"
+          "Testably.Abstractions.Interface": "10.1.0"
         }
       },
       "ViciOne.Engine.DefaultPoolings": {
@@ -416,15 +416,15 @@
       },
       "Testably.Abstractions.FileSystem.Interface": {
         "type": "Transitive",
-        "resolved": "10.0.0-pre.1",
-        "contentHash": "2NN3Slz8S/RcTFVOQ441FVE98MKJvf+caECzBw3TnK0pGbYdt0qPDcjckMKuZyl6FWk11SLdNqTlvu4hgGdnKA=="
+        "resolved": "10.1.0",
+        "contentHash": "0R+m7DvS2QuDcFOfDGtyGErRrgXOl4/z2tbNLX2RfvlYJjlVcKG+wMIBfZO8vxGtTNwNxffTG4ibFRwd0jkM7w=="
       },
       "Testably.Abstractions.Interface": {
         "type": "Transitive",
-        "resolved": "10.0.0-pre.1",
-        "contentHash": "lRxYVeYayVjfVZukwkSTwe6U7Y8oFKEzeIYY4qn8zVjsaeh3D6zl73G+WoN9cM8mFS8nLKyXC+rFQh4L8Djwkw==",
+        "resolved": "10.1.0",
+        "contentHash": "syfu5XadpGDjhDWTh1vh/6HUFgamCaU1KhRwsHk6HyMeJLz5Jncm99H87NiEO73JihQ7yE3APlEbAXjlMyKBSg==",
         "dependencies": {
-          "Testably.Abstractions.FileSystem.Interface": "10.0.0-pre.1"
+          "Testably.Abstractions.FileSystem.Interface": "10.1.0"
         }
       },
       "ViciOne.Core.Contracts": {
@@ -497,7 +497,7 @@
           "Serilog.Sinks.File": "[7.0.0, )",
           "Serilog.Sinks.Journal": "[0.7.0, )",
           "Serilog.Sinks.SyslogMessages": "[4.1.0, )",
-          "Testably.Abstractions": "[10.0.0, )",
+          "Testably.Abstractions": "[10.1.0, )",
           "ViciOne.ManagedEngine.CommunicationContracts": "[1.0.0, )"
         }
       },
@@ -505,7 +505,7 @@
         "type": "Project",
         "dependencies": {
           "Microsoft.Extensions.DependencyModel": "[10.0.5, )",
-          "Testably.Abstractions": "[10.0.0, )"
+          "Testably.Abstractions": "[10.1.0, )"
         }
       },
       "Microsoft.Extensions.DependencyModel": {
