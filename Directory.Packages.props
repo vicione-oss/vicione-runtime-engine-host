@@ -28,7 +28,7 @@
     <PackageVersion Include="Serilog.Settings.Configuration" Version="10.0.0" />
     <PackageVersion Include="Serilog.Sinks.Console" Version="6.1.1" />
     <PackageVersion Include="Serilog.Sinks.File" Version="7.0.0" />
-    <PackageVersion Include="Serilog.Sinks.Journal" Version="0.7.0" />
+    <PackageVersion Include="Serilog.Sinks.Journal" Version="1.1.0" />
     <PackageVersion Include="Serilog.Sinks.SyslogMessages" Version="4.1.0" />
     <PackageVersion Include="Spectre.Console" Version="0.54.0" />
     <PackageVersion Include="System.CommandLine" Version="2.0.5" />

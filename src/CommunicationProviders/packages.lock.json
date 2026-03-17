@@ -49,13 +49,13 @@
       },
       "Serilog.Sinks.Journal": {
         "type": "Direct",
-        "requested": "[0.7.0, )",
-        "resolved": "0.7.0",
-        "contentHash": "BJq9QYzwIQVlgI3dJthMFvIBTyDTbOqiMYtCLNd4UX+d0GTSnDegf7RCjQj+Kak4uEv2CD7DmF/xPk6WWx4RmA==",
+        "requested": "[1.1.0, )",
+        "resolved": "1.1.0",
+        "contentHash": "9a2bKDkW8/EyIhxlv2CyacAU4CQJt9ms4MNE63EMXqUekKoKOZkvo2shOKWCGQjEGL59z6mwWNUpRbuTwInD5Q==",
         "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "9.0.3",
-          "Microsoft.Extensions.Logging.Configuration": "9.0.3",
-          "Serilog": "4.3.0"
+          "Microsoft.Extensions.Logging.Abstractions": "10.0.3",
+          "Microsoft.Extensions.Logging.Configuration": "10.0.3",
+          "Serilog": "4.3.1"
         }
       },
       "Serilog.Sinks.SyslogMessages": {
@@ -159,8 +159,8 @@
       },
       "Serilog": {
         "type": "Transitive",
-        "resolved": "4.3.0",
-        "contentHash": "+cDryFR0GRhsGOnZSKwaDzRRl4MupvJ42FhCE4zhQRVanX0Jpg6WuCBk59OVhVDPmab1bB+nRykAnykYELA9qQ=="
+        "resolved": "4.3.1",
+        "contentHash": "savYe7h5yRlkqBVOwP8cIRDOdqKiPmYCU4W87JH38sBmcKD5EBoXvQIw6bNEvZ/pTe1gsiye3VFCzBsoppGkXQ=="
       },
       "Serilog.Sinks.PeriodicBatching": {
         "type": "Transitive",

@@ -19,6 +19,7 @@
 - Update `Microsoft.Extensions.Hosting` to `10.0.5`
 - Update `Microsoft.Extensions.Logging.Abstractions` to `10.0.5`
 - Update `Microsoft.Extensions.Logging.Configuration` to `10.0.5`
+- Update `Serilog.Sinks.Journal` to `1.1.0`
 
 ## 0.30.0 - 2025-11-06
 
