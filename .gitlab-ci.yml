@@ -169,11 +169,10 @@ Get next version:
     reports:
       dotenv: nextversion.env
 
-Create release:
+Confirm next version:
   <<: *release_job
   when: manual
   manual_confirmation: "Are you sure you want to create a release with the version found in `Get next version`? If not, change the input `Version`."
-  image: registry.gitlab.com/gitlab-org/cli:latest
   needs:
     - Get next version
   inputs:
@@ -181,13 +180,36 @@ Create release:
       default: "0.0.0-default.change-if-required" # This value is never used, but GitLab requires a default value for manual inputs
       description: "Version to release (default: value from `Get next version`)"
       regex: ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
-  # https://docs.gitlab.com/ee/ci/yaml/index.html#release
   script:
     - VERSION=${{ job.inputs.Version }}
     - if [ "$VERSION" = "0.0.0-default.change-if-required" ]; then VERSION=$NEXTVERSION; fi
-    - sed "0,/^## ${VERSION}/d;/^## /Q" CHANGELOG.md | sed '1d;$d' > changelog.md
+    - echo "NEXTVERSION=${VERSION}" > nextversion.env
+  artifacts:
+    reports:
+      dotenv: nextversion.env
+
+Get changelog:
+  <<: *release_job
+  needs:
+    - Confirm next version
+  script:
+    - sed "0,/^## ${NEXTVERSION}/d;/^## /Q" CHANGELOG.md | sed '1d;$d' > changelog.md
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - changelog.md
+
+Create release:
+  <<: *release_job
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  needs:
+    - Confirm next version
+    - Get changelog
+  # https://docs.gitlab.com/ee/ci/yaml/index.html#release
+  script:
+    - echo "" # unfortunately mandatory and addressed in https://gitlab.com/gitlab-org/gitlab/-/issues/223856
   release:
-    tag_name: 'v$VERSION'
-    tag_message: 'Version $VERSION'
-    name: 'v$VERSION'
+    tag_name: 'v$NEXTVERSION'
+    tag_message: 'Version $NEXTVERSION'
+    name: 'v$NEXTVERSION'
     description: './changelog.md'
