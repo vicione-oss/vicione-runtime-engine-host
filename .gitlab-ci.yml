@@ -100,6 +100,9 @@ Prerelease EngineHost Raw:
     METADATA_VERSION_FILE: 'VERSION'
     METADATA_MIN_VERSION_FILE: 'VERSION_CORE'
     METADATA_MIN_VERSION_KEY: 'MinCoreVersion'
+  before_script:
+    - dotnet nuget update source JFrogNuGetProxy --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
+    - dotnet nuget update source JFrogViciOne --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
   after_script:
     - !reference [.push-metadata]
 
@@ -117,6 +120,9 @@ Release EngineHost Raw:
     METADATA_VERSION_FILE: 'VERSION'
     METADATA_MIN_VERSION_FILE: 'VERSION_CORE'
     METADATA_MIN_VERSION_KEY: 'MinCoreVersion'
+  before_script:
+    - dotnet nuget update source JFrogNuGetProxy --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
+    - dotnet nuget update source JFrogViciOne --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
   after_script:
     - !reference [.push-metadata]
 
