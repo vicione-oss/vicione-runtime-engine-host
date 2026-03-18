@@ -15,9 +15,7 @@ stages:
   - test
   - pack
   - publish
-  - deploy
   - release
-  - release-public
 
 variables:
   IMAGE_NAME: mcr.microsoft.com/dotnet/sdk:10.0.103
@@ -101,6 +99,7 @@ markdown:
 Prerelease EngineHost Raw:
   extends: .dotnet-deploy-raw-rids
   image: ${IMAGE_NAME}
+  stage: publish
   rules:
     - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
       when: manual
@@ -131,6 +130,7 @@ Prerelease EngineHost Raw:
 Release EngineHost Raw:
   extends: .dotnet-release-raw-rids
   image: ${IMAGE_NAME}
+  stage: publish
   rules:
     - if: "$CI_COMMIT_TAG"
   variables:
@@ -150,8 +150,11 @@ Release EngineHost Raw:
   after_script:
     - !reference [.push-metadata]
 
-Public Release Raw:
+Publish EngineHost Raw:
   extends: .dotnet-release-public
+  stage: publish
+  needs:
+    - Release EngineHost Raw
   rules:
     - if: "$CI_COMMIT_TAG"
       when: manual
