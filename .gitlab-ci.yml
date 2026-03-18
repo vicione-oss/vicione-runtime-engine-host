@@ -76,9 +76,6 @@ include:
       before_script:
        - dotnet nuget update source JFrogViciOne --configfile NuGet.Config -u $NuGet_User_RW_JFrog -p $NuGet_PW_RW_JFrog --store-password-in-clear-text
 
-default:
-  image: ${IMAGE_NAME}
-
 markdown:
   extends: .dotnet-test-xunit
   variables: null
@@ -91,6 +88,7 @@ markdown:
 
 Prerelease EngineHost Raw:
   extends: .dotnet-deploy-raw-rids
+  image: ${IMAGE_NAME}
   variables:
     SERVER: 'https://ifm.jfrog.io/artifactory/vicione-suite-dev'
     USER: ${Raw_User_RW_JFrog}
@@ -107,6 +105,7 @@ Prerelease EngineHost Raw:
 
 Release EngineHost Raw:
   extends: .dotnet-release-raw-rids
+  image: ${IMAGE_NAME}
   variables:
     SERVER: 'https://ifm.jfrog.io/artifactory/vicione-suite-staging'
     USER: ${Raw_User_RW_JFrog}
