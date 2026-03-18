@@ -1,24 +1,13 @@
-.rules: &rules
+.rules_always: &rules_always
   - if: "$CI_COMMIT_TAG"
-    when: manual
-    allow_failure: true
   - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
   - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   - if: $CI_PIPELINE_SOURCE == "web"
 
-.rules_manual: &rules_manual
-  - if: "$CI_COMMIT_TAG"
-    when: manual
-    allow_failure: true
+.rules_not_tags: &rules_not_tags
   - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
-    when: manual
-    allow_failure: true
   - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    when: manual
-    allow_failure: true
   - if: $CI_PIPELINE_SOURCE == "web"
-    when: manual
-    allow_failure: true
 
 stages:
   - .pre
@@ -41,21 +30,21 @@ include:
   - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-restore@2.2.0
     inputs:
       image: ${IMAGE_NAME}
-      rules: *rules
+      rules: *rules_always
       before_script:
         - dotnet nuget update source JFrogNuGetProxy --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
         - dotnet nuget update source JFrogViciOne --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
   - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-build@2.2.0
     inputs:
       image: ${IMAGE_NAME}
-      rules: *rules
+      rules: *rules_always
       before_script:
         # Aspire.AppHost.Sdk gets restored during build and not during restore
         - dotnet nuget update source JFrogNuGetProxy --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
   - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-test@2.2.0
     inputs:
       image: ${IMAGE_NAME}
-      rules: *rules
+      rules: *rules_not_tags
       before_script:
         # necessary to be able to pass tests in PackageResolvers.NuGet.Tests
         - dotnet nuget update source JFrogNuGetProxy --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
@@ -64,14 +53,36 @@ include:
   - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-pack@2.1.1
     inputs:
       image: ${IMAGE_NAME}
-      rules: *rules_manual
+      rules:
+        - if: "$CI_COMMIT_TAG"
+        - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
+          when: manual
+          allow_failure: true
+        - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+          when: manual
+          allow_failure: true
+        - if: $CI_PIPELINE_SOURCE == "web"
+          when: manual
+          allow_failure: true
       before_script:
         # Aspire.AppHost.Sdk gets restored during build and not during restore
         - dotnet nuget update source JFrogNuGetProxy --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
   - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-nuget-push@2.1.1
     inputs:
       image: ${IMAGE_NAME}
-      rules: *rules_manual
+      rules:
+        - if: "$CI_COMMIT_TAG"
+          when: manual
+          allow_failure: true
+        - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
+          when: manual
+          allow_failure: true
+        - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+          when: manual
+          allow_failure: true
+        - if: $CI_PIPELINE_SOURCE == "web"
+          when: manual
+          allow_failure: true
       source: 'JFrogViciOne'
       before_script:
        - dotnet nuget update source JFrogViciOne --configfile NuGet.Config -u $NuGet_User_RW_JFrog -p $NuGet_PW_RW_JFrog --store-password-in-clear-text
@@ -80,6 +91,7 @@ markdown:
   extends: .dotnet-test-xunit
   variables: null
   artifacts: null
+  rules: *rules_not_tags
   image:
     name: davidanson/markdownlint-cli2:v0.20.0
     entrypoint: ["/bin/sh", "-c"]
@@ -89,6 +101,16 @@ markdown:
 Prerelease EngineHost Raw:
   extends: .dotnet-deploy-raw-rids
   image: ${IMAGE_NAME}
+  rules:
+    - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SOURCE == "web"
+      when: manual
+      allow_failure: true
   variables:
     SERVER: 'https://ifm.jfrog.io/artifactory/vicione-suite-dev'
     USER: ${Raw_User_RW_JFrog}
@@ -109,6 +131,8 @@ Prerelease EngineHost Raw:
 Release EngineHost Raw:
   extends: .dotnet-release-raw-rids
   image: ${IMAGE_NAME}
+  rules:
+    - if: "$CI_COMMIT_TAG"
   variables:
     SERVER: 'https://ifm.jfrog.io/artifactory/vicione-suite-staging'
     USER: ${Raw_User_RW_JFrog}
@@ -128,6 +152,13 @@ Release EngineHost Raw:
 
 Public Release Raw:
   extends: .dotnet-release-public
+  rules:
+    - if: "$CI_COMMIT_TAG"
+      when: manual
+      allow_failure: true
+    - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
+      when: manual
+      allow_failure: true
 
 .release_job: &release_job
   stage: release
@@ -146,6 +177,7 @@ Public Release Raw:
 
 Get version:
   stage: .pre
+  rules: *rules_always
   <<: *git_version
   script:
     - |
