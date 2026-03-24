@@ -25,21 +25,21 @@ include:
     file: '/CI-Templates/v2/dotnet.yml'
   - project: 'vicione-oss/tooling/ci-templates'
     file: '/project/v1/dotnet.yml'
-  - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-restore@2.2.0
+  - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-restore@2
     inputs:
       image: ${IMAGE_NAME}
       rules: *rules_always
       before_script:
         - dotnet nuget update source JFrogNuGetProxy --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
         - dotnet nuget update source JFrogViciOne --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
-  - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-build@2.2.0
+  - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-build@2
     inputs:
       image: ${IMAGE_NAME}
       rules: *rules_always
       before_script:
         # Aspire.AppHost.Sdk gets restored during build and not during restore
         - dotnet nuget update source JFrogNuGetProxy --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
-  - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-test@2.2.0
+  - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-test@2
     inputs:
       image: ${IMAGE_NAME}
       rules: *rules_not_tags
@@ -48,7 +48,7 @@ include:
         - dotnet nuget update source JFrogNuGetProxy --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
         - dotnet nuget remove source JFrogViciOne
       coverage: true
-  - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-pack@2.1.1
+  - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-pack@2
     inputs:
       image: ${IMAGE_NAME}
       rules:
@@ -65,7 +65,7 @@ include:
       before_script:
         # Aspire.AppHost.Sdk gets restored during build and not during restore
         - dotnet nuget update source JFrogNuGetProxy --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
-  - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-nuget-push@2.1.1
+  - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-nuget-push@2
     inputs:
       image: ${IMAGE_NAME}
       rules:
