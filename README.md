@@ -176,8 +176,8 @@ sequenceDiagram
 |:-------:|-------------------------------|:---------:|:--------------:|:-------------:|:---------:|
 |   .pre  | **Get version**               |    run    |       run      |      run      |    run    |
 |   .pre  | **Restore**                   |    run    |       run      |      run      |    run    |
-|  build  | **Build**                     |    run    |       run      |      run      |    run    |
-|   test  | **Test**                      | not added |       run      |      run      |    run    |
+|  build  | **Build**                     |    run    |    not added   |   not added   | not added |
+|   test  | **Build+Test**                | not added |       run      |      run      |    run    |
 |   test  | **Lint Markdown**             | not added |       run      |      run      |    run    |
 |   pack  | **Pack NuGet**                |    run    |     manual     |     manual    |   manual  |
 | publish | **Publish NuGet**             |   manual  |     manual     |     manual    |   manual  |
