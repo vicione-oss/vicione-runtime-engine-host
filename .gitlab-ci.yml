@@ -85,10 +85,11 @@ include:
       before_script:
        - dotnet nuget update source JFrogViciOne --configfile NuGet.Config -u $NuGet_User_RW_JFrog -p $NuGet_PW_RW_JFrog --store-password-in-clear-text
 
-markdown:
+Lint Markdown:
   extends: .dotnet-test-xunit
   variables: null
   artifacts: null
+  dependencies: []
   rules: *rules_not_tags
   image:
     name: davidanson/markdownlint-cli2:v0.20.0
