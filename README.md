@@ -1,5 +1,13 @@
 # Engine Host
 
+Engine Host is the runtime hosting service of the [ViciOne](https://gitlab.com/vicione-oss) platform. It acts as the deployment container and lifecycle orchestrator for **ManagedEngines** — isolated, dynamically loaded data flow processors composed of interconnected FunctionBlocks.
+
+In industrial and IoT environments, data must be continuously collected, transformed, and forwarded — often across hybrid cloud and on-premise setups. Engine Host addresses this by allowing data flows to be deployed, started, stopped, and torn down remotely via MQTT, without recompilation or redeployment of the host itself. Multiple engines can run concurrently, all synchronized to a single shared cycle time through the EngineChain — a coordinated execution loop that processes every enabled engine in index order on each tick, using high-resolution timers for drift-free timing.
+
+Engines are assembled from reusable packages (FunctionBlocks, communicators, type converters, etc.) resolved at deploy time from NuGet feeds, local directories, or through a build using the .NET SDK. Each engine is loaded into an assembly context that can be isolated or shared across engines to optimize memory usage. External data exchange — with sensors, other engines, or cloud services — is handled through pluggable connectors (MQTT, Direct), while settings and variable state can be persisted across restarts.
+
+Observability is provided through OpenTelemetry (tracing and metrics) in development environments, and Serilog structured logging in production, giving operators visibility into cycle performance, engine state, and failures.
+
 ## Configuration
 
 ### OpenTelemetry
