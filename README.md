@@ -161,3 +161,18 @@ sequenceDiagram
         end
     end
 ```
+
+## CI overview
+
+|  Stage  | Job                           |    Tag    | Default branch | Merge request |    Web    |
+|:-------:|-------------------------------|:---------:|:--------------:|:-------------:|:---------:|
+|   .pre  | **Get version**               |    run    |       run      |      run      |    run    |
+|   .pre  | **Restore**                   |    run    |       run      |      run      |    run    |
+|  build  | **Build**                     |    run    |       run      |      run      |    run    |
+|   test  | **Test**                      | not added |       run      |      run      |    run    |
+|   test  | **Lint Markdown**             | not added |       run      |      run      |    run    |
+|   pack  | **Pack NuGet**                |    run    |     manual     |     manual    |   manual  |
+| publish | **Publish NuGet**             |   manual  |     manual     |     manual    |   manual  |
+| publish | **Prerelease EngineHost Raw** | not added |     manual     |     manual    |   manual  |
+| publish | **Release EngineHost Raw**    |    run    |    not added   |   not added   | not added |
+| publish | **Publish EngineHost Raw**    |   manual  |    not added   |   not added   | not added |
