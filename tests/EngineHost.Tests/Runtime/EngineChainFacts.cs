@@ -129,11 +129,12 @@ public class EngineChain_ProcessChainLinks
         TestLogger<EngineChain> logger = new(LogLevel.Warning);
         using EngineChain engineChain = new(Substitute.For<ITimer>(), logger);
         var calls = 0u;
-        engineChain.AddChainLink("1", () => { Thread.Sleep(150.Milliseconds()); return calls++; }, 0);
+        using ManualResetEventSlim actionStarted = new();
+        engineChain.AddChainLink("1", () => { actionStarted.Set(); Thread.Sleep(150.Milliseconds()); return calls++; }, 0);
         engineChain.EnableChainLink("1");
 
         var cycle1 = Task.Run(() => engineChain.ProcessChainLinks(TestContext.Current.CancellationToken), TestContext.Current.CancellationToken);
-        await Task.Delay(50.Milliseconds(), TestContext.Current.CancellationToken);
+        actionStarted.Wait(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
         engineChain.DisableChainLink("1");
         engineChain.ProcessChainLinks(TestContext.Current.CancellationToken);
         await cycle1;
@@ -147,10 +148,12 @@ public class EngineChain_ProcessChainLinks
     {
         using EngineChain engineChain = new(Substitute.For<ITimer>(), NullLogger<EngineChain>.Instance);
         var calls = 0u;
+        using ManualResetEventSlim actionStarted = new();
 
         engineChain.AddChainLink("1", () =>
         {
             calls++;
+            actionStarted.Set();
             Thread.Sleep(225);
             return 0;
         }, 0);
@@ -158,8 +161,9 @@ public class EngineChain_ProcessChainLinks
 
         // First call is being processed
         var firstProcess = Task.Run(() => engineChain.ProcessChainLinks(TestContext.Current.CancellationToken), TestContext.Current.CancellationToken);
+        // Wait until the first call is actually running
+        actionStarted.Wait(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
         // Second call returns null because first is still running
-        await Task.Delay(50, TestContext.Current.CancellationToken);
         var secondResult = engineChain.ProcessChainLinks(TestContext.Current.CancellationToken);
         await firstProcess;
 

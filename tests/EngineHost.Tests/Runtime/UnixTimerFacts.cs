@@ -183,9 +183,10 @@ public class UnixTimer_Action
             NullLogger.Instance);
 
         timer.Start();
-        actionCalled.Wait(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken);
+        var called = actionCalled.Wait(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
         await timer.StopAsync();
 
+        called.Should().BeTrue();
         receivedToken.CanBeCanceled.Should().BeTrue();
     }
 }
@@ -215,7 +216,7 @@ public class UnixTimer_Report
             NullLogger.Instance);
 
         timer.Start();
-        var received = reportReceived.Wait(TimeSpan.FromSeconds(2), TestContext.Current.CancellationToken);
+        var received = reportReceived.Wait(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
         await timer.StopAsync();
 
         received.Should().BeTrue();
