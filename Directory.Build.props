@@ -27,10 +27,13 @@
 
   <!-- NuGet packages publish information -->
   <PropertyGroup>
-    <!-- https://docs.microsoft.com/de-de/nuget/reference/msbuild-targets -->
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://gitlab.com/vicione-oss/vicione/runtime/engine-host</PackageProjectUrl>
     <Authors>$(Company)</Authors>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="$(MsBuildThisFileDirectory)\LICENSE.txt" Pack="true" PackagePath="" />
+  </ItemGroup>
 
   <!-- Properties for source projects -->
   <ItemGroup Condition="$(MSBuildProjectDirectory.Contains('src'))">
