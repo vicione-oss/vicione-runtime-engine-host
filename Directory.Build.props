@@ -1,22 +1,23 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!-- Properties for all projects in the repo -->
   <PropertyGroup>
-    <Nullable>enable</Nullable>
-    <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
     <!-- General information -->
     <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
     <RuntimeIdentifiers Condition="$(MSBuildProjectDirectory.Contains('src'))">linux-x64;linux-arm64;win-x64</RuntimeIdentifiers>
     <Description>-</Description>
     <Product>ViciOne</Product>
-    <Company>ifm software</Company>
+    <Company>ifm software gmbh</Company>
     <Year>$([System.DateTime]::Now.Year)</Year>
     <Copyright>Copyright © $(Company) $(Year)</Copyright>
     <NeutralLanguage>en-US</NeutralLanguage>
     <SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
+
     <!-- Code quality -->
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile> <!-- Required for EnforceCodeStyleInBuild and NuGet packages -->
+
     <!-- NuGet lock file -->
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <RestoreLockedMode Condition="'$(CI)' == 'true'">true</RestoreLockedMode>
@@ -54,6 +55,6 @@
   <PropertyGroup Condition="$(MSBuildProjectDirectory.Contains('samples'))">
     <NoWarn>CS1591</NoWarn> <!-- Suppress documentation of public API -->
     <IsPackable>false</IsPackable>
-    <IsPublishable>false</IsPublishable>
+    <IsPublishable>true</IsPublishable>
   </PropertyGroup>
 </Project>
