@@ -1,5 +1,11 @@
 # Changelog
 
+## Next - Unreleased
+
+### Changed
+
+- Update `NuGet.Commands` to `7.3.1`
+
 ## 1.0.0 - 2026-03-18
 
 ### Added
