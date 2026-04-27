@@ -308,15 +308,15 @@
       },
       "Testably.Abstractions.FileSystem.Interface": {
         "type": "Transitive",
-        "resolved": "10.1.0",
-        "contentHash": "0R+m7DvS2QuDcFOfDGtyGErRrgXOl4/z2tbNLX2RfvlYJjlVcKG+wMIBfZO8vxGtTNwNxffTG4ibFRwd0jkM7w=="
+        "resolved": "10.2.0",
+        "contentHash": "ghs49+4Z93PJ/BGCH55iDZU9937AVlOPjGEfh7HxsyielugBTy2dECbEQ59D3Y5wkZbR0mkn0xjvdK0RnGj5wg=="
       },
       "Testably.Abstractions.Interface": {
         "type": "Transitive",
-        "resolved": "10.1.0",
-        "contentHash": "syfu5XadpGDjhDWTh1vh/6HUFgamCaU1KhRwsHk6HyMeJLz5Jncm99H87NiEO73JihQ7yE3APlEbAXjlMyKBSg==",
+        "resolved": "10.2.0",
+        "contentHash": "dBOjLArgUBFRti+GJtOZfqCFtRP7IY0o79FZIpu9JeRpZcbRNYMzrFZVEujGarj0Lc7TIZGmZBG3gOg1T2SxdA==",
         "dependencies": {
-          "Testably.Abstractions.FileSystem.Interface": "10.1.0"
+          "Testably.Abstractions.FileSystem.Interface": "10.2.0"
         }
       },
       "ViciOne.Core.Contracts": {
@@ -389,7 +389,7 @@
           "Serilog.Sinks.File": "[7.0.0, )",
           "Serilog.Sinks.Journal": "[1.2.0, )",
           "Serilog.Sinks.SyslogMessages": "[4.1.0, )",
-          "Testably.Abstractions": "[10.1.0, )",
+          "Testably.Abstractions": "[10.2.0, )",
           "ViciOne.ManagedEngine.CommunicationContracts": "[1.0.0, )"
         }
       },
@@ -404,7 +404,7 @@
           "Serilog.Extensions.Hosting": "[10.0.0, )",
           "Serilog.Settings.Configuration": "[10.0.0, )",
           "Serilog.Sinks.Console": "[6.1.1, )",
-          "Testably.Abstractions": "[10.1.0, )",
+          "Testably.Abstractions": "[10.2.0, )",
           "ViciOne.Engine.DefaultPoolings": "[1.0.0, )",
           "ViciOne.ManagedEngine": "[1.0.0, )",
           "ViciOne.ManagedEngine.CommunicationProviders": "[1.0.0, )",
@@ -415,7 +415,7 @@
         "type": "Project",
         "dependencies": {
           "Microsoft.Extensions.DependencyModel": "[10.0.7, )",
-          "Testably.Abstractions": "[10.1.0, )"
+          "Testably.Abstractions": "[10.2.0, )"
         }
       },
       "Microsoft.Extensions.DependencyModel": {
@@ -598,11 +598,11 @@
       },
       "Testably.Abstractions": {
         "type": "CentralTransitive",
-        "requested": "[10.1.0, )",
-        "resolved": "10.1.0",
-        "contentHash": "8hjpc/vjNNJpHYrcuZTfKkcojS+pwyQtviTFdVBedqGOMlCrG+X2CjY2lW+ZavDYlw3TCi7zrMVqW674PkAqVQ==",
+        "requested": "[10.2.0, )",
+        "resolved": "10.2.0",
+        "contentHash": "D+10h2+8yOyZynYhmf9tvteavTJJ+x4u5O329qTfKswkVqOzIbPx6sT9NfdTTafoMkNEyPRgZdNQxIWC7Sytug==",
         "dependencies": {
-          "Testably.Abstractions.Interface": "10.1.0"
+          "Testably.Abstractions.Interface": "10.2.0"
         }
       },
       "ViciOne.Engine.DefaultPoolings": {

@@ -533,7 +533,7 @@
         "type": "Project",
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "[10.0.7, )",
-          "Testably.Abstractions": "[10.1.0, )",
+          "Testably.Abstractions": "[10.2.0, )",
           "Testably.Abstractions.Testing": "[6.2.0, )"
         }
       },
@@ -552,7 +552,7 @@
           "Serilog.Sinks.File": "[7.0.0, )",
           "Serilog.Sinks.Journal": "[1.2.0, )",
           "Serilog.Sinks.SyslogMessages": "[4.1.0, )",
-          "Testably.Abstractions": "[10.1.0, )",
+          "Testably.Abstractions": "[10.2.0, )",
           "ViciOne.ManagedEngine.CommunicationContracts": "[1.0.0, )"
         }
       },
@@ -567,7 +567,7 @@
           "Serilog.Extensions.Hosting": "[10.0.0, )",
           "Serilog.Settings.Configuration": "[10.0.0, )",
           "Serilog.Sinks.Console": "[6.1.1, )",
-          "Testably.Abstractions": "[10.1.0, )",
+          "Testably.Abstractions": "[10.2.0, )",
           "ViciOne.Engine.DefaultPoolings": "[1.0.0, )",
           "ViciOne.ManagedEngine": "[1.0.0, )",
           "ViciOne.ManagedEngine.CommunicationProviders": "[1.0.0, )",
@@ -578,7 +578,7 @@
         "type": "Project",
         "dependencies": {
           "Microsoft.Extensions.DependencyModel": "[10.0.7, )",
-          "Testably.Abstractions": "[10.1.0, )"
+          "Testably.Abstractions": "[10.2.0, )"
         }
       },
       "Microsoft.Extensions.DependencyModel": {
@@ -761,11 +761,11 @@
       },
       "Testably.Abstractions": {
         "type": "CentralTransitive",
-        "requested": "[10.1.0, )",
-        "resolved": "10.1.0",
-        "contentHash": "8hjpc/vjNNJpHYrcuZTfKkcojS+pwyQtviTFdVBedqGOMlCrG+X2CjY2lW+ZavDYlw3TCi7zrMVqW674PkAqVQ==",
+        "requested": "[10.2.0, )",
+        "resolved": "10.2.0",
+        "contentHash": "D+10h2+8yOyZynYhmf9tvteavTJJ+x4u5O329qTfKswkVqOzIbPx6sT9NfdTTafoMkNEyPRgZdNQxIWC7Sytug==",
         "dependencies": {
-          "Testably.Abstractions.Interface": "10.1.0"
+          "Testably.Abstractions.Interface": "10.2.0"
         }
       },
       "Testably.Abstractions.Testing": {
