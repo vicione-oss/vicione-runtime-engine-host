@@ -177,6 +177,7 @@ sequenceDiagram
 |   .pre  | **Get version**               |    run    |       run      |      run      |    run    |
 |   .pre  | **Restore**                   |    run    |       run      |      run      |    run    |
 |  build  | **Build**                     |    run    |       run      |      run      |    run    |
+|   test  | **Dependency scanning**       | not added |       run      |      run      |    run    |
 |   test  | **Test**                      | not added |       run      |      run      |    run    |
 |   test  | **Lint Markdown**             | not added |       run      |      run      |    run    |
 |   pack  | **Pack NuGet**                |    run    |     manual     |     manual    |   manual  |

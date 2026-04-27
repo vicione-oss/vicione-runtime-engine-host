@@ -41,7 +41,7 @@ include:
         - dotnet nuget update source JFrogNuGetProxy --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
   - component: $CI_SERVER_FQDN/components/dependency-scanning/main@1.1
     inputs:
-      job_name: dependency-scanning
+      job_name: Dependency scanning
   - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-test@2
     inputs:
       image: ${IMAGE_NAME}
@@ -88,8 +88,9 @@ include:
       before_script:
        - dotnet nuget update source JFrogViciOne --configfile NuGet.Config -u $NuGet_User_RW_JFrog -p $NuGet_PW_RW_JFrog --store-password-in-clear-text
 
-dependency-scanning:
+Dependency scanning:
   dependencies: [] # do not download any artifacts from previous stages, as the scanner should run only on the source code
+  rules: *rules_not_tags
 
 Lint Markdown:
   extends: .dotnet-test-xunit
