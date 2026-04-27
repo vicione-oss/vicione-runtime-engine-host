@@ -16,17 +16,17 @@
       },
       "Microsoft.Extensions.TimeProvider.Testing": {
         "type": "Direct",
-        "requested": "[10.4.0, )",
-        "resolved": "10.4.0",
-        "contentHash": "uJ8n9WUEzux9I2CjZh7imGBgZadfwhAKlxuBq7GsNGL8FJF81aHXAYaRMnwW+9EvRFQNytu7xo1ffeuuTncAzg=="
+        "requested": "[10.5.0, )",
+        "resolved": "10.5.0",
+        "contentHash": "BW6DXn0oZWfoEN9cb+3PcM2IBHqcTnsO+UqEhW+uzdEuZSY3C9i9ITKoLiYbS8JwWm6daTpa4kRikUwr3KD+qQ=="
       },
       "Microsoft.Testing.Extensions.CodeCoverage": {
         "type": "Direct",
-        "requested": "[18.5.2, )",
-        "resolved": "18.5.2",
-        "contentHash": "UNcGLx9pVtlXF8MPDR8KDp+/OKKNIJjpzwRyZSt609TSGvaD8mtuQMb5GKZvhMucPp0a5Juvn3kxXDceQZWmAg==",
+        "requested": "[18.6.2, )",
+        "resolved": "18.6.2",
+        "contentHash": "vRDhB96XQyVdYFp4cQZOMz/lx0okfCdzTXPxGiuFhKx2yUL0FT/skTpnTv+7x13+tjNOcT39i2Ln3BYtslzf2w==",
         "dependencies": {
-          "Microsoft.DiaSymReader": "2.2.3",
+          "Microsoft.DiaSymReader": "2.2.5",
           "Microsoft.Extensions.DependencyModel": "8.0.2",
           "Microsoft.Testing.Platform": "2.1.0"
         }
@@ -87,8 +87,8 @@
       },
       "Microsoft.DiaSymReader": {
         "type": "Transitive",
-        "resolved": "2.2.3",
-        "contentHash": "bhwzJfzyiJM0nXJyNB7Y9OfsEXyxLdDBHG99soIp5JjnPydwkOaBdRCtRtWgQh3noSLi2cSIZ/wpbHNNE9knxQ=="
+        "resolved": "2.2.5",
+        "contentHash": "Cq0DLpL8oQmXX3EUCClAYWDBy7Nf3Km6kmUw/eYWlYcTeC3g3Nekd/Z/ldsiy+Oi3xboanlQV9oaVCkgdLEhOQ=="
       },
       "Microsoft.Extensions.Configuration": {
         "type": "Transitive",
@@ -406,15 +406,15 @@
       },
       "Testably.Abstractions.FileSystem.Interface": {
         "type": "Transitive",
-        "resolved": "10.1.0",
-        "contentHash": "0R+m7DvS2QuDcFOfDGtyGErRrgXOl4/z2tbNLX2RfvlYJjlVcKG+wMIBfZO8vxGtTNwNxffTG4ibFRwd0jkM7w=="
+        "resolved": "10.2.0",
+        "contentHash": "ghs49+4Z93PJ/BGCH55iDZU9937AVlOPjGEfh7HxsyielugBTy2dECbEQ59D3Y5wkZbR0mkn0xjvdK0RnGj5wg=="
       },
       "Testably.Abstractions.Interface": {
         "type": "Transitive",
-        "resolved": "10.1.0",
-        "contentHash": "syfu5XadpGDjhDWTh1vh/6HUFgamCaU1KhRwsHk6HyMeJLz5Jncm99H87NiEO73JihQ7yE3APlEbAXjlMyKBSg==",
+        "resolved": "10.2.0",
+        "contentHash": "dBOjLArgUBFRti+GJtOZfqCFtRP7IY0o79FZIpu9JeRpZcbRNYMzrFZVEujGarj0Lc7TIZGmZBG3gOg1T2SxdA==",
         "dependencies": {
-          "Testably.Abstractions.FileSystem.Interface": "10.1.0"
+          "Testably.Abstractions.FileSystem.Interface": "10.2.0"
         }
       },
       "ViciOne.Core.Contracts": {
@@ -534,7 +534,7 @@
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "[10.0.5, )",
           "Testably.Abstractions": "[10.1.0, )",
-          "Testably.Abstractions.Testing": "[5.3.1, )"
+          "Testably.Abstractions.Testing": "[6.2.0, )"
         }
       },
       "ViciOne.ManagedEngine.CommunicationContracts": {
@@ -770,12 +770,12 @@
       },
       "Testably.Abstractions.Testing": {
         "type": "CentralTransitive",
-        "requested": "[5.3.1, )",
-        "resolved": "5.3.1",
-        "contentHash": "tt8EUKoNfKiDmrUTh1CpLbusMaYCLBmXWHT5eqoJV8YokzYoG1IA/KKo3Gx1tM6sTWSnvzgmqi6NsFQN1gSLYg==",
+        "requested": "[6.2.0, )",
+        "resolved": "6.2.0",
+        "contentHash": "g6RfzgclFvo74mgAFxiQMGgvDCgT/rJhv4Llm5sjLn747Apa/X0+it/ZiqnT7pcOJ/O4zC8Qv9aLW58Ry8teaw==",
         "dependencies": {
           "DotNet.Glob": "3.1.3",
-          "Testably.Abstractions.Interface": "10.1.0"
+          "Testably.Abstractions.Interface": "[10.2.0, 10.3.0)"
         }
       },
       "ViciOne.Engine.DefaultPoolings": {

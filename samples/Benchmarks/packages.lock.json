@@ -4,9 +4,9 @@
     "net10.0": {
       "BenchmarkDotNet.Extensions": {
         "type": "Direct",
-        "requested": "[1.1.1, )",
-        "resolved": "1.1.1",
-        "contentHash": "vBbNRpjA6TOTYJFj62h1SYRJvfmo4tWWFZ7ptLE+MvIYaRcLxokPQT7TGhRF+sUh1zgtKkrGU3z+t7Ar33lMvg==",
+        "requested": "[1.2.0, )",
+        "resolved": "1.2.0",
+        "contentHash": "t9atBbSyO9ofcECsFI50zi3Q0I9N1W1h6di8nnv0wXbphKmUTWSJ7FMy83D85ORuHbcr1ZsJz8wLgo2H8B3ghQ==",
         "dependencies": {
           "BenchmarkDotNet": "0.15.8"
         }
@@ -28,9 +28,9 @@
       },
       "System.CommandLine": {
         "type": "Direct",
-        "requested": "[2.0.5, )",
-        "resolved": "2.0.5",
-        "contentHash": "2XtWAPk1G6arpe3OCFNrYYuf6iIboznxs2elJSGgd8e0euou7LfGYFon6hBEfDWNtOLr0M3+oUVgy1a5EGa41A=="
+        "requested": "[2.0.7, )",
+        "resolved": "2.0.7",
+        "contentHash": "ih4yNLLF2Ebz85xJJBaPeddLa4d1AekYId7Y1g8oSsEaBHHd/CtyeBJ+tDvQadqeXz7i591K5ry/td+4aaHnQA=="
       },
       "BenchmarkDotNet": {
         "type": "Transitive",
