@@ -4,6 +4,15 @@
 
 ### Changed
 
+- Update `OpenTelemetry.Exporter.OpenTelemetryProtocol` to `1.15.3`
+- Update `OpenTelemetry.Extensions.Hosting` to `1.15.3`
+- Update `OpenTelemetry.Instrumentation.Runtime` to `1.15.1`
+- Update `Microsoft.Extensions.DependencyModel` to `10.0.7`
+- Update `Microsoft.Extensions.Hosting` to `10.0.7`
+- Update `Microsoft.Extensions.Logging.Abstractions` to `10.0.7`
+- Update `Microsoft.Extensions.Logging.Configuration` to `10.0.7`
+- Update `Serilog.Sinks.Journal` to `1.2.0`
+- Update `Testably.Abstractions` to `10.2.0`
 - Update `NuGet.Commands` to `7.3.1`
 
 ## 1.0.0 - 2026-03-18
