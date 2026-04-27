@@ -4,6 +4,9 @@
 
 ### Changed
 
+- Update `OpenTelemetry.Exporter.OpenTelemetryProtocol` to `1.15.3`
+- Update `OpenTelemetry.Extensions.Hosting` to `1.15.3`
+- Update `OpenTelemetry.Instrumentation.Runtime` to `1.15.1`
 - Update `NuGet.Commands` to `7.3.1`
 
 ## 1.0.0 - 2026-03-18
