@@ -550,7 +550,7 @@
           "Microsoft.Extensions.Logging.Configuration": "[10.0.7, )",
           "Serilog.Extensions.Logging": "[10.0.0, )",
           "Serilog.Sinks.File": "[7.0.0, )",
-          "Serilog.Sinks.Journal": "[1.1.0, )",
+          "Serilog.Sinks.Journal": "[1.2.0, )",
           "Serilog.Sinks.SyslogMessages": "[4.1.0, )",
           "Testably.Abstractions": "[10.1.0, )",
           "ViciOne.ManagedEngine.CommunicationContracts": "[1.0.0, )"
@@ -740,9 +740,9 @@
       },
       "Serilog.Sinks.Journal": {
         "type": "CentralTransitive",
-        "requested": "[1.1.0, )",
-        "resolved": "1.1.0",
-        "contentHash": "9a2bKDkW8/EyIhxlv2CyacAU4CQJt9ms4MNE63EMXqUekKoKOZkvo2shOKWCGQjEGL59z6mwWNUpRbuTwInD5Q==",
+        "requested": "[1.2.0, )",
+        "resolved": "1.2.0",
+        "contentHash": "IabCUZnUZVtFYP4AVzB0ujic/k0zEGHy8/SSTcFKW40H6M8ORzNB3O1e/tJBf+ZkonN93kgtMJycVWnsWALbXw==",
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "10.0.3",
           "Microsoft.Extensions.Logging.Configuration": "10.0.3",

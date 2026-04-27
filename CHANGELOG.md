@@ -11,6 +11,7 @@
 - Update `Microsoft.Extensions.Hosting` to `10.0.7`
 - Update `Microsoft.Extensions.Logging.Abstractions` to `10.0.7`
 - Update `Microsoft.Extensions.Logging.Configuration` to `10.0.7`
+- Update `Serilog.Sinks.Journal` to `1.2.0`
 - Update `NuGet.Commands` to `7.3.1`
 
 ## 1.0.0 - 2026-03-18
