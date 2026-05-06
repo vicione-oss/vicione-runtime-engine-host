@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Runtime.Loader;
 using System.Security.Cryptography;
 using System.Text;
@@ -122,11 +123,33 @@ internal sealed class ContextPool : IContextPool, IDisposable
 
     private void UnloadContext(string deploymentId, string contextId, AssemblyLoadContext context)
     {
+        var nativeHandles = context is PackagesAssemblyLoadContext p
+            ? p.DetachNativeHandles()
+            : [];
+
         context.Unload();
+
         AssemblyLoadContextObserver.Observe(context,
-            () => _logger.ContextIsStillAlive(LogLevel.Information, contextId, deploymentId),
-            () => _logger.ContextIsStillAlive(LogLevel.Warning, contextId, deploymentId),
-            () => _logger.ContextIsUnloaded(contextId, deploymentId));
+            logEarly: () => _logger.ContextIsStillAlive(LogLevel.Information, contextId, deploymentId),
+            logLate: () => _logger.ContextIsStillAlive(LogLevel.Warning, contextId, deploymentId),
+            logUnloaded: () => _logger.ContextIsUnloaded(contextId, deploymentId),
+            onUnloaded: () => FreeNativeHandles(nativeHandles, contextId),
+            logLeaked: () => _logger.ContextLeakedNativeHandlesNotFreed(contextId));
+    }
+
+    private void FreeNativeHandles(IntPtr[] handles, string contextId)
+    {
+        foreach (var h in handles)
+        {
+            try
+            {
+                NativeLibrary.Free(h);
+            }
+            catch (Exception ex)
+            {
+                _logger.FreeNativeLibraryFailed(ex, contextId);
+            }
+        }
     }
 
     internal static string GetUniqueHash(IReadOnlyCollection<PackageReference> packageReferences)
@@ -154,11 +177,22 @@ internal sealed class ContextPool : IContextPool, IDisposable
 
     public void Dispose()
     {
-        foreach (var (_, contextInfo) in _contexts)
-            contextInfo.Context.Unload();
+        ContextInfo[] snapshot;
+        _mutex.Wait();
+        try
+        {
+            snapshot = _contexts.Values.ToArray();
+            _contexts.Clear();
+            _deploymentContextMap.Clear();
+        }
+        finally { _mutex.Release(); }
 
-        _contexts.Clear();
-        _deploymentContextMap.Clear();
+        foreach (var ci in snapshot)
+        {
+            try { ci.Context.Unload(); }
+            catch (InvalidOperationException) { /* already unloading */ }
+        }
+
         _mutex.Dispose();
     }
 

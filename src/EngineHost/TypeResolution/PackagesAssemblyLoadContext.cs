@@ -14,7 +14,7 @@ internal sealed class PackagesAssemblyLoadContext : AssemblyLoadContext, IAssemb
 {
     private readonly ConcurrentDictionary<string, Assembly?> _managedAssembliesCache = [];
     private readonly ConcurrentDictionary<string, IntPtr> _unmanagedAssembliesCache = [];
-    private readonly Stack<IntPtr> _unmanagedAssemblies = new();
+    private readonly ConcurrentStack<IntPtr> _unmanagedAssemblies = new();
     private readonly IEnumerable<string> _sharedAssemblies;
     private readonly ILogger<PackagesAssemblyLoadContext> _logger;
     private readonly Dictionary<string, AssemblyDependencyResolver> _resolverMap;
@@ -33,24 +33,15 @@ internal sealed class PackagesAssemblyLoadContext : AssemblyLoadContext, IAssemb
         _name = engine;
         _fileSystem = fileSystem;
         _resolverMap = GetResolverMap(files);
+    }
 
-        Unloading += _ =>
-        {
-            _managedAssembliesCache.Clear();
-            _unmanagedAssembliesCache.Clear();
-
-            while (_unmanagedAssemblies.Count != 0)
-            {
-                try
-                {
-                    _loadContextMethods.FreeNativeLibrary(_unmanagedAssemblies.Pop());
-                }
-                catch (Exception ex)
-                {
-                    _logger.FreeNativeAssemblyFailed(ex, _name);
-                }
-            }
-        };
+    /// <remarks>Must be called before <c>Unload()</c> to transfer ownership of native handles to the caller.</remarks>
+    internal IntPtr[] DetachNativeHandles()
+    {
+        var snapshot = _unmanagedAssemblies.ToArray();
+        _unmanagedAssemblies.Clear();
+        _unmanagedAssembliesCache.Clear();
+        return snapshot;
     }
 
     internal static Dictionary<string, AssemblyDependencyResolver> GetResolverMap(List<(string Filename, string ComponentName)> files)

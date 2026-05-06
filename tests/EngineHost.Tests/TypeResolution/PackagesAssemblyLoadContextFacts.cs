@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using AwesomeAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -233,5 +234,115 @@ public class PackagesAssemblyLoadContext_GetResolverMap
 
         map.Should().HaveCount(3);
         map["Assembly1"].Should().Be(map["Assembly2"]).And.NotBe(map["Assembly3"]);
+    }
+}
+
+public class PackagesAssemblyLoadContext_DetachNativeHandles
+{
+    [Fact]
+    public void Returns_pushed_handles_and_clears_state()
+    {
+        var loadContextMethods = Substitute.For<ILoadContextMethods>();
+        TestLogger<PackagesAssemblyLoadContext> logger = new();
+        using TemporaryDirectory directory = new();
+        directory.CreateDirectory("Component1");
+        var file1 = directory.CreateFile("Component1", "libA");
+        var file2 = directory.CreateFile("Component1", "libB");
+        loadContextMethods.TryLoadNativeLibrary(Arg.Any<string>(), out Arg.Any<nint>())
+            .Returns(c =>
+            {
+                c[1] = (IntPtr)42;
+                return true;
+            }, c =>
+            {
+                c[1] = (IntPtr)84;
+                return true;
+            });
+        var context = new PackagesAssemblyLoadContext("my-engine", [], logger,
+            [
+                ("libA", file1),
+                ("libB", file2),
+            ], directory.FileSystem, loadContextMethods);
+
+        ((IAssemblyLoadContext)context).LoadUnmanagedDll("libA");
+        ((IAssemblyLoadContext)context).LoadUnmanagedDll("libB");
+
+        var handles = context.DetachNativeHandles();
+
+        handles.Should().HaveCount(2);
+        handles.Should().Contain(42);
+        handles.Should().Contain(84);
+
+        // After detach, loading again should re-resolve
+        loadContextMethods.TryLoadNativeLibrary(Arg.Any<string>(), out Arg.Any<nint>())
+            .Returns(c =>
+            {
+                c[1] = (IntPtr)99;
+                return true;
+            });
+        var result = ((IAssemblyLoadContext)context).LoadUnmanagedDll("libA");
+        result.Should().Be(99);
+    }
+
+    [Fact]
+    public void Constructor_does_not_subscribe_to_Unloading()
+    {
+        var loadContextMethods = Substitute.For<ILoadContextMethods>();
+        TestLogger<PackagesAssemblyLoadContext> logger = new();
+        using TemporaryDirectory directory = new();
+        directory.CreateDirectory("Component1");
+        var file = directory.CreateFile("Component1", "libA");
+        loadContextMethods.TryLoadNativeLibrary(Arg.Any<string>(), out Arg.Any<nint>())
+            .Returns(c =>
+            {
+                c[1] = (IntPtr)42;
+                return true;
+            });
+        var context = new PackagesAssemblyLoadContext("my-engine", [], logger,
+            [
+                ("libA", file),
+            ], directory.FileSystem, loadContextMethods);
+
+        ((IAssemblyLoadContext)context).LoadUnmanagedDll("libA");
+        context.Unload();
+
+        loadContextMethods.DidNotReceive().FreeNativeLibrary(Arg.Any<IntPtr>());
+    }
+
+    [Fact]
+    public void LoadUnmanagedDll_is_thread_safe()
+    {
+        var loadContextMethods = Substitute.For<ILoadContextMethods>();
+        TestLogger<PackagesAssemblyLoadContext> logger = new();
+        using TemporaryDirectory directory = new();
+        directory.CreateDirectory("Component1");
+
+        const int Count = 100;
+        var files = new List<(string, string)>();
+        for (var i = 0; i < Count; i++)
+        {
+            var name = $"lib{i}";
+            var file = directory.CreateFile("Component1", name);
+            files.Add((name, file));
+        }
+
+        var counter = 0;
+        loadContextMethods.TryLoadNativeLibrary(Arg.Any<string>(), out Arg.Any<nint>())
+            .Returns(c =>
+            {
+                var val = System.Threading.Interlocked.Increment(ref counter);
+                c[1] = (IntPtr)val;
+                return true;
+            });
+
+        var context = new PackagesAssemblyLoadContext("my-engine", [], logger, files, directory.FileSystem, loadContextMethods);
+
+        Parallel.For(0, Count, i =>
+        {
+            ((IAssemblyLoadContext)context).LoadUnmanagedDll($"lib{i}");
+        });
+
+        var handles = context.DetachNativeHandles();
+        handles.Should().HaveCount(Count);
     }
 }

@@ -4,6 +4,7 @@
 
 ### Changed
 
+- Native library handles are now freed only after the owning AssemblyLoadContext is confirmed collected, preventing use-after-free crashes
 - Update `OpenTelemetry.Exporter.OpenTelemetryProtocol` to `1.15.3`
 - Update `OpenTelemetry.Extensions.Hosting` to `1.15.3`
 - Update `OpenTelemetry.Instrumentation.Runtime` to `1.15.1`

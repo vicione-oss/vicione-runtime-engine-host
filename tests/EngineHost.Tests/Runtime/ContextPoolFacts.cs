@@ -417,3 +417,24 @@ internal sealed class ContextPoolContext : IDisposable
 
     public void Dispose() => ContextPool.Dispose();
 }
+
+public sealed class ContextPool_Dispose
+{
+    [Fact]
+    [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Dispose is the method under test.")]
+    public void Is_safe_when_a_context_is_already_unloading()
+    {
+        var config = Substitute.For<IOptions<HostConfig>>();
+        DirectoryMock directory = new();
+        config.Value.Returns(new HostConfig { DeploymentsDirectory = directory.Path, });
+        var pool = new ContextPool(config, Substitute.For<ILoggerFactory>(), directory.FileSystem, new TestLogger<ContextPool>());
+
+        AssemblyLoadContext context = new("context-already-unloading", true);
+        pool._contexts.Add("ctx1", new() { Context = context, ConsumerCount = 1, });
+        context.Unload();
+
+        var act = () => pool.Dispose();
+
+        act.Should().NotThrow();
+    }
+}

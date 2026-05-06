@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 namespace ViciOne.ManagedEngine.TypeResolution;
 
@@ -32,7 +31,4 @@ internal static partial class PackagesAssemblyLoadContextLog
     [LoggerMessage(7, LogLevel.Debug, "{Context}: Load native assembly '{Assembly}' from cache.{StackTrace}")]
     internal static partial void LoadNativeAssemblyFromCache(this ILogger<PackagesAssemblyLoadContext> logger,
         string context, string assembly, string stackTrace);
-
-    [LoggerMessage(10, LogLevel.Warning, "{Context}: Cannot free a native assembly.")]
-    internal static partial void FreeNativeAssemblyFailed(this ILogger<PackagesAssemblyLoadContext> logger, Exception exception, string context);
 }
