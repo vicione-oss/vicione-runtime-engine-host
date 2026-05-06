@@ -129,7 +129,7 @@ internal sealed class ContextPool : IContextPool, IDisposable
 
         context.Unload();
 
-        AssemblyLoadContextObserver.Observe(context,
+        _ = AssemblyLoadContextObserver.Observe(context,
             logEarly: () => _logger.ContextIsStillAlive(LogLevel.Information, contextId, deploymentId),
             logLate: () => _logger.ContextIsStillAlive(LogLevel.Warning, contextId, deploymentId),
             logUnloaded: () => _logger.ContextIsUnloaded(contextId, deploymentId),
