@@ -35,19 +35,24 @@ include:
   - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-build@2
     inputs:
       image: ${IMAGE_NAME}
-      rules: *rules_always
+      rules:
+        - if: "$CI_COMMIT_TAG"
       before_script:
         # Aspire.AppHost.Sdk gets restored during build and not during restore
         - dotnet nuget update source JFrogNuGetProxy --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
-  - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-test@2
+  - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-artifacts@2
     inputs:
       image: ${IMAGE_NAME}
+      name: Build+Test
+      stage: test
       rules: *rules_not_tags
       before_script:
         # necessary to be able to pass tests in PackageResolvers.NuGet.Tests
         - dotnet nuget update source JFrogNuGetProxy --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
-        - dotnet nuget remove source JFrogViciOne
-      coverage: true
+        - dotnet nuget update source JFrogViciOne --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
+      build: true
+      test: true
+      test_coverage: true
   - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-pack@2
     inputs:
       image: ${IMAGE_NAME}
@@ -83,7 +88,7 @@ include:
           allow_failure: true
       source: 'JFrogViciOne'
       before_script:
-       - dotnet nuget update source JFrogViciOne --configfile NuGet.Config -u $NuGet_User_RW_JFrog -p $NuGet_PW_RW_JFrog --store-password-in-clear-text
+        - dotnet nuget update source JFrogViciOne --configfile NuGet.Config -u $NuGet_User_RW_JFrog -p $NuGet_PW_RW_JFrog --store-password-in-clear-text
 
 Lint Markdown:
   extends: .dotnet-test-xunit
