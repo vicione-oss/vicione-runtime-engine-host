@@ -6,7 +6,7 @@ using System.Threading;
 namespace ViciOne.ManagedEngine.Runtime;
 
 [SupportedOSPlatform("linux")]
-internal partial class TimerFd : IDisposable
+internal sealed partial class TimerFd : IDisposable
 {
     private readonly SafeFdHandle _handle;
 

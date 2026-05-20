@@ -28,7 +28,7 @@ public sealed class MqttRuntimeFunctionProvider_
     {
         await using ConstructorProviderFactory providerFactory = new();
 
-        var instance = providerFactory.CreateRuntimeFunctionProvider(
+        using var instance = providerFactory.CreateRuntimeFunctionProvider(
             Substitute.For<IRuntimeFunctionHandler>(),
             new MqttCommunication { Host = "localhost", },
             Substitute.For<ILoggerFactory>(),

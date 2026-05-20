@@ -5,7 +5,7 @@ using Microsoft.Win32.SafeHandles;
 
 namespace ViciOne.ManagedEngine.Runtime;
 
-internal partial class TimerFd
+internal sealed partial class TimerFd
 {
     private enum ClockId : int
     {

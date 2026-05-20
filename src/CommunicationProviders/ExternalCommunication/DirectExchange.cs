@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ViciOne.ManagedEngine.ExternalCommunication;
 
-internal class DirectExchange : IDisposable
+internal sealed class DirectExchange : IDisposable
 {
     public static DirectExchange Instance = new();
 
