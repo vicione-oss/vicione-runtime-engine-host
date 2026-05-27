@@ -45,6 +45,7 @@ internal sealed class MqttPipelineCommunicationAdapter(IOptions<HostConfig> conf
         if (_server is not null)
         {
             await _server.Stop().ConfigureAwait(false);
+            _server.Dispose();
             _server = null;
         }
     }

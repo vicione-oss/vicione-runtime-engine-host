@@ -15,7 +15,7 @@ using ViciOne.ManagedEngine.TypeResolution;
 
 namespace ViciOne.ManagedEngine.Runtime;
 
-internal class ContextPool : IContextPool, IDisposable
+internal sealed class ContextPool : IContextPool, IDisposable
 {
     internal static readonly string[] s_preloadAssemblies =
     [

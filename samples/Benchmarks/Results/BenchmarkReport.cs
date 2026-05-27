@@ -53,7 +53,7 @@ internal static class BenchmarkReport
         {
             UseShellExecute = true,
         };
-        var editor = Process.Start(editorStartInfo);
+        using var editor = Process.Start(editorStartInfo);
         if (editor is not null)
             await editor.WaitForExitAsync();
         Dictionary<string, string> inputs = [];
