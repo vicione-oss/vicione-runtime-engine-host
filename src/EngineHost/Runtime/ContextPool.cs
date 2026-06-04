@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Loader;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -127,7 +128,7 @@ internal sealed class ContextPool : IContextPool, IDisposable
             ? p.DetachNativeHandles()
             : [];
 
-        context.Unloading += _ => ClearJsonSerializerOptionsCache(); // it is called after other handlers
+        context.Unloading += _ => ClearJsonSerializerCache(); // it is called after other handlers
         context.Unload();
 
         _ = AssemblyLoadContextObserver.Observe(context,
@@ -136,6 +137,19 @@ internal sealed class ContextPool : IContextPool, IDisposable
             logUnloaded: () => _logger.ContextIsUnloaded(contextId, deploymentId),
             onUnloaded: () => FreeNativeHandles(nativeHandles, contextId),
             logLeaked: () => _logger.ContextLeakedNativeHandlesNotFreed(contextId));
+    }
+
+    private void ClearJsonSerializerCache()
+    {
+        try
+        {
+            JsonSerializerOptions.Default.ClearCaches();
+            JsonMemberAccessor.ClearCache();
+        }
+        catch
+        {
+            _logger.ClearJsonSerializerCacheFailed();
+        }
     }
 
     private void FreeNativeHandles(IntPtr[] handles, string contextId)

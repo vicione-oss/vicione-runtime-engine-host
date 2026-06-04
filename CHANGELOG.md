@@ -6,6 +6,8 @@
 
 - Native library handles are now freed only after the owning AssemblyLoadContext is confirmed collected, preventing use-after-free crashes
 - Cache `JsonSerializerOptions` per deployment to avoid using the default instance which is shared with the host
+- Clear `JsonSerializer` caches on context unload to prevent memory leaks from unloaded assemblies
+- Progressive GC collection on context unload to speed up memory cleanup
 - Update `OpenTelemetry.Exporter.OpenTelemetryProtocol` to `1.15.3`
 - Update `OpenTelemetry.Extensions.Hosting` to `1.15.3`
 - Update `OpenTelemetry.Instrumentation.Runtime` to `1.15.1`

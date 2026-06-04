@@ -28,4 +28,7 @@ internal static partial class ContextPoolLog
 
     [LoggerMessage(10, LogLevel.Warning, "Context '{ContextId}': Cannot free a native library.")]
     internal static partial void FreeNativeLibraryFailed(this ILogger<ContextPool> logger, Exception exception, string contextId);
+
+    [LoggerMessage(11, LogLevel.Warning, "Failed to clear JsonSerializer cache, this might lead to increased memory usage until the process is recycled.")]
+    internal static partial void ClearJsonSerializerCacheFailed(this ILogger<ContextPool> logger);
 }
