@@ -32,7 +32,7 @@ public class DeploymentsService_StartingAsync
         var deploymentsDirectory = tempDirectory.FileSystem.Path.Combine(tempDirectory.Path, Guid.NewGuid().ToString());
         options.Value.Returns(new HostConfig { DeploymentsDirectory = deploymentsDirectory, });
 
-        DeploymentsService service = new(options, deploymentPool, contextPool, engineChain, mediator, logger, tempDirectory.FileSystem);
+        DeploymentsService service = new(options, deploymentPool, contextPool, engineChain, mediator, logger, tempDirectory.FileSystem, new());
 
         await service.StartingAsync(CancellationToken.None);
 
@@ -61,7 +61,7 @@ public class DeploymentsService_StartAsync
         });
         options.Value.Returns(new HostConfig { DeploymentsDirectory = deployment.Path, });
 
-        DeploymentsService service = new(options, deploymentPool, contextPool, engineChain, mediator, logger, deployment.FileSystem);
+        DeploymentsService service = new(options, deploymentPool, contextPool, engineChain, mediator, logger, deployment.FileSystem, new());
 
         await service.StartAsync(CancellationToken.None);
 
@@ -92,7 +92,7 @@ public class DeploymentsService_StartAsync
         deployment.WriteStartParameter();
         options.Value.Returns(new HostConfig { DeploymentsDirectory = deployment.Path, });
 
-        DeploymentsService service = new(options, deploymentPool, contextPool, engineChain, mediator, logger, deployment.FileSystem);
+        DeploymentsService service = new(options, deploymentPool, contextPool, engineChain, mediator, logger, deployment.FileSystem, new());
 
         await service.StartAsync(CancellationToken.None);
 
@@ -122,7 +122,7 @@ public class DeploymentsService_StopAsync
         var id = Guid.NewGuid().ToString();
         deploymentPool.GetStartedDeployments().Returns([id,]);
 
-        DeploymentsService service = new(options, deploymentPool, contextPool, engineChain, mediator, logger, fileSystem);
+        DeploymentsService service = new(options, deploymentPool, contextPool, engineChain, mediator, logger, fileSystem, new());
 
         await service.StopAsync(CancellationToken.None);
 
@@ -150,7 +150,7 @@ public class DeploymentsService_StopAsync
         mediator.Send<StopEngine, bool>(Arg.Is<StopEngine>(r => r.DeploymentIdentifier == id1), Arg.Any<CancellationToken>())
             .ThrowsAsync(new InvalidOperationException("Pipeline failed."));
 
-        DeploymentsService service = new(options, deploymentPool, contextPool, engineChain, mediator, logger, fileSystem);
+        DeploymentsService service = new(options, deploymentPool, contextPool, engineChain, mediator, logger, fileSystem, new());
 
         await service.StopAsync(CancellationToken.None);
 

@@ -199,6 +199,6 @@ internal sealed class DeploymentPoolContext
         Deployment.PlaceAssemblies();
         Config = Substitute.For<IOptions<HostConfig>>();
         Config.Value.Returns(new HostConfig { DeploymentsDirectory = Deployment.Path, });
-        EnginePool = new(Config, Deployment.FileSystem);
+        EnginePool = new(Config, Deployment.FileSystem, new());
     }
 }

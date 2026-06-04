@@ -127,6 +127,7 @@ internal sealed class ContextPool : IContextPool, IDisposable
             ? p.DetachNativeHandles()
             : [];
 
+        context.Unloading += _ => ClearJsonSerializerOptionsCache(); // it is called after other handlers
         context.Unload();
 
         _ = AssemblyLoadContextObserver.Observe(context,

@@ -18,7 +18,8 @@ internal class DeploymentsService(
     IEngineChain engineChain,
     IMediator mediator,
     ILogger<DeploymentsService> logger,
-    IFileSystem fileSystem) : IHostedLifecycleService
+    IFileSystem fileSystem,
+    JsonSerializerOptionsCache jsonSerializerOptionsCache) : IHostedLifecycleService
 {
     private readonly IFileSystem _fileSystem = fileSystem;
     private readonly HostConfig _config = options.Value;
@@ -27,6 +28,7 @@ internal class DeploymentsService(
     private readonly IEngineChain _engineChain = engineChain;
     private readonly IMediator _mediator = mediator;
     private readonly ILogger<DeploymentsService> _logger = logger;
+    private readonly JsonSerializerOptionsCache _jsonSerializerOptionsCache = jsonSerializerOptionsCache;
 
     public Task StartingAsync(CancellationToken cancellationToken)
     {
@@ -62,7 +64,7 @@ internal class DeploymentsService(
     {
         try
         {
-            var deployParameter = await DirectoryDeployment.ReadDeployParameter(_config.DeploymentsDirectory, deploymentIdentifier, _fileSystem, cancellationToken).ConfigureAwait(false);
+            var deployParameter = await DirectoryDeployment.ReadDeployParameter(_config.DeploymentsDirectory, deploymentIdentifier, _fileSystem, _jsonSerializerOptionsCache.GetOrAdd(deploymentIdentifier), cancellationToken).ConfigureAwait(false);
             var context = await _contextPool.RegisterDeploymentAsync(deploymentIdentifier, deployParameter.PackageReferences,
                 cancellationToken).ConfigureAwait(false);
             var deployment = await _deploymentPool.RecoverDeploymentAsync(deploymentIdentifier, context, cancellationToken).ConfigureAwait(false);
