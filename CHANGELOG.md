@@ -22,6 +22,7 @@
 ### Fixed
 
 - Cache assemblies in `PackagesAssemblyLoadContext` with weak references to ensure they can be collected when the context is unloaded
+- Update `FastCloner` to `3.5.5` to fix unloading issues until core engine updates the version
 
 ## 1.0.0 - 2026-03-18
 

@@ -17,11 +17,6 @@
         "resolved": "2.0.7",
         "contentHash": "ih4yNLLF2Ebz85xJJBaPeddLa4d1AekYId7Y1g8oSsEaBHHd/CtyeBJ+tDvQadqeXz7i591K5ry/td+4aaHnQA=="
       },
-      "FastCloner": {
-        "type": "Transitive",
-        "resolved": "3.4.7",
-        "contentHash": "30wSSPo5ut//D6VZH1HfugVZBAmXxaoF7/oDPiAOKAOp+50C63KJ2dhtja4CeQd68ZqiYJoxNcigJPARieWiJg=="
-      },
       "Microsoft.Extensions.Configuration": {
         "type": "Transitive",
         "resolved": "10.0.7",
@@ -396,6 +391,7 @@
       "ViciOne.ManagedEngine.Host": {
         "type": "Project",
         "dependencies": {
+          "FastCloner": "[3.5.5, )",
           "Microsoft.Extensions.Hosting": "[10.0.7, )",
           "Microsoft.IO.RecyclableMemoryStream": "[3.0.1, )",
           "OpenTelemetry.Exporter.OpenTelemetryProtocol": "[1.15.3, )",
@@ -417,6 +413,12 @@
           "Microsoft.Extensions.DependencyModel": "[10.0.7, )",
           "Testably.Abstractions": "[10.2.0, )"
         }
+      },
+      "FastCloner": {
+        "type": "CentralTransitive",
+        "requested": "[3.5.5, )",
+        "resolved": "3.5.5",
+        "contentHash": "q553fGj+/MiKS/LoaAinN9CCeKE6tKCUuCWck38vRB7odTurhlssiSKHWbskPBiEhSnXXWewLAGoqoTaieKMGw=="
       },
       "Microsoft.Extensions.DependencyModel": {
         "type": "CentralTransitive",
