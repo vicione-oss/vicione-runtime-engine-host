@@ -273,15 +273,9 @@ public class PackagesAssemblyLoadContext_DetachNativeHandles
         handles.Should().Contain(42);
         handles.Should().Contain(84);
 
-        // After detach, loading again should re-resolve
-        loadContextMethods.TryLoadNativeLibrary(Arg.Any<string>(), out Arg.Any<nint>())
-            .Returns(c =>
-            {
-                c[1] = (IntPtr)99;
-                return true;
-            });
-        var result = ((IAssemblyLoadContext)context).LoadUnmanagedDll("libA");
-        result.Should().Be(99);
+        // After detach, loading again should throw
+        var act = () => ((IAssemblyLoadContext)context).LoadUnmanagedDll("libA");
+        act.Should().Throw<ObjectDisposedException>();
     }
 
     [Fact]
