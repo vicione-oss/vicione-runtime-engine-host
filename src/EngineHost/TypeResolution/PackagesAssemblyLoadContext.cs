@@ -12,7 +12,7 @@ namespace ViciOne.ManagedEngine.TypeResolution;
 
 internal sealed class PackagesAssemblyLoadContext : AssemblyLoadContext, IAssemblyLoadContext
 {
-    private readonly ConcurrentDictionary<string, Assembly?> _managedAssembliesCache = [];
+    private readonly ConcurrentDictionary<string, WeakReference<Assembly>?> _managedAssembliesCache = [];
     private readonly ConcurrentDictionary<string, IntPtr> _unmanagedAssembliesCache = [];
     private readonly ConcurrentStack<IntPtr> _unmanagedAssemblies = new();
     private readonly IEnumerable<string> _sharedAssemblies;
@@ -61,16 +61,17 @@ internal sealed class PackagesAssemblyLoadContext : AssemblyLoadContext, IAssemb
         if (_logger.IsEnabled(LogLevel.Trace))
             stackTrace = CreateStackTraceMessage(new StackTrace(3, false), 5);
 
-        if (_managedAssembliesCache.TryGetValue(assemblyName.FullName, out var assembly))
+        if (_managedAssembliesCache.TryGetValue(assemblyName.FullName, out var cachedEntry))
         {
             _logger.LoadAssemblyFromCache(_name, assemblyName.FullName, stackTrace);
-            return assembly;
+            return cachedEntry?.TryGetTarget(out var cachedAssembly) == true ? cachedAssembly : null;
         }
 
         if (_sharedAssemblies.Any(a => string.Equals(assemblyName.Name, a, StringComparison.OrdinalIgnoreCase)))
         {
             _logger.LoadAssemblyFromSharedAssemblies(_name, assemblyName.FullName, stackTrace);
-            return _managedAssembliesCache.GetOrAdd(assemblyName.FullName, (Assembly?)null);
+            _managedAssembliesCache.TryAdd(assemblyName.FullName, null);
+            return null;
         }
 
         if (_resolverMap.TryGetValue(assemblyName.Name ?? string.Empty, out var resolver))
@@ -79,12 +80,15 @@ internal sealed class PackagesAssemblyLoadContext : AssemblyLoadContext, IAssemb
             if (path is not null)
             {
                 _logger.LoadAssemblyFromFile(_name, assemblyName.FullName, path, stackTrace);
-                return _managedAssembliesCache.GetOrAdd(assemblyName.FullName, _ => _loadContextMethods.LoadFromAssemblyPath(path));
+                var assembly = _loadContextMethods.LoadFromAssemblyPath(path);
+                _managedAssembliesCache.TryAdd(assemblyName.FullName, new WeakReference<Assembly>(assembly));
+                return assembly;
             }
         }
 
         _logger.LoadAssemblyFromDefaultContext(_name, assemblyName.FullName, stackTrace);
-        return _managedAssembliesCache.GetOrAdd(assemblyName.FullName, (Assembly?)null);
+        _managedAssembliesCache.TryAdd(assemblyName.FullName, null);
+        return null;
     }
 
     private static string CreateStackTraceMessage(StackTrace stackTrace, int limit)

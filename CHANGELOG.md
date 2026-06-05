@@ -19,6 +19,10 @@
 - Update `Testably.Abstractions` to `10.2.0`
 - Update `NuGet.Commands` to `7.3.1`
 
+### Fixed
+
+- Cache assemblies in `PackagesAssemblyLoadContext` with weak references to ensure they can be collected when the context is unloaded
+
 ## 1.0.0 - 2026-03-18
 
 ### Added
