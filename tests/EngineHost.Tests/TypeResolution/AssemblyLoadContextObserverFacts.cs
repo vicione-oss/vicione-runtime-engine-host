@@ -27,7 +27,9 @@ public class AssemblyLoadContextObserver_Observe
             onUnloaded: () => onUnloadedCalled = true,
             logEarlyDelay: 100, logLateDelay: 100, maxWaitDelay: 500, pollInterval: 50,
             timeProvider: timeProvider,
-            isAlive: () => alive);
+            isAlive: () => alive,
+            tryEnsureUnload: () => Task.CompletedTask,
+            tryEnsureUnloadAggressive: () => Task.CompletedTask);
 
         alive = false;
         timeProvider.Advance(TimeSpan.FromMilliseconds(100));
@@ -56,7 +58,9 @@ public class AssemblyLoadContextObserver_Observe
             onUnloaded: () => onUnloadedCalled = true,
             logEarlyDelay: 100, logLateDelay: 200, maxWaitDelay: 500, pollInterval: 50,
             timeProvider: timeProvider,
-            isAlive: () => alive);
+            isAlive: () => alive,
+            tryEnsureUnload: () => Task.CompletedTask,
+            tryEnsureUnloadAggressive: () => Task.CompletedTask);
 
         // After early delay, context is still alive
         timeProvider.Advance(TimeSpan.FromMilliseconds(100));
@@ -94,7 +98,9 @@ public class AssemblyLoadContextObserver_Observe
             onUnloaded: () => onUnloadedCalled = true,
             logEarlyDelay: 50, logLateDelay: 50, maxWaitDelay: 500, pollInterval: 50,
             timeProvider: timeProvider,
-            isAlive: () => alive);
+            isAlive: () => alive,
+            tryEnsureUnload: () => Task.CompletedTask,
+            tryEnsureUnloadAggressive: () => Task.CompletedTask);
 
         // Advance past early delay
         timeProvider.Advance(TimeSpan.FromMilliseconds(50));
@@ -133,7 +139,9 @@ public class AssemblyLoadContextObserver_Observe
             logLeaked: () => leakedCalled = true,
             logEarlyDelay: 10, logLateDelay: 10, maxWaitDelay: 50, pollInterval: 10,
             timeProvider: timeProvider,
-            isAlive: () => true);
+            isAlive: () => true,
+            tryEnsureUnload: () => Task.CompletedTask,
+            tryEnsureUnloadAggressive: () => Task.CompletedTask);
 
         // Advance past early + late + enough polls to exceed maxWaitDelay
         timeProvider.Advance(TimeSpan.FromMilliseconds(10));
@@ -169,7 +177,9 @@ public class AssemblyLoadContextObserver_Observe
             onUnloaded: null,
             logEarlyDelay: 50, logLateDelay: 50, maxWaitDelay: 200, pollInterval: 50,
             timeProvider: timeProvider,
-            isAlive: () => false);
+            isAlive: () => false,
+            tryEnsureUnload: () => Task.CompletedTask,
+            tryEnsureUnloadAggressive: () => Task.CompletedTask);
 
         timeProvider.Advance(TimeSpan.FromMilliseconds(50));
         await task;
@@ -193,7 +203,9 @@ public class AssemblyLoadContextObserver_Observe
             logLeaked: null,
             logEarlyDelay: 10, logLateDelay: 10, maxWaitDelay: 30, pollInterval: 10,
             timeProvider: timeProvider,
-            isAlive: () => true);
+            isAlive: () => true,
+            tryEnsureUnload: () => Task.CompletedTask,
+            tryEnsureUnloadAggressive: () => Task.CompletedTask);
 
         timeProvider.Advance(TimeSpan.FromMilliseconds(10));
         await Task.Yield();
@@ -236,7 +248,9 @@ public class AssemblyLoadContextObserver_Observe
                 logLate: static () => { },
                 logUnloaded: onUnloaded,
                 logEarlyDelay: 100, logLateDelay: 100,
-                timeProvider: tp);
+                timeProvider: tp,
+                tryEnsureUnload: () => Task.CompletedTask,
+                tryEnsureUnloadAggressive: () => Task.CompletedTask);
         }
     }
 }

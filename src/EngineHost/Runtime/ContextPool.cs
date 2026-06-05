@@ -97,7 +97,6 @@ internal sealed class ContextPool : IContextPool, IDisposable
                 {
                     UnloadContext(deploymentId, contextId, contextInfo.Context);
                     _contexts.Remove(contextId);
-                    _ = TryEnsureUnloadAsync();
                     _logger.ContextUnloadInitiated(contextId, deploymentId);
                 }
                 else
@@ -107,18 +106,6 @@ internal sealed class ContextPool : IContextPool, IDisposable
 
                 _deploymentContextMap.Remove(deploymentId);
             }
-        }
-
-        static async Task TryEnsureUnloadAsync()
-        {
-            for (var i = 0; i < 3; i++)
-            {
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                await Task.Delay(50, default).ConfigureAwait(false);
-            }
-
-            GC.Collect(GC.MaxGeneration, GCCollectionMode.Aggressive);
         }
     }
 
