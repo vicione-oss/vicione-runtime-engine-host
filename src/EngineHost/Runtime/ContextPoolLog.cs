@@ -23,10 +23,10 @@ internal static partial class ContextPoolLog
     [LoggerMessage(8, LogLevel.Debug, "Remove deployment '{DeploymentId}' from context '{ContextId}'.")]
     internal static partial void RemoveConsumer(this ILogger<ContextPool> logger, string contextId, string deploymentId);
 
-    [LoggerMessage(9, LogLevel.Warning, "Context '{ContextId}' leaked: native handles will not be freed.")]
+    [LoggerMessage(9, LogLevel.Warning, "Context '{ContextId}' leaked. Native handles will not be freed.")]
     internal static partial void ContextLeakedNativeHandlesNotFreed(this ILogger<ContextPool> logger, string contextId);
 
-    [LoggerMessage(10, LogLevel.Warning, "Context '{ContextId}': Cannot free a native library.")]
+    [LoggerMessage(10, LogLevel.Warning, "Failed to free native library for context '{ContextId}'.")]
     internal static partial void FreeNativeLibraryFailed(this ILogger<ContextPool> logger, Exception exception, string contextId);
 
     [LoggerMessage(11, LogLevel.Warning, "Failed to clear JsonSerializer cache, this might lead to increased memory usage until the process is recycled.")]

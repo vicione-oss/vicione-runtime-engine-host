@@ -17,7 +17,7 @@ using ViciOne.ManagedEngine.TypeResolution;
 
 namespace ViciOne.ManagedEngine.Runtime;
 
-internal sealed class ContextPool : IContextPool, IDisposable
+internal sealed class ContextPool : IContextPool, IAsyncDisposable
 {
     internal static readonly string[] s_preloadAssemblies =
     [
@@ -177,17 +177,15 @@ internal sealed class ContextPool : IContextPool, IDisposable
         return subReferences.Intersect(mainReferences, PackageReferenceIgnoreCasingEqualityComparer.Default).Count() == subReferences.Count;
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
         ContextInfo[] snapshot;
-        _mutex.Wait();
-        try
+        using (await _mutex.LockAsync())
         {
             snapshot = _contexts.Values.ToArray();
             _contexts.Clear();
             _deploymentContextMap.Clear();
         }
-        finally { _mutex.Release(); }
 
         foreach (var ci in snapshot)
         {
