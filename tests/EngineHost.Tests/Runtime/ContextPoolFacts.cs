@@ -14,10 +14,10 @@ using Xunit;
 
 namespace ViciOne.ManagedEngine.Runtime;
 
-public sealed class ContextPool_RegisterDeployment : IDisposable
+public sealed class ContextPool_RegisterDeployment : IAsyncDisposable
 {
     private readonly ContextPoolContext _context = new();
-    public void Dispose() => _context.Dispose();
+    public async ValueTask DisposeAsync() => await _context.DisposeAsync();
 
     [Fact]
     public async Task Returns_new_context_if_references_are_not_equal_Async()
@@ -74,10 +74,10 @@ public sealed class ContextPool_RegisterDeployment : IDisposable
     }
 }
 
-public sealed class ContextPool_UnregisterDeployment : IDisposable
+public sealed class ContextPool_UnregisterDeployment : IAsyncDisposable
 {
     private readonly ContextPoolContext _context = new();
-    public void Dispose() => _context.Dispose();
+    public async ValueTask DisposeAsync() => await _context.DisposeAsync();
 
     [Fact]
     public async Task Keeps_context_if_consumers_exists_Async()
@@ -402,7 +402,7 @@ public sealed class ContextPool_AreEqualOrSubsetOfPackageReferences
     }
 }
 
-internal sealed class ContextPoolContext : IDisposable
+internal sealed class ContextPoolContext : IAsyncDisposable
 {
     internal ContextPool ContextPool { get; }
     internal DirectoryMock Directory { get; } = new();
@@ -415,5 +415,26 @@ internal sealed class ContextPoolContext : IDisposable
         ContextPool = new(Config, Substitute.For<ILoggerFactory>(), Directory.FileSystem, Logger);
     }
 
-    public void Dispose() => ContextPool.Dispose();
+    public async ValueTask DisposeAsync() => await ContextPool.DisposeAsync();
+}
+
+public sealed class ContextPool_DisposeAsync
+{
+    [Fact]
+    [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "DisposeAsync is the method under test.")]
+    public async Task Is_safe_when_a_context_is_already_unloading()
+    {
+        var config = Substitute.For<IOptions<HostConfig>>();
+        DirectoryMock directory = new();
+        config.Value.Returns(new HostConfig { DeploymentsDirectory = directory.Path, });
+        var pool = new ContextPool(config, Substitute.For<ILoggerFactory>(), directory.FileSystem, new TestLogger<ContextPool>());
+
+        AssemblyLoadContext context = new("context-already-unloading", true);
+        pool._contexts.Add("ctx1", new() { Context = context, ConsumerCount = 1, });
+        context.Unload();
+
+        var act = async () => await pool.DisposeAsync();
+
+        await act.Should().NotThrowAsync();
+    }
 }

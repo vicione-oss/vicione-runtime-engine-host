@@ -11,12 +11,13 @@ using ViciOne.ManagedEngine.EngineDeployment;
 
 namespace ViciOne.ManagedEngine.Runtime;
 
-internal class DeploymentPool(IOptions<HostConfig> config, IFileSystem fileSystem) : IDeploymentPool
+internal class DeploymentPool(IOptions<HostConfig> config, IFileSystem fileSystem, JsonSerializerOptionsCache jsonSerializerOptionsCache) : IDeploymentPool
 {
     internal readonly ConcurrentDictionary<string, IDeployment> _deployments = new();
     private readonly ConcurrentDictionary<string, int> _startedDeployments = new();
     private readonly HostConfig _config = config.Value;
     private readonly IFileSystem _fileSystem = fileSystem;
+    private readonly JsonSerializerOptionsCache _jsonSerializerOptionsCache = jsonSerializerOptionsCache;
 
     public bool TryGetDeployment(string id, [NotNullWhen(true)] out IDeployment? deployment)
     {
@@ -29,7 +30,7 @@ internal class DeploymentPool(IOptions<HostConfig> config, IFileSystem fileSyste
         [StringSyntax(StringSyntaxAttribute.Json)] string startParameter, DeployParameter deployParameter, CancellationToken cancellationToken)
     {
         await DirectoryDeployment.ConfigureDeployment(_config.DeploymentsDirectory, deploymentId, startParameter,
-            deployParameter, _fileSystem, cancellationToken).ConfigureAwait(false);
+            deployParameter, _fileSystem, _jsonSerializerOptionsCache.GetOrAdd(deploymentId), cancellationToken).ConfigureAwait(false);
         return await CreateAndRegisterAsync(deploymentId, startParameter, context).ConfigureAwait(false);
     }
 
@@ -40,7 +41,7 @@ internal class DeploymentPool(IOptions<HostConfig> config, IFileSystem fileSyste
     }
 
     public Task<DeployParameter> GetDeployParameter(string deploymentId, CancellationToken cancellationToken)
-        => DirectoryDeployment.ReadDeployParameter(_config.DeploymentsDirectory, deploymentId, _fileSystem, cancellationToken);
+        => DirectoryDeployment.ReadDeployParameter(_config.DeploymentsDirectory, deploymentId, _fileSystem, _jsonSerializerOptionsCache.GetOrAdd(deploymentId), cancellationToken);
 
     private async Task<Deployment> CreateAndRegisterAsync(string deploymentId, [StringSyntax(StringSyntaxAttribute.Json)] string startParameter, AssemblyLoadContext context)
     {
@@ -60,6 +61,7 @@ internal class DeploymentPool(IOptions<HostConfig> config, IFileSystem fileSyste
         if (_deployments.TryRemove(id, out var deployment))
             await deployment.DisposeAsync();
         DirectoryDeployment.Delete(_config.DeploymentsDirectory, id, _fileSystem);
+        _jsonSerializerOptionsCache.Remove(id);
     }
 
     public IReadOnlyCollection<string> GetStartedDeployments()

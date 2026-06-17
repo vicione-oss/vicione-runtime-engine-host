@@ -33,14 +33,14 @@ internal static class DirectoryDeployment
         => [.. fileSystem.Directory.EnumerateDirectories(directory, "????????-????-????-????-????????????", SearchOption.TopDirectoryOnly).Select(d => fileSystem.Path.GetFileName(d))];
 
     internal static async Task ConfigureDeployment(string directory, string deploymentIdentifier,
-        [StringSyntax(StringSyntaxAttribute.Json)] string startParameter, DeployParameter deployParameter, IFileSystem fileSystem, CancellationToken cancellationToken)
+        [StringSyntax(StringSyntaxAttribute.Json)] string startParameter, DeployParameter deployParameter, IFileSystem fileSystem, JsonSerializerOptions jsonSerializerOptions, CancellationToken cancellationToken)
     {
         var deploymentPath = GetPath(directory, deploymentIdentifier, fileSystem);
 
         fileSystem.Directory.CreateDirectory(deploymentPath);
 
         await PlaceStartParameter(startParameter, deploymentPath, fileSystem, cancellationToken).ConfigureAwait(false);
-        await PlaceDeployParameter(deployParameter, deploymentPath, fileSystem, cancellationToken).ConfigureAwait(false);
+        await PlaceDeployParameter(deployParameter, deploymentPath, fileSystem, jsonSerializerOptions, cancellationToken).ConfigureAwait(false);
     }
 
     private static async Task PlaceStartParameter([StringSyntax(StringSyntaxAttribute.Json)] string startParameter, string deploymentPath, IFileSystem fileSystem,
@@ -53,15 +53,15 @@ internal static class DirectoryDeployment
         await writer.WriteAsync(startParameter.AsMemory(), cancellationToken).ConfigureAwait(false);
     }
 
-    private static async Task PlaceDeployParameter(DeployParameter deployParameter, string deploymentPath, IFileSystem fileSystem, CancellationToken cancellationToken)
+    private static async Task PlaceDeployParameter(DeployParameter deployParameter, string deploymentPath, IFileSystem fileSystem, JsonSerializerOptions jsonSerializerOptions, CancellationToken cancellationToken)
     {
         var fileName = FileNameHelper.GetDeployParameterFileName(deploymentPath, fileSystem);
         await using var file = fileSystem.FileStream.New(fileName, s_writeOptions);
         await using GZipStream gzip = new(file, CompressionMode.Compress);
-        await JsonSerializer.SerializeAsync(gzip, deployParameter, cancellationToken: cancellationToken);
+        await JsonSerializer.SerializeAsync(gzip, deployParameter, jsonSerializerOptions, cancellationToken);
     }
 
-    internal static async Task<DeployParameter> ReadDeployParameter(string directory, string deploymentIdentifier, IFileSystem fileSystem, CancellationToken cancellationToken)
+    internal static async Task<DeployParameter> ReadDeployParameter(string directory, string deploymentIdentifier, IFileSystem fileSystem, JsonSerializerOptions jsonSerializerOptions, CancellationToken cancellationToken)
     {
         var deploymentPath = GetPath(directory, deploymentIdentifier, fileSystem);
         var fileName = FileNameHelper.GetDeployParameterFileName(deploymentPath, fileSystem);
@@ -71,7 +71,7 @@ internal static class DirectoryDeployment
         {
             await using var file = fileSystem.FileStream.New(fileName, s_readOptions);
             await using GZipStream gzip = new(file, CompressionMode.Decompress);
-            return await JsonSerializer.DeserializeAsync<DeployParameter>(gzip, cancellationToken: cancellationToken)
+            return await JsonSerializer.DeserializeAsync<DeployParameter>(gzip, jsonSerializerOptions, cancellationToken)
                 ?? throw new InvalidOperationException("JSON file content cannot be null.");
         }
         catch (Exception ex)

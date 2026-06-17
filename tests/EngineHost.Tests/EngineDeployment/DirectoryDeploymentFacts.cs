@@ -32,7 +32,7 @@ public class DirectoryDeployment_ConfigureDeployment
         };
 
         await DirectoryDeployment.ConfigureDeployment(directory.Path, DeploymentIdentifier, string.Empty,
-            deployParameter, directory.FileSystem, CancellationToken.None);
+            deployParameter, directory.FileSystem, new(), CancellationToken.None);
 
         (await ReadCompressedJsonFile(FileNameHelper.GetDeployParameterFileName(Path.Combine(directory.Path, DeploymentIdentifier), directory.FileSystem), directory.FileSystem))
             .Should().Be(@"{""PackageReferences"":[{""Name"":""Package"",""Version"":""1.0.0""}],""EngineChainIndex"":10,""CycleTime"":100}");
@@ -44,7 +44,7 @@ public class DirectoryDeployment_ConfigureDeployment
         DirectoryMock directory = new();
 
         await DirectoryDeployment.ConfigureDeployment(directory.Path, DeploymentIdentifier, "{}",
-            new(), directory.FileSystem, CancellationToken.None);
+            new(), directory.FileSystem, new(), CancellationToken.None);
 
         (await ReadCompressedJsonFile(FileNameHelper.GetStartParameterFileName(directory.FileSystem.Path.Combine(directory.Path, DeploymentIdentifier), directory.FileSystem), directory.FileSystem)).Should().Be("{}");
     }
@@ -75,7 +75,7 @@ public class DirectoryDeployment_ReadDeployParameter
         DeployParameter expected = new() { CycleTime = 123, };
         deployment.WriteDeployParameter(expected);
 
-        var actual = await DirectoryDeployment.ReadDeployParameter(deployment.Path, DeploymentIdentifier, deployment.FileSystem, TestContext.Current.CancellationToken);
+        var actual = await DirectoryDeployment.ReadDeployParameter(deployment.Path, DeploymentIdentifier, deployment.FileSystem, new(), TestContext.Current.CancellationToken);
 
         actual.Should().BeEquivalentTo(expected);
     }
@@ -85,7 +85,7 @@ public class DirectoryDeployment_ReadDeployParameter
     {
         TemporaryDirectoryDeployment deployment = new(DeploymentIdentifier, string.Empty);
 
-        var call = FluentActions.Awaiting(() => DirectoryDeployment.ReadDeployParameter(deployment.Path, DeploymentIdentifier, deployment.FileSystem, TestContext.Current.CancellationToken));
+        var call = FluentActions.Awaiting(() => DirectoryDeployment.ReadDeployParameter(deployment.Path, DeploymentIdentifier, deployment.FileSystem, new(), TestContext.Current.CancellationToken));
 
         await call.Should().ThrowAsync<InvalidOperationException>().WithMessage("*not*find*deploy*parameter*json.gz'*");
     }
@@ -98,7 +98,7 @@ public class DirectoryDeployment_ReadDeployParameter
 
         using var _ = deployment.FileSystem.File.Open(deployment.DeployParameterFile, FileMode.Open, FileAccess.ReadWrite);
 
-        var call = FluentActions.Awaiting(() => DirectoryDeployment.ReadDeployParameter(deployment.Path, DeploymentIdentifier, deployment.FileSystem, TestContext.Current.CancellationToken));
+        var call = FluentActions.Awaiting(() => DirectoryDeployment.ReadDeployParameter(deployment.Path, DeploymentIdentifier, deployment.FileSystem, new(), TestContext.Current.CancellationToken));
 
         await call.Should().ThrowAsync<InvalidOperationException>().WithMessage($"*not*read*deploy*parameter*json.gz'*");
     }

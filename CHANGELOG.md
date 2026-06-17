@@ -4,6 +4,10 @@
 
 ### Changed
 
+- Native library handles are now freed only after the owning AssemblyLoadContext is confirmed collected, preventing use-after-free crashes
+- Cache `JsonSerializerOptions` per deployment to avoid using the default instance which is shared with the host
+- Clear `JsonSerializer` caches on context unload to prevent memory leaks from unloaded assemblies
+- Progressive GC collection on context unload to speed up memory cleanup
 - Update `OpenTelemetry.Exporter.OpenTelemetryProtocol` to `1.15.3`
 - Update `OpenTelemetry.Extensions.Hosting` to `1.15.3`
 - Update `OpenTelemetry.Instrumentation.Runtime` to `1.15.1`
@@ -14,6 +18,11 @@
 - Update `Serilog.Sinks.Journal` to `1.2.0`
 - Update `Testably.Abstractions` to `10.2.0`
 - Update `NuGet.Commands` to `7.3.1`
+
+### Fixed
+
+- Cache assemblies in `PackagesAssemblyLoadContext` with weak references to ensure they can be collected when the context is unloaded
+- Update `FastCloner` to `3.5.5` to fix unloading issues until core engine updates the version
 
 ## 1.0.0 - 2026-03-18
 

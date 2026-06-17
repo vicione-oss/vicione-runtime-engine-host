@@ -1,64 +1,60 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
+using System.Threading;
 using Microsoft.Extensions.Logging;
 
 namespace ViciOne.ManagedEngine.TypeResolution;
 
 internal sealed class PackagesAssemblyLoadContext : AssemblyLoadContext, IAssemblyLoadContext
 {
-    private readonly ConcurrentDictionary<string, Assembly?> _managedAssembliesCache = [];
+    private readonly ConcurrentDictionary<string, WeakReference<Assembly>?> _managedAssembliesCache = [];
     private readonly ConcurrentDictionary<string, IntPtr> _unmanagedAssembliesCache = [];
-    private readonly Stack<IntPtr> _unmanagedAssemblies = new();
-    private readonly IEnumerable<string> _sharedAssemblies;
+    private readonly Lock _nativeHandleLock = new();
+    private readonly FrozenSet<string> _sharedAssemblies;
     private readonly ILogger<PackagesAssemblyLoadContext> _logger;
-    private readonly Dictionary<string, AssemblyDependencyResolver> _resolverMap;
+    private readonly FrozenDictionary<string, AssemblyDependencyResolver> _resolverMap;
     private readonly string _name;
     private readonly IFileSystem _fileSystem;
-
     private readonly ILoadContextMethods _loadContextMethods;
+    private volatile bool _detached;
 
     internal PackagesAssemblyLoadContext(string engine, IReadOnlyCollection<string> sharedAssemblies, ILogger<PackagesAssemblyLoadContext> logger,
         List<(string Filename, string ComponentName)> files, IFileSystem fileSystem, ILoadContextMethods? loadContextMethods = null)
         : base(engine, true)
     {
         _loadContextMethods = loadContextMethods ?? new LoadContextMethods(this);
-        _sharedAssemblies = sharedAssemblies;
+        _sharedAssemblies = sharedAssemblies.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
         _logger = logger;
         _name = engine;
         _fileSystem = fileSystem;
         _resolverMap = GetResolverMap(files);
-
-        Unloading += _ =>
-        {
-            _managedAssembliesCache.Clear();
-            _unmanagedAssembliesCache.Clear();
-
-            while (_unmanagedAssemblies.Count != 0)
-            {
-                try
-                {
-                    _loadContextMethods.FreeNativeLibrary(_unmanagedAssemblies.Pop());
-                }
-                catch (Exception ex)
-                {
-                    _logger.FreeNativeAssemblyFailed(ex, _name);
-                }
-            }
-        };
     }
 
-    internal static Dictionary<string, AssemblyDependencyResolver> GetResolverMap(List<(string Filename, string ComponentName)> files)
+    /// <remarks>Must be called before <c>Unload()</c> to transfer ownership of native handles to the caller.</remarks>
+    internal IntPtr[] DetachNativeHandles()
+    {
+        lock (_nativeHandleLock)
+        {
+            _detached = true;
+            var snapshot = _unmanagedAssembliesCache.Values.ToArray();
+            _unmanagedAssembliesCache.Clear();
+            return snapshot;
+        }
+    }
+
+    internal static FrozenDictionary<string, AssemblyDependencyResolver> GetResolverMap(List<(string Filename, string ComponentName)> files)
     {
         var resolvers = files
             .DistinctBy(e => e.ComponentName)
             .ToDictionary(e => e.ComponentName, e => new AssemblyDependencyResolver(e.ComponentName));
-        return files.ToDictionary(e => e.Filename, e => resolvers[e.ComponentName]);
+        return files.ToFrozenDictionary(e => e.Filename, e => resolvers[e.ComponentName]);
     }
 
     Assembly? IAssemblyLoadContext.Load(AssemblyName assemblyName)
@@ -70,16 +66,17 @@ internal sealed class PackagesAssemblyLoadContext : AssemblyLoadContext, IAssemb
         if (_logger.IsEnabled(LogLevel.Trace))
             stackTrace = CreateStackTraceMessage(new StackTrace(3, false), 5);
 
-        if (_managedAssembliesCache.TryGetValue(assemblyName.FullName, out var assembly))
+        if (_managedAssembliesCache.TryGetValue(assemblyName.FullName, out var cachedEntry))
         {
             _logger.LoadAssemblyFromCache(_name, assemblyName.FullName, stackTrace);
-            return assembly;
+            return cachedEntry?.TryGetTarget(out var cachedAssembly) == true ? cachedAssembly : null;
         }
 
-        if (_sharedAssemblies.Any(a => string.Equals(assemblyName.Name, a, StringComparison.OrdinalIgnoreCase)))
+        if (_sharedAssemblies.Contains(assemblyName.Name ?? string.Empty))
         {
             _logger.LoadAssemblyFromSharedAssemblies(_name, assemblyName.FullName, stackTrace);
-            return _managedAssembliesCache.GetOrAdd(assemblyName.FullName, (Assembly?)null);
+            _managedAssembliesCache.TryAdd(assemblyName.FullName, null);
+            return null;
         }
 
         if (_resolverMap.TryGetValue(assemblyName.Name ?? string.Empty, out var resolver))
@@ -88,12 +85,15 @@ internal sealed class PackagesAssemblyLoadContext : AssemblyLoadContext, IAssemb
             if (path is not null)
             {
                 _logger.LoadAssemblyFromFile(_name, assemblyName.FullName, path, stackTrace);
-                return _managedAssembliesCache.GetOrAdd(assemblyName.FullName, _ => _loadContextMethods.LoadFromAssemblyPath(path));
+                var assembly = _loadContextMethods.LoadFromAssemblyPath(path);
+                _managedAssembliesCache.TryAdd(assemblyName.FullName, new WeakReference<Assembly>(assembly));
+                return assembly;
             }
         }
 
         _logger.LoadAssemblyFromDefaultContext(_name, assemblyName.FullName, stackTrace);
-        return _managedAssembliesCache.GetOrAdd(assemblyName.FullName, (Assembly?)null);
+        _managedAssembliesCache.TryAdd(assemblyName.FullName, null);
+        return null;
     }
 
     private static string CreateStackTraceMessage(StackTrace stackTrace, int limit)
@@ -104,6 +104,9 @@ internal sealed class PackagesAssemblyLoadContext : AssemblyLoadContext, IAssemb
 
     protected override IntPtr LoadUnmanagedDll(string unmanagedDllName)
     {
+        if (_detached)
+            throw new ObjectDisposedException(nameof(PackagesAssemblyLoadContext), "Cannot load after native handles have been detached.");
+
         var stackTrace = string.Empty;
         if (_logger.IsEnabled(LogLevel.Trace))
             stackTrace = CreateStackTraceMessage(new StackTrace(3, false), 5);
@@ -124,12 +127,24 @@ internal sealed class PackagesAssemblyLoadContext : AssemblyLoadContext, IAssemb
 
                 if (path is not null && _loadContextMethods.TryLoadNativeLibrary(path, out var handle))
                 {
-                    if (_unmanagedAssembliesCache.TryAdd(unmanagedDllName, handle))
+                    if (handle == IntPtr.Zero)
+                        return IntPtr.Zero;
+
+                    lock (_nativeHandleLock)
                     {
-                        _unmanagedAssemblies.Push(handle);
-                        _logger.LoadNativeAssemblyFromFile(_name, unmanagedDllName, path, stackTrace);
-                        return handle;
+                        if (_detached)
+                        {
+                            _loadContextMethods.FreeNativeLibrary(handle);
+                            throw new ObjectDisposedException(nameof(PackagesAssemblyLoadContext), "Cannot load after native handles have been detached.");
+                        }
+
+                        if (_unmanagedAssembliesCache.TryAdd(unmanagedDllName, handle))
+                        {
+                            _logger.LoadNativeAssemblyFromFile(_name, unmanagedDllName, path, stackTrace);
+                            return handle;
+                        }
                     }
+
                     _loadContextMethods.FreeNativeLibrary(handle);
                     return _unmanagedAssembliesCache.TryGetValue(unmanagedDllName, out var result) ? result : IntPtr.Zero;
                 }

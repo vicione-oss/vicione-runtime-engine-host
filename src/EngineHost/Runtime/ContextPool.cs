@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Runtime.Loader;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -15,7 +17,7 @@ using ViciOne.ManagedEngine.TypeResolution;
 
 namespace ViciOne.ManagedEngine.Runtime;
 
-internal sealed class ContextPool : IContextPool, IDisposable
+internal sealed class ContextPool : IContextPool, IAsyncDisposable
 {
     internal static readonly string[] s_preloadAssemblies =
     [
@@ -95,7 +97,6 @@ internal sealed class ContextPool : IContextPool, IDisposable
                 {
                     UnloadContext(deploymentId, contextId, contextInfo.Context);
                     _contexts.Remove(contextId);
-                    _ = TryEnsureUnloadAsync();
                     _logger.ContextUnloadInitiated(contextId, deploymentId);
                 }
                 else
@@ -106,27 +107,51 @@ internal sealed class ContextPool : IContextPool, IDisposable
                 _deploymentContextMap.Remove(deploymentId);
             }
         }
-
-        static async Task TryEnsureUnloadAsync()
-        {
-            for (var i = 0; i < 3; i++)
-            {
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                await Task.Delay(50, default).ConfigureAwait(false);
-            }
-
-            GC.Collect(GC.MaxGeneration, GCCollectionMode.Aggressive);
-        }
     }
 
     private void UnloadContext(string deploymentId, string contextId, AssemblyLoadContext context)
     {
+        var nativeHandles = context is PackagesAssemblyLoadContext p
+            ? p.DetachNativeHandles()
+            : [];
+
+        context.Unloading += _ => ClearJsonSerializerCache(); // it is called after other handlers
         context.Unload();
-        AssemblyLoadContextObserver.Observe(context,
-            () => _logger.ContextIsStillAlive(LogLevel.Information, contextId, deploymentId),
-            () => _logger.ContextIsStillAlive(LogLevel.Warning, contextId, deploymentId),
-            () => _logger.ContextIsUnloaded(contextId, deploymentId));
+
+        _ = AssemblyLoadContextObserver.Observe(context,
+            logEarly: () => _logger.ContextIsStillAlive(LogLevel.Information, contextId, deploymentId),
+            logLate: () => _logger.ContextIsStillAlive(LogLevel.Warning, contextId, deploymentId),
+            logUnloaded: () => _logger.ContextIsUnloaded(contextId, deploymentId),
+            onUnloaded: () => FreeNativeHandles(nativeHandles, contextId),
+            logLeaked: () => _logger.ContextLeakedNativeHandlesNotFreed(contextId));
+    }
+
+    private void ClearJsonSerializerCache()
+    {
+        try
+        {
+            JsonSerializerOptions.Default.ClearCaches();
+            JsonMemberAccessor.ClearCache();
+        }
+        catch
+        {
+            _logger.ClearJsonSerializerCacheFailed();
+        }
+    }
+
+    private void FreeNativeHandles(IntPtr[] handles, string contextId)
+    {
+        foreach (var h in handles)
+        {
+            try
+            {
+                NativeLibrary.Free(h);
+            }
+            catch (Exception ex)
+            {
+                _logger.FreeNativeLibraryFailed(ex, contextId);
+            }
+        }
     }
 
     internal static string GetUniqueHash(IReadOnlyCollection<PackageReference> packageReferences)
@@ -152,13 +177,22 @@ internal sealed class ContextPool : IContextPool, IDisposable
         return subReferences.Intersect(mainReferences, PackageReferenceIgnoreCasingEqualityComparer.Default).Count() == subReferences.Count;
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
-        foreach (var (_, contextInfo) in _contexts)
-            contextInfo.Context.Unload();
+        ContextInfo[] snapshot;
+        using (await _mutex.LockAsync())
+        {
+            snapshot = _contexts.Values.ToArray();
+            _contexts.Clear();
+            _deploymentContextMap.Clear();
+        }
 
-        _contexts.Clear();
-        _deploymentContextMap.Clear();
+        foreach (var ci in snapshot)
+        {
+            try { ci.Context.Unload(); }
+            catch (InvalidOperationException) { /* already unloading */ }
+        }
+
         _mutex.Dispose();
     }
 
