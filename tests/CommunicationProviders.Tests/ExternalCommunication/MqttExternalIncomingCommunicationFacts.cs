@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.Loader;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using AwesomeAssertions;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
-using MQTTnet.Client;
 using MQTTnet.Extensions;
 using NSubstitute;
 using ViciOne.ManagedEngine.Communication;
@@ -109,9 +109,9 @@ public sealed class MqttExternalIncomingCommunication_Received : IDisposable
         var builder = new MqttApplicationMessageBuilder()
             .WithTopic("A")
             .WithPayload(payload)
-            .WithUserProperty(MqttUserProperties.Timestamp, "2020-04-16T10:14:40.0000000+0200")
-            .WithUserProperty(MqttUserProperties.Validity, "1")
-            .WithUserProperty(MqttUserProperties.Type, value.GetType().AssemblyQualifiedName);
+            .WithUserProperty(MqttUserProperties.Timestamp, Encoding.UTF8.GetBytes("2020-04-16T10:14:40.0000000+0200"))
+            .WithUserProperty(MqttUserProperties.Validity, Encoding.UTF8.GetBytes("1"))
+            .WithUserProperty(MqttUserProperties.Type, Encoding.UTF8.GetBytes(value.GetType().AssemblyQualifiedName ?? string.Empty));
         var e = new MqttApplicationMessageReceivedEventArgs("B", builder.Build(), new(), (_, _) => Task.CompletedTask);
         _context.MqttClient.MessageReceived += Raise.Event<Func<MqttApplicationMessageReceivedEventArgs, Task>>(e);
 
@@ -137,9 +137,9 @@ public sealed class MqttExternalIncomingCommunication_Received : IDisposable
         var builder = new MqttApplicationMessageBuilder()
             .WithTopic("A")
             .WithJsonPayload(JsonSerializer.Serialize<object?>(null, _serializerOptions))
-            .WithUserProperty(MqttUserProperties.Timestamp, "2020-04-16T08:14:40.0000000Z")
-            .WithUserProperty(MqttUserProperties.Validity, "0")
-            .WithUserProperty(MqttUserProperties.Type, typeof(object).AssemblyQualifiedName);
+            .WithUserProperty(MqttUserProperties.Timestamp, Encoding.UTF8.GetBytes("2020-04-16T08:14:40.0000000Z"))
+            .WithUserProperty(MqttUserProperties.Validity, Encoding.UTF8.GetBytes("0"))
+            .WithUserProperty(MqttUserProperties.Type, Encoding.UTF8.GetBytes(typeof(object).AssemblyQualifiedName ?? string.Empty));
         var e = new MqttApplicationMessageReceivedEventArgs("B", builder.Build(), new(), (_, _) => Task.CompletedTask);
         _context.MqttClient.MessageReceived += Raise.Event<Func<MqttApplicationMessageReceivedEventArgs, Task>>(e);
 
@@ -163,9 +163,9 @@ public sealed class MqttExternalIncomingCommunication_Received : IDisposable
         var builder = new MqttApplicationMessageBuilder()
             .WithTopic("A")
             .WithJsonPayload(JsonSerializer.Serialize(new CancelEventArgs(true), _serializerOptions))
-            .WithUserProperty(MqttUserProperties.Timestamp, "2020-04-16T09:14:40.0000000+0100")
-            .WithUserProperty(MqttUserProperties.Validity, "0")
-            .WithUserProperty(MqttUserProperties.Type, typeof(CancelEventArgs).AssemblyQualifiedName);
+            .WithUserProperty(MqttUserProperties.Timestamp, Encoding.UTF8.GetBytes("2020-04-16T09:14:40.0000000+0100"))
+            .WithUserProperty(MqttUserProperties.Validity, Encoding.UTF8.GetBytes("0"))
+            .WithUserProperty(MqttUserProperties.Type, Encoding.UTF8.GetBytes(typeof(CancelEventArgs).AssemblyQualifiedName ?? string.Empty));
         var e = new MqttApplicationMessageReceivedEventArgs("B", builder.Build(), new(), (_, _) => Task.CompletedTask);
         _context.MqttClient.MessageReceived += Raise.Event<Func<MqttApplicationMessageReceivedEventArgs, Task>>(e);
 
@@ -191,9 +191,9 @@ public sealed class MqttExternalIncomingCommunication_Received : IDisposable
         var builder = new MqttApplicationMessageBuilder()
             .WithTopic("A")
             .WithPayload("invalid payload text")
-            .WithUserProperty(MqttUserProperties.Timestamp, "2020-04-16T08:14:40.0000000Z")
-            .WithUserProperty(MqttUserProperties.Validity, "1")
-            .WithUserProperty(MqttUserProperties.Type, typeof(string).AssemblyQualifiedName);
+            .WithUserProperty(MqttUserProperties.Timestamp, Encoding.UTF8.GetBytes("2020-04-16T08:14:40.0000000Z"))
+            .WithUserProperty(MqttUserProperties.Validity, Encoding.UTF8.GetBytes("1"))
+            .WithUserProperty(MqttUserProperties.Type, Encoding.UTF8.GetBytes(typeof(string).AssemblyQualifiedName ?? string.Empty));
         var e = new MqttApplicationMessageReceivedEventArgs("X", builder.Build(), new(), (_, _) => Task.CompletedTask);
         _context.MqttClient.MessageReceived += Raise.Event<Func<MqttApplicationMessageReceivedEventArgs, Task>>(e);
 
@@ -238,8 +238,8 @@ public sealed class MqttExternalIncomingCommunication_Received : IDisposable
         var builder = new MqttApplicationMessageBuilder()
             .WithTopic("A")
             .WithPayload("78")
-            .WithUserProperty(MqttUserProperties.Timestamp, "2020-04-16T10:14:40.0000000+0200")
-            .WithUserProperty(MqttUserProperties.Type, typeof(int).AssemblyQualifiedName);
+            .WithUserProperty(MqttUserProperties.Timestamp, Encoding.UTF8.GetBytes("2020-04-16T10:14:40.0000000+0200"))
+            .WithUserProperty(MqttUserProperties.Type, Encoding.UTF8.GetBytes(typeof(int).AssemblyQualifiedName ?? string.Empty));
         var e = new MqttApplicationMessageReceivedEventArgs("X", builder.Build(), new(), (_, _) => Task.CompletedTask);
         _context.MqttClient.MessageReceived += Raise.Event<Func<MqttApplicationMessageReceivedEventArgs, Task>>(e);
 

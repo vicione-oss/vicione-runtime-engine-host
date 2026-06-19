@@ -7,6 +7,7 @@
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet.Extensions" />
     <PackageReference Include="CsvHelper" />
+    <PackageReference Include="MQTTnet.Server" />
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="System.CommandLine" />
   </ItemGroup>

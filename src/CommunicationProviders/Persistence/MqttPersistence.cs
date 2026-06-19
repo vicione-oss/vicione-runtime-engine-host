@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Loader;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -94,7 +95,7 @@ public sealed class MqttPersistence : ISettingsPersistence<MqttCommunication>, I
                 .WithTopic(topic)
                 .WithJsonPayload(JsonSerializer.SerializeToUtf8Bytes(persistenceEntry.Value, type, _serializerOptions))
                 .WithUserProperty(MqttUserProperties.Timestamp, persistenceEntry.Time)
-                .WithUserProperty(MqttUserProperties.Type, type.AssemblyQualifiedName)
+                .WithUserProperty(MqttUserProperties.Type, Encoding.UTF8.GetBytes(type.AssemblyQualifiedName!))
                 .Build();
             await _client.Publish(message).ConfigureAwait(false);
             _logger.PersistenceEntrySend(persistenceEntry.UniqueIdentifier, _nameResolver.ResolveName(persistenceEntry.UniqueIdentifier), topic);

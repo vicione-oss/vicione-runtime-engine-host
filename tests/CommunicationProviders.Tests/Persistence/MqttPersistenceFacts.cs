@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Net.Mime;
 using System.Runtime.Loader;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -125,8 +126,8 @@ public sealed class MqttPersistence_Save : IDisposable
         message.ContentType.Should().Be(MediaTypeNames.Application.Json);
         message.UserProperties.Should().BeEquivalentTo(new MqttUserProperty[]
         {
-            new(MqttUserProperties.Timestamp, "2020-09-28T12:05:14.0000000Z"),
-            new(MqttUserProperties.Type, value.GetType().AssemblyQualifiedName),
+            new(MqttUserProperties.Timestamp, Encoding.UTF8.GetBytes("2020-09-28T12:05:14.0000000Z")),
+            new(MqttUserProperties.Type, Encoding.UTF8.GetBytes(value.GetType().AssemblyQualifiedName ?? string.Empty)),
         });
         message.ConvertPayloadToString().Should().Be(payload);
     }

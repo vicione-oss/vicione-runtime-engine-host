@@ -6,8 +6,8 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using MQTTnet.Client;
 using MQTTnet.Extensions;
+using MQTTnet.Packets;
 using MQTTnet.Protocol;
 using ViciOne.ManagedEngine.Communication;
 using ViciOne.ManagedEngine.Runtime;
@@ -76,7 +76,7 @@ public sealed class MqttExternalIncomingCommunication : IExternalIncomingCommuni
         }
     }
 
-    private Task MessageReceivedAsync(MqttApplicationMessageReceivedEventArgs e)
+    private Task MessageReceivedAsync(MQTTnet.MqttApplicationMessageReceivedEventArgs e)
     {
         _logger.MessageReceived(_options.ConnectionUniqueIdentifier, _nameResolver.ResolveName(_options.ConnectionUniqueIdentifier), e.ClientId,
             e.ApplicationMessage.Topic);
@@ -91,11 +91,11 @@ public sealed class MqttExternalIncomingCommunication : IExternalIncomingCommuni
                 Validity = e.ApplicationMessage.UserProperties.FindRequired(MqttUserProperties.Validity).Get<int>(),
                 Channel = e.ApplicationMessage.Topic,
             };
-            if (e.ApplicationMessage.PayloadSegment.Count > 0)
+            if (e.ApplicationMessage.Payload.Length > 0)
             {
-                value.Value = JsonSerializer.Deserialize(
-                    e.ApplicationMessage.PayloadSegment,
-                    TypeResolver.GetType(e.ApplicationMessage.UserProperties.FindRequired(MqttUserProperties.Type).Value, _assemblyLoadContext),
+                var reader = new Utf8JsonReader(e.ApplicationMessage.Payload);
+                value.Value = JsonSerializer.Deserialize(ref reader,
+                    TypeResolver.GetType(e.ApplicationMessage.UserProperties.FindRequired(MqttUserProperties.Type).ReadValueAsString(), _assemblyLoadContext),
                     _serializerOptions);
             }
         }

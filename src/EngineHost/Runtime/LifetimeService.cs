@@ -1,4 +1,5 @@
 ﻿using System.Net.Mime;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,7 +40,7 @@ internal sealed class LifetimeService(IOptions<HostConfig> options, [FromKeyedSe
             .WithPayload(UpAndRunningPayload)
             .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
             .WithContentType(MediaTypeNames.Text.Plain)
-            .WithUserProperty(nameof(EngineHost.Version), EngineHost.InformationalVersion)
+            .WithUserProperty(nameof(EngineHost.Version), Encoding.UTF8.GetBytes(EngineHost.InformationalVersion))
             .Build());
     }
 

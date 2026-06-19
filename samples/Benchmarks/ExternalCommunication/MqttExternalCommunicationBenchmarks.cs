@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using Benchmarks.Communication;
 using Microsoft.Extensions.Logging.Abstractions;
-using MQTTnet;
 using MQTTnet.Extensions;
 using MQTTnet.Server;
 using NSubstitute;
@@ -61,7 +60,7 @@ public class MqttExternalCommunicationBenchmarks : IDisposable
     {
         if (MqttTestEnvironment.InProcessBroker && MqttTestEnvironment.Port.HasValue)
         {
-            _broker = new MqttFactory().CreateMqttServer(
+            _broker = new MqttServerFactory().CreateMqttServer(
                 new MqttServerOptionsBuilder()
                     .WithDefaultEndpoint()
                     .WithDefaultEndpointPort(MqttTestEnvironment.Port.Value)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Loader;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -79,7 +80,7 @@ public sealed class MqttExternalOutgoingCommunication : IExternalOutgoingCommuni
                     .WithUserProperty(MqttUserProperties.Timestamp, value.Timestamp)
                     .WithUserProperty(MqttUserProperties.Validity, value.Validity)
                     .WithUserProperty(MqttUserProperties.EngineCycle, engineCycle)
-                    .WithUserProperty(MqttUserProperties.Type, type.AssemblyQualifiedName)
+                    .WithUserProperty(MqttUserProperties.Type, Encoding.UTF8.GetBytes(type.AssemblyQualifiedName ?? string.Empty))
                     .Build();
                 await _client.Publish(message).ConfigureAwait(false);
                 _logger.MessageSend(_options.ConnectionUniqueIdentifier, _nameResolver.ResolveName(_options.ConnectionUniqueIdentifier), value.Channel);
