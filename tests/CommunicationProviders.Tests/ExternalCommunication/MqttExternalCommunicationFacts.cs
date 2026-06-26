@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using AwesomeAssertions;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
-using MQTTnet.Client;
 using MQTTnet.Extensions;
 using NSubstitute;
 using ViciOne.ManagedEngine.Communication;

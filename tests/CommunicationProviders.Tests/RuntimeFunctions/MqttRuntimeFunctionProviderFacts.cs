@@ -3,12 +3,12 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mime;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AwesomeAssertions;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
-using MQTTnet.Client;
 using MQTTnet.Extensions;
 using MQTTnet.Packets;
 using MQTTnet.Protocol;
@@ -136,7 +136,7 @@ public sealed class MqttRuntimeFunctionProvider_MessageReceived : IDisposable
         var builder = new MqttApplicationMessageBuilder()
             .WithTopic($"{_context.Engine}/request")
             .WithResponseTopic("responsetopic")
-            .WithUserProperty(string.Empty, string.Empty)
+            .WithUserProperty(string.Empty, Encoding.UTF8.GetBytes(string.Empty))
             .WithCorrelationData(ArrayPool<byte>.Shared.Rent(4))
             .WithJsonPayload(EmptyJson)
             .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.ExactlyOnce);
@@ -153,7 +153,7 @@ public sealed class MqttRuntimeFunctionProvider_MessageReceived : IDisposable
         message.QualityOfServiceLevel.Should().Be(MqttQualityOfServiceLevel.ExactlyOnce);
         message.UserProperties.Should().BeEquivalentTo(new MqttUserProperty[]
         {
-            new("Status", "failed"),
+            new("Status", Encoding.UTF8.GetBytes("failed")),
         });
         message.ConvertPayloadToString().Should().MatchEquivalentOf("*not*determine*request*name*");
     }
@@ -182,7 +182,7 @@ public sealed class MqttRuntimeFunctionProvider_MessageReceived : IDisposable
         message.QualityOfServiceLevel.Should().Be(MqttQualityOfServiceLevel.ExactlyOnce);
         message.UserProperties.Should().BeEquivalentTo(new MqttUserProperty[]
         {
-            new("Status", "failed"),
+            new("Status", Encoding.UTF8.GetBytes("failed")),
         });
         message.ConvertPayloadToString().Should().MatchEquivalentOf("*request*unknown*not*supported*");
     }
@@ -212,7 +212,7 @@ public sealed class MqttRuntimeFunctionProvider_MessageReceived : IDisposable
         message.QualityOfServiceLevel.Should().Be(MqttQualityOfServiceLevel.ExactlyOnce);
         message.UserProperties.Should().BeEquivalentTo(new MqttUserProperty[]
         {
-            new("Status", "failed"),
+            new("Status", Encoding.UTF8.GetBytes("failed")),
         });
         message.ConvertPayloadToString().Should().Be("Could not set log level.");
     }
@@ -243,7 +243,7 @@ public sealed class MqttRuntimeFunctionProvider_MessageReceived : IDisposable
         message.QualityOfServiceLevel.Should().Be(MqttQualityOfServiceLevel.ExactlyOnce);
         message.UserProperties.Should().BeEquivalentTo(new MqttUserProperty[]
         {
-            new("Status", "failed"),
+            new("Status", Encoding.UTF8.GetBytes("failed")),
         });
         message.ConvertPayloadToString().Should().Be("No log available to set level.");
     }
@@ -276,9 +276,9 @@ public sealed class MqttRuntimeFunctionProvider_MessageReceived : IDisposable
         message.QualityOfServiceLevel.Should().Be(MqttQualityOfServiceLevel.ExactlyOnce);
         message.UserProperties.Should().BeEquivalentTo(new MqttUserProperty[]
         {
-            new("Status", "ok"),
+            new("Status", Encoding.UTF8.GetBytes("ok")),
         });
-        message.PayloadSegment.Array.Should().BeNull();
+        message.Payload.ToArray().Should().BeEmpty();
         _context.Logger.EventId.Should().Be(new EventId(5, "MessageReceived"));
         _context.Logger.Exception.Should().BeNull();
         _context.Logger.LogLevel.Should().Be(LogLevel.Trace);

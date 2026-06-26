@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net.Mime;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AwesomeAssertions;
@@ -49,7 +50,7 @@ public sealed class LifetimeService_StartedAsync
         message.ContentType.Should().Be(MediaTypeNames.Text.Plain);
         var userProperty = message.UserProperties.Should().ContainSingle().Subject;
         userProperty.Name.Should().Be("Version");
-        userProperty.Value.Should().Be(EngineHost.InformationalVersion);
+        Encoding.UTF8.GetString(userProperty.ValueBuffer.Span).Should().Be(EngineHost.InformationalVersion);
         context.Logger.Calls.Should().Be(1);
         context.Logger.LogLevel.Should().Be(LogLevel.Information);
         context.Logger.EventId.Should().Be(new EventId(0, nameof(LifetimeServiceLog.UpAndRunning)));

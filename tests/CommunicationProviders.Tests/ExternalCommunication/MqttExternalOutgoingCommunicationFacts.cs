@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Net.Mime;
 using System.Runtime.Loader;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -167,10 +168,10 @@ public sealed class MqttExternalOutgoingCommunication_Send : IDisposable
         var message = messages.Should().ContainSingle().Subject;
         message.UserProperties.Should().BeEquivalentTo(new MqttUserProperty[]
         {
-            new(MqttUserProperties.Timestamp, "2020-04-15T17:18:20.0000000Z"),
-            new(MqttUserProperties.Validity, "1"),
-            new(MqttUserProperties.EngineCycle, "8"),
-            new(MqttUserProperties.Type, typeof(object).AssemblyQualifiedName),
+            new(MqttUserProperties.Timestamp, Encoding.UTF8.GetBytes("2020-04-15T17:18:20.0000000Z")),
+            new(MqttUserProperties.Validity, Encoding.UTF8.GetBytes("1")),
+            new(MqttUserProperties.EngineCycle, Encoding.UTF8.GetBytes("8")),
+            new(MqttUserProperties.Type, Encoding.UTF8.GetBytes(typeof(object).AssemblyQualifiedName ?? string.Empty)),
         });
     }
 

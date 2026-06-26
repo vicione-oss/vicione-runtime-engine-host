@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using MQTTnet.Client;
 using MQTTnet.Extensions;
 using MQTTnet.Extensions.ManagedClient;
 
@@ -56,12 +55,12 @@ internal sealed class PipelineSubscriptionWatcher : IDisposable
         return Task.CompletedTask;
     }
 
-    private static bool IsGranted(MqttClientSubscribeResultCode code)
+    private static bool IsGranted(MQTTnet.MqttClientSubscribeResultCode code)
         => code switch
         {
-            MqttClientSubscribeResultCode.GrantedQoS0 or
-            MqttClientSubscribeResultCode.GrantedQoS1 or
-            MqttClientSubscribeResultCode.GrantedQoS2 => true,
+            MQTTnet.MqttClientSubscribeResultCode.GrantedQoS0 or
+            MQTTnet.MqttClientSubscribeResultCode.GrantedQoS1 or
+            MQTTnet.MqttClientSubscribeResultCode.GrantedQoS2 => true,
             _ => false,
         };
 }

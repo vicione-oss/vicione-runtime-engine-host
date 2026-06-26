@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AwesomeAssertions;
@@ -10,7 +11,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Time.Testing;
 using MQTTnet;
-using MQTTnet.Client;
 using MQTTnet.Extensions;
 using MQTTnet.Extensions.ManagedClient;
 using MQTTnet.Packets;
@@ -98,7 +98,7 @@ public sealed class MqttPipelineCommunicationAdapter_OnMessageReceivedAsync : IA
         await _context.MqttClient.Received().Publish(Arg.Is<MqttApplicationMessage>(m =>
             m.CorrelationData.SequenceEqual(correlationToken) &&
             m.Topic == "responseTopic" &&
-            m.UserProperties[0].Value == "ok" &&
+            Encoding.UTF8.GetString(m.UserProperties[0].ValueBuffer.ToArray()) == "ok" &&
             m.ConvertPayloadToString() == "\"Result\"" &&
             m.PayloadFormatIndicator == MqttPayloadFormatIndicator.CharacterData &&
             m.ContentType == MediaTypeNames.Application.Json));
@@ -119,7 +119,7 @@ public sealed class MqttPipelineCommunicationAdapter_OnMessageReceivedAsync : IA
         await _context.MqttClient.Received().Publish(Arg.Is<MqttApplicationMessage>(m =>
             m.CorrelationData.SequenceEqual(correlationToken) &&
             m.Topic == "responseTopic" &&
-            m.UserProperties[0].Value == "failed" &&
+            Encoding.UTF8.GetString(m.UserProperties[0].ValueBuffer.ToArray()) == "failed" &&
             m.ConvertPayloadToString().Contains("cannot find engine.exe") &&
             m.PayloadFormatIndicator == MqttPayloadFormatIndicator.CharacterData &&
             m.ContentType == MediaTypeNames.Text.Plain));
@@ -132,7 +132,7 @@ public sealed class MqttPipelineCommunicationAdapter_OnMessageReceivedAsync : IA
             "123",
             new MqttApplicationMessageBuilder()
                 .WithTopic("/request")
-                .WithUserProperty("Method", method)
+                .WithUserProperty("Method", Encoding.UTF8.GetBytes(method))
                 .WithPayload(payload)
                 .WithContentType(MediaTypeNames.Application.Json)
                 .WithResponseTopic("responseTopic")

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using AwesomeAssertions;
 using Microsoft.Extensions.Logging;
-using MQTTnet.Client;
+using MQTTnet;
 using MQTTnet.Extensions;
 using MQTTnet.Extensions.ManagedClient;
 using MQTTnet.Packets;
