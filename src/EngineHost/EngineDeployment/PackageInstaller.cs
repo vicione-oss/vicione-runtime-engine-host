@@ -17,8 +17,21 @@ internal static class PackageInstaller
 
         return [.. packages
             .SelectMany(p => p.Assets.Select(a => (Asset: a, Package: p)))
+            .Where(e => IsLoadableAsset(e.Asset.Filename, fileSystem))
             .GroupBy(e => fileSystem.Path.GetFileNameWithoutExtension(e.Asset.Filename), e => new AssetFileCandidate(e.Asset.Filename, ReadAssemblyVersion(e.Asset.Filename, fileSystem), e.Package))
             .Select(e => (e.Key, e.Aggregate((file1 , file2) => ByHighestVersionOrLastFile(file1, file2, fileSystem)).Package))];
+    }
+
+    /// <remarks>Non-loadable assets (e.g. <c>.pdb</c>, <c>.xml</c>, <c>.deps.json</c>) must not compete with
+    /// assemblies of the same base name for the resolver mapping.</remarks>
+    internal static bool IsLoadableAsset(string filename, IFileSystem fileSystem)
+    {
+        var name = fileSystem.Path.GetFileName(filename);
+        var extension = fileSystem.Path.GetExtension(name);
+        return extension.Equals(".dll", StringComparison.OrdinalIgnoreCase)
+            || extension.Equals(".so", StringComparison.OrdinalIgnoreCase)
+            || extension.Equals(".dylib", StringComparison.OrdinalIgnoreCase)
+            || name.Contains(".so.", StringComparison.OrdinalIgnoreCase);
     }
 
     internal sealed record AssetFileCandidate(string Filename, Version? Version, Package Package);
