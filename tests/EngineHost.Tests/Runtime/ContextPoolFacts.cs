@@ -164,6 +164,34 @@ public sealed class ContextPool_UnregisterDeployment : IAsyncDisposable
     }
 }
 
+public sealed class ContextPool_ObserveUnloadAndLogFailure : IAsyncDisposable
+{
+    private readonly ContextPoolContext _context = new();
+    public async ValueTask DisposeAsync() => await _context.DisposeAsync();
+
+    [Fact]
+    public async Task Logs_exception_of_failed_observation_Async()
+    {
+        InvalidOperationException exception = new("observation failed");
+
+        await _context.ContextPool.ObserveUnloadAndLogFailureAsync("context", () => Task.FromException(exception));
+
+        _context.Logger.Calls.Should().Be(1);
+        _context.Logger.LogLevel.Should().Be(LogLevel.Error);
+        _context.Logger.EventId.Should().Be(new EventId(12, nameof(ContextPoolLog.ContextUnloadObservationFailed)));
+        _context.Logger.Exception.Should().Be(exception);
+        _context.Logger.Message.Should().MatchEquivalentOf("*observation*unload*context*context*failed*");
+    }
+
+    [Fact]
+    public async Task Does_not_log_on_successful_observation_Async()
+    {
+        await _context.ContextPool.ObserveUnloadAndLogFailureAsync("context", () => Task.CompletedTask);
+
+        _context.Logger.Calls.Should().Be(0);
+    }
+}
+
 public sealed class ContextPool_GetUniqueHash
 {
     [Fact]
