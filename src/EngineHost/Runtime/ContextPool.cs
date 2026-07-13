@@ -180,12 +180,13 @@ internal sealed class ContextPool : IContextPool, IAsyncDisposable
         return HashToString(CreateHash(packageReferences));
 
         // Delimiters prevent collisions between e.g. ("Foo", "1.0") and ("Foo1", ".0").
+        // Uppercasing must happen before ordering so that logically equal sets order identically.
         static Span<byte> CreateHash(IEnumerable<PackageReference> references)
             => SHA256.HashData(
                 Encoding.UTF8.GetBytes(
                     string.Join('\n', references
-                        .Select(r => r.Name + '|' + r.Version)
-                        .Order()).ToUpperInvariant()));
+                        .Select(r => (r.Name + '|' + r.Version).ToUpperInvariant())
+                        .Order())));
 
         static string HashToString(Span<byte> hash)
             => Convert.ToHexString(hash);

@@ -322,6 +322,42 @@ public sealed class ContextPool_GetUniqueHash
     }
 
     [Fact]
+    public void Ignores_casing_when_ordering_multiple_references()
+    {
+        var packageReferences1 = new List<PackageReference>()
+        {
+            new()
+            {
+                Name = "a",
+                Version = "1",
+            },
+            new()
+            {
+                Name = "B",
+                Version = "2",
+            },
+        };
+        var packageReferences2 = new List<PackageReference>()
+        {
+            new()
+            {
+                Name = "A",
+                Version = "1",
+            },
+            new()
+            {
+                Name = "b",
+                Version = "2",
+            },
+        };
+
+        var hash1 = ContextPool.GetUniqueHash(packageReferences1);
+        var hash2 = ContextPool.GetUniqueHash(packageReferences2);
+
+        hash1.Should().Be(hash2);
+    }
+
+    [Fact]
     public void Separates_name_from_version()
     {
         var packageReferences1 = new List<PackageReference>()
