@@ -59,6 +59,10 @@ internal sealed class ContextPool : IContextPool, IAsyncDisposable
     {
         using (await _mutex.LockAsync())
         {
+            // Guard before any mutation; failing later on _deploymentContextMap.Add would leak a freshly created context.
+            if (_deploymentContextMap.ContainsKey(deploymentId))
+                throw new InvalidOperationException($"Deployment '{deploymentId}' is already registered.");
+
             // Duplicates would defeat the subset matching (Intersect de-duplicates) and inflate the hash.
             packageReferences = packageReferences.Distinct(PackageReferenceIgnoreCasingEqualityComparer.Default).ToArray();
 

@@ -91,6 +91,35 @@ public sealed class ContextPool_RegisterDeployment : IAsyncDisposable
     }
 
     [Fact]
+    public async Task Throws_if_deployment_is_already_registered_Async()
+    {
+        await _context.ContextPool.RegisterDeploymentAsync("deployment", [], CancellationToken.None);
+
+        var act = async () => await _context.ContextPool.RegisterDeploymentAsync("deployment", [], CancellationToken.None);
+
+        await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("*deployment*already registered*");
+        var contextInfo = _context.ContextPool._contexts.Should().ContainSingle().Which;
+        contextInfo.Value.ConsumerCount.Should().Be(1);
+        _context.ContextPool._deploymentContextMap.Should().ContainSingle();
+    }
+
+    [Fact]
+    public async Task Leaves_pool_unchanged_if_package_resolution_fails_Async()
+    {
+        var act = async () => await _context.ContextPool.RegisterDeploymentAsync("deployment",
+            [new() { Name = "missing", Version = "1.0.0", },], CancellationToken.None);
+
+        await act.Should().ThrowAsync<InvalidOperationException>();
+        _context.ContextPool._contexts.Should().BeEmpty();
+        _context.ContextPool._deploymentContextMap.Should().BeEmpty();
+
+        var context = await _context.ContextPool.RegisterDeploymentAsync("deployment", [], CancellationToken.None);
+
+        context.Should().NotBeNull();
+        _context.ContextPool._contexts.Should().ContainSingle();
+    }
+
+    [Fact]
     public async Task Returns_same_context_if_references_contain_case_duplicates_Async()
     {
         PackageReference reference = new() { Name = "one", Version = "1.0.0", };
