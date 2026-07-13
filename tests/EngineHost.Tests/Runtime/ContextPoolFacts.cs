@@ -72,6 +72,40 @@ public sealed class ContextPool_RegisterDeployment : IAsyncDisposable
 
         context.IsCollectible.Should().BeTrue();
     }
+
+    [Fact]
+    public async Task Returns_same_context_if_references_contain_duplicates_Async()
+    {
+        PackageReference reference = new() { Name = "one", Version = "1.0.0", };
+        var existingContextId = ContextPool.GetUniqueHash([reference]);
+
+        AssemblyLoadContext existingContext = new(existingContextId, true);
+        _context.ContextPool._contexts.Add(existingContextId, new() { Context = existingContext, ConsumerCount = 1, PackageReferences = [reference], });
+
+        var context = await _context.ContextPool.RegisterDeploymentAsync("deployment",
+            [reference, new() { Name = "one", Version = "1.0.0", },], CancellationToken.None);
+
+        context.Should().Be(existingContext);
+        var contextInfo = _context.ContextPool._contexts.Should().ContainSingle().Which;
+        contextInfo.Value.ConsumerCount.Should().Be(2);
+    }
+
+    [Fact]
+    public async Task Returns_same_context_if_references_contain_case_duplicates_Async()
+    {
+        PackageReference reference = new() { Name = "one", Version = "1.0.0", };
+        var existingContextId = ContextPool.GetUniqueHash([reference]);
+
+        AssemblyLoadContext existingContext = new(existingContextId, true);
+        _context.ContextPool._contexts.Add(existingContextId, new() { Context = existingContext, ConsumerCount = 1, PackageReferences = [reference], });
+
+        var context = await _context.ContextPool.RegisterDeploymentAsync("deployment",
+            [reference, new() { Name = "ONE", Version = "1.0.0", },], CancellationToken.None);
+
+        context.Should().Be(existingContext);
+        var contextInfo = _context.ContextPool._contexts.Should().ContainSingle().Which;
+        contextInfo.Value.ConsumerCount.Should().Be(2);
+    }
 }
 
 public sealed class ContextPool_UnregisterDeployment : IAsyncDisposable

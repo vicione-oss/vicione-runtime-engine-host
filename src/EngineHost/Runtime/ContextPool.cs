@@ -59,6 +59,9 @@ internal sealed class ContextPool : IContextPool, IAsyncDisposable
     {
         using (await _mutex.LockAsync())
         {
+            // Duplicates would defeat the subset matching (Intersect de-duplicates) and inflate the hash.
+            packageReferences = packageReferences.Distinct(PackageReferenceIgnoreCasingEqualityComparer.Default).ToArray();
+
             var (contextId, contextInfo) = _contexts.FirstOrDefault(c => AreEqualOrSubsetOfPackageReferences(c.Value.PackageReferences, packageReferences));
 
             if (contextInfo is null)
