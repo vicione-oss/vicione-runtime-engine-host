@@ -229,6 +229,63 @@ public sealed class ContextPool_GetUniqueHash
 
         hash1.Should().Be(hash2);
     }
+
+    [Fact]
+    public void Separates_name_from_version()
+    {
+        var packageReferences1 = new List<PackageReference>()
+        {
+            new()
+            {
+                Name = "Foo",
+                Version = "1.0",
+            },
+        };
+        var packageReferences2 = new List<PackageReference>()
+        {
+            new()
+            {
+                Name = "Foo1",
+                Version = ".0",
+            },
+        };
+
+        var hash1 = ContextPool.GetUniqueHash(packageReferences1);
+        var hash2 = ContextPool.GetUniqueHash(packageReferences2);
+
+        hash1.Should().NotBe(hash2);
+    }
+
+    [Fact]
+    public void Separates_references_from_each_other()
+    {
+        var packageReferences1 = new List<PackageReference>()
+        {
+            new()
+            {
+                Name = "A",
+                Version = "1",
+            },
+            new()
+            {
+                Name = "B",
+                Version = "2",
+            },
+        };
+        var packageReferences2 = new List<PackageReference>()
+        {
+            new()
+            {
+                Name = "A",
+                Version = "1B|2",
+            },
+        };
+
+        var hash1 = ContextPool.GetUniqueHash(packageReferences1);
+        var hash2 = ContextPool.GetUniqueHash(packageReferences2);
+
+        hash1.Should().NotBe(hash2);
+    }
 }
 
 public sealed class ContextPool_AreEqualOrSubsetOfPackageReferences

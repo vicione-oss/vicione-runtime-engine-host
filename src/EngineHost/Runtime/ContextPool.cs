@@ -158,11 +158,12 @@ internal sealed class ContextPool : IContextPool, IAsyncDisposable
     {
         return HashToString(CreateHash(packageReferences));
 
+        // Delimiters prevent collisions between e.g. ("Foo", "1.0") and ("Foo1", ".0").
         static Span<byte> CreateHash(IEnumerable<PackageReference> references)
             => SHA256.HashData(
                 Encoding.UTF8.GetBytes(
-                    string.Join(string.Empty, references
-                        .Select(r => r.Name + r.Version)
+                    string.Join('\n', references
+                        .Select(r => r.Name + '|' + r.Version)
                         .Order()).ToUpperInvariant()));
 
         static string HashToString(Span<byte> hash)
