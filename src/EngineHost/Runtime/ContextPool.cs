@@ -59,6 +59,13 @@ internal sealed class ContextPool : IContextPool, IAsyncDisposable
     {
         using (await _mutex.LockAsync())
         {
+            // Guard before any mutation; failing later on _deploymentContextMap.Add would leak a freshly created context.
+            if (_deploymentContextMap.ContainsKey(deploymentId))
+                throw new InvalidOperationException($"Deployment '{deploymentId}' is already registered.");
+
+            // Duplicates would defeat the subset matching (Intersect de-duplicates) and inflate the hash.
+            packageReferences = packageReferences.Distinct(PackageReferenceIgnoreCasingEqualityComparer.Default).ToArray();
+
             var (contextId, contextInfo) = _contexts.FirstOrDefault(c => AreEqualOrSubsetOfPackageReferences(c.Value.PackageReferences, packageReferences));
 
             if (contextInfo is null)
@@ -118,12 +125,26 @@ internal sealed class ContextPool : IContextPool, IAsyncDisposable
         context.Unloading += _ => ClearJsonSerializerCache(); // it is called after other handlers
         context.Unload();
 
-        _ = AssemblyLoadContextObserver.Observe(context,
+        _ = ObserveUnloadAndLogFailureAsync(contextId, () => AssemblyLoadContextObserver.Observe(context,
             logEarly: () => _logger.ContextIsStillAlive(LogLevel.Information, contextId, deploymentId),
             logLate: () => _logger.ContextIsStillAlive(LogLevel.Warning, contextId, deploymentId),
             logUnloaded: () => _logger.ContextIsUnloaded(contextId, deploymentId),
             onUnloaded: () => FreeNativeHandles(nativeHandles, contextId),
-            logLeaked: () => _logger.ContextLeakedNativeHandlesNotFreed(contextId));
+            logLeaked: () => _logger.ContextLeakedNativeHandlesNotFreed(contextId)));
+    }
+
+    /// <remarks>The observation runs fire-and-forget; without this wrapper its exceptions would be lost
+    /// as unobserved task exceptions.</remarks>
+    internal async Task ObserveUnloadAndLogFailureAsync(string contextId, Func<Task> observe)
+    {
+        try
+        {
+            await observe().ConfigureAwait(false);
+        }
+        catch (Exception exception)
+        {
+            _logger.ContextUnloadObservationFailed(exception, contextId);
+        }
     }
 
     private void ClearJsonSerializerCache()
@@ -158,12 +179,14 @@ internal sealed class ContextPool : IContextPool, IAsyncDisposable
     {
         return HashToString(CreateHash(packageReferences));
 
+        // Delimiters prevent collisions between e.g. ("Foo", "1.0") and ("Foo1", ".0").
+        // Uppercasing must happen before ordering so that logically equal sets order identically.
         static Span<byte> CreateHash(IEnumerable<PackageReference> references)
             => SHA256.HashData(
                 Encoding.UTF8.GetBytes(
-                    string.Join(string.Empty, references
-                        .Select(r => r.Name + r.Version)
-                        .Order()).ToUpperInvariant()));
+                    string.Join('\n', references
+                        .Select(r => (r.Name + '|' + r.Version).ToUpperInvariant())
+                        .Order())));
 
         static string HashToString(Span<byte> hash)
             => Convert.ToHexString(hash);

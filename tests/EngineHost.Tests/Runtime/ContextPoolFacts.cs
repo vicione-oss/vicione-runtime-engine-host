@@ -72,6 +72,69 @@ public sealed class ContextPool_RegisterDeployment : IAsyncDisposable
 
         context.IsCollectible.Should().BeTrue();
     }
+
+    [Fact]
+    public async Task Returns_same_context_if_references_contain_duplicates_Async()
+    {
+        PackageReference reference = new() { Name = "one", Version = "1.0.0", };
+        var existingContextId = ContextPool.GetUniqueHash([reference]);
+
+        AssemblyLoadContext existingContext = new(existingContextId, true);
+        _context.ContextPool._contexts.Add(existingContextId, new() { Context = existingContext, ConsumerCount = 1, PackageReferences = [reference], });
+
+        var context = await _context.ContextPool.RegisterDeploymentAsync("deployment",
+            [reference, new() { Name = "one", Version = "1.0.0", },], CancellationToken.None);
+
+        context.Should().Be(existingContext);
+        var contextInfo = _context.ContextPool._contexts.Should().ContainSingle().Which;
+        contextInfo.Value.ConsumerCount.Should().Be(2);
+    }
+
+    [Fact]
+    public async Task Throws_if_deployment_is_already_registered_Async()
+    {
+        await _context.ContextPool.RegisterDeploymentAsync("deployment", [], CancellationToken.None);
+
+        var act = async () => await _context.ContextPool.RegisterDeploymentAsync("deployment", [], CancellationToken.None);
+
+        await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("*deployment*already registered*");
+        var contextInfo = _context.ContextPool._contexts.Should().ContainSingle().Which;
+        contextInfo.Value.ConsumerCount.Should().Be(1);
+        _context.ContextPool._deploymentContextMap.Should().ContainSingle();
+    }
+
+    [Fact]
+    public async Task Leaves_pool_unchanged_if_package_resolution_fails_Async()
+    {
+        var act = async () => await _context.ContextPool.RegisterDeploymentAsync("deployment",
+            [new() { Name = "missing", Version = "1.0.0", },], CancellationToken.None);
+
+        await act.Should().ThrowAsync<InvalidOperationException>();
+        _context.ContextPool._contexts.Should().BeEmpty();
+        _context.ContextPool._deploymentContextMap.Should().BeEmpty();
+
+        var context = await _context.ContextPool.RegisterDeploymentAsync("deployment", [], CancellationToken.None);
+
+        context.Should().NotBeNull();
+        _context.ContextPool._contexts.Should().ContainSingle();
+    }
+
+    [Fact]
+    public async Task Returns_same_context_if_references_contain_case_duplicates_Async()
+    {
+        PackageReference reference = new() { Name = "one", Version = "1.0.0", };
+        var existingContextId = ContextPool.GetUniqueHash([reference]);
+
+        AssemblyLoadContext existingContext = new(existingContextId, true);
+        _context.ContextPool._contexts.Add(existingContextId, new() { Context = existingContext, ConsumerCount = 1, PackageReferences = [reference], });
+
+        var context = await _context.ContextPool.RegisterDeploymentAsync("deployment",
+            [reference, new() { Name = "ONE", Version = "1.0.0", },], CancellationToken.None);
+
+        context.Should().Be(existingContext);
+        var contextInfo = _context.ContextPool._contexts.Should().ContainSingle().Which;
+        contextInfo.Value.ConsumerCount.Should().Be(2);
+    }
 }
 
 public sealed class ContextPool_UnregisterDeployment : IAsyncDisposable
@@ -126,6 +189,34 @@ public sealed class ContextPool_UnregisterDeployment : IAsyncDisposable
     public async Task Does_nothing_if_context_does_not_exist_Async()
     {
         await _context.ContextPool.UnregisterDeploymentAsync("1");
+        _context.Logger.Calls.Should().Be(0);
+    }
+}
+
+public sealed class ContextPool_ObserveUnloadAndLogFailure : IAsyncDisposable
+{
+    private readonly ContextPoolContext _context = new();
+    public async ValueTask DisposeAsync() => await _context.DisposeAsync();
+
+    [Fact]
+    public async Task Logs_exception_of_failed_observation_Async()
+    {
+        InvalidOperationException exception = new("observation failed");
+
+        await _context.ContextPool.ObserveUnloadAndLogFailureAsync("context", () => Task.FromException(exception));
+
+        _context.Logger.Calls.Should().Be(1);
+        _context.Logger.LogLevel.Should().Be(LogLevel.Error);
+        _context.Logger.EventId.Should().Be(new EventId(12, nameof(ContextPoolLog.ContextUnloadObservationFailed)));
+        _context.Logger.Exception.Should().Be(exception);
+        _context.Logger.Message.Should().MatchEquivalentOf("*observation*unload*context*context*failed*");
+    }
+
+    [Fact]
+    public async Task Does_not_log_on_successful_observation_Async()
+    {
+        await _context.ContextPool.ObserveUnloadAndLogFailureAsync("context", () => Task.CompletedTask);
+
         _context.Logger.Calls.Should().Be(0);
     }
 }
@@ -228,6 +319,99 @@ public sealed class ContextPool_GetUniqueHash
         var hash2 = ContextPool.GetUniqueHash(packageReferences2);
 
         hash1.Should().Be(hash2);
+    }
+
+    [Fact]
+    public void Ignores_casing_when_ordering_multiple_references()
+    {
+        var packageReferences1 = new List<PackageReference>()
+        {
+            new()
+            {
+                Name = "a",
+                Version = "1",
+            },
+            new()
+            {
+                Name = "B",
+                Version = "2",
+            },
+        };
+        var packageReferences2 = new List<PackageReference>()
+        {
+            new()
+            {
+                Name = "A",
+                Version = "1",
+            },
+            new()
+            {
+                Name = "b",
+                Version = "2",
+            },
+        };
+
+        var hash1 = ContextPool.GetUniqueHash(packageReferences1);
+        var hash2 = ContextPool.GetUniqueHash(packageReferences2);
+
+        hash1.Should().Be(hash2);
+    }
+
+    [Fact]
+    public void Separates_name_from_version()
+    {
+        var packageReferences1 = new List<PackageReference>()
+        {
+            new()
+            {
+                Name = "Foo",
+                Version = "1.0",
+            },
+        };
+        var packageReferences2 = new List<PackageReference>()
+        {
+            new()
+            {
+                Name = "Foo1",
+                Version = ".0",
+            },
+        };
+
+        var hash1 = ContextPool.GetUniqueHash(packageReferences1);
+        var hash2 = ContextPool.GetUniqueHash(packageReferences2);
+
+        hash1.Should().NotBe(hash2);
+    }
+
+    [Fact]
+    public void Separates_references_from_each_other()
+    {
+        var packageReferences1 = new List<PackageReference>()
+        {
+            new()
+            {
+                Name = "A",
+                Version = "1",
+            },
+            new()
+            {
+                Name = "B",
+                Version = "2",
+            },
+        };
+        var packageReferences2 = new List<PackageReference>()
+        {
+            new()
+            {
+                Name = "A",
+                Version = "1B|2",
+            },
+        };
+
+        var hash1 = ContextPool.GetUniqueHash(packageReferences1);
+        var hash2 = ContextPool.GetUniqueHash(packageReferences2);
+
+        hash1.Should().NotBe(hash2);
     }
 }
 

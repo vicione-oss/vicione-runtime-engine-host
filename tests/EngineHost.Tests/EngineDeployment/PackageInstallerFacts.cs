@@ -75,6 +75,35 @@ public class PackageInstaller_Resolve
     }
 
     [Fact]
+    public void Ignores_non_loadable_assets()
+    {
+        var fileSystem = new MockFileSystem();
+
+        Package packageA = new(Path.Combine("dir", "A"),
+        [
+            new(Path.Combine("dir", "A", "Assembly.dll")),
+        ]);
+        Package packageB = new(Path.Combine("dir", "B"),
+        [
+            new(Path.Combine("dir", "B", "Assembly.xml")),
+            new(Path.Combine("dir", "B", "Assembly.pdb")),
+            new(Path.Combine("dir", "B", "Assembly.deps.json")),
+        ]);
+
+        List<Package> packages =
+        [
+            packageA,
+            packageB,
+        ];
+
+        var files = PackageInstaller.Resolve(packages, fileSystem, CancellationToken.None);
+
+        var file = files.Should().ContainSingle().Which;
+        file.Filename.Should().Be("Assembly");
+        file.Package.Should().Be(packageA);
+    }
+
+    [Fact]
     public void Aggregates_by_filename_without_extension()
     {
         var fileSystem = new MockFileSystem();
@@ -104,6 +133,27 @@ public class PackageInstaller_Resolve
                 e.Filename.Should().Be("Assembly");
                 e.Package.Should().Be(packageB);
             });
+    }
+}
+
+public class PackageInstaller_IsLoadableAsset
+{
+    [Theory]
+    [InlineData("Assembly.dll", true)]
+    [InlineData("Assembly.DLL", true)]
+    [InlineData("libnative.so", true)]
+    [InlineData("libnative.so.3", true)]
+    [InlineData("libnative.dylib", true)]
+    [InlineData("Assembly.pdb", false)]
+    [InlineData("Assembly.xml", false)]
+    [InlineData("Assembly.deps.json", false)]
+    [InlineData("Assembly.runtimeconfig.json", false)]
+    [InlineData("readme.md", false)]
+    public void Recognizes_loadable_assets(string filename, bool expected)
+    {
+        var fileSystem = new MockFileSystem();
+
+        PackageInstaller.IsLoadableAsset(Path.Combine("dir", "A", filename), fileSystem).Should().Be(expected);
     }
 }
 

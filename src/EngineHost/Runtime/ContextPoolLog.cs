@@ -31,4 +31,7 @@ internal static partial class ContextPoolLog
 
     [LoggerMessage(11, LogLevel.Warning, "Failed to clear JsonSerializer cache, this might lead to increased memory usage until the process is recycled.")]
     internal static partial void ClearJsonSerializerCacheFailed(this ILogger<ContextPool> logger);
+
+    [LoggerMessage(12, LogLevel.Error, "Observation of the unload of context '{ContextId}' failed. Native handles might not be freed.")]
+    internal static partial void ContextUnloadObservationFailed(this ILogger<ContextPool> logger, Exception exception, string contextId);
 }
