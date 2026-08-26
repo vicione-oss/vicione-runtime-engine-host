@@ -25,14 +25,14 @@ include:
     file: '/CI-Templates/v2/dotnet.yml'
   - project: 'vicione-oss/tooling/ci-templates'
     file: '/project/v1/dotnet.yml'
-  - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-restore@2
+  - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-restore@v2.7.0
     inputs:
       image: ${IMAGE_NAME}
       rules: *rules_always
       before_script:
         - dotnet nuget update source JFrogNuGetProxy --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
         - dotnet nuget update source JFrogViciOne --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
-  - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-build@2
+  - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-build@v2.7.0
     inputs:
       image: ${IMAGE_NAME}
       rules:
@@ -40,7 +40,7 @@ include:
       before_script:
         # Aspire.AppHost.Sdk gets restored during build and not during restore
         - dotnet nuget update source JFrogNuGetProxy --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
-  - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-artifacts@2
+  - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-artifacts@v2.7.0
     inputs:
       image: ${IMAGE_NAME}
       name: Build+Test
@@ -53,7 +53,7 @@ include:
       build: true
       test: true
       test_coverage: true
-  - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-pack@2
+  - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-pack@v2.7.0
     inputs:
       image: ${IMAGE_NAME}
       rules:
@@ -70,7 +70,7 @@ include:
       before_script:
         # Aspire.AppHost.Sdk gets restored during build and not during restore
         - dotnet nuget update source JFrogNuGetProxy --configfile NuGet.Config -u $NuGet_User_JFrog -p $NuGet_PW_JFrog --store-password-in-clear-text
-  - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-nuget-push@2
+  - component: $CI_SERVER_FQDN/vicione-oss/tooling/dotnet-component/dotnet-nuget-push@v2.7.0
     inputs:
       image: ${IMAGE_NAME}
       rules:
