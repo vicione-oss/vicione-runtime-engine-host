@@ -172,15 +172,19 @@ sequenceDiagram
 
 ## CI overview
 
-|  Stage  | Job                           |    Tag    | Default branch | Merge request |    Web    |
-|:-------:|-------------------------------|:---------:|:--------------:|:-------------:|:---------:|
-|   .pre  | **Get version**               |    run    |       run      |      run      |    run    |
-|   .pre  | **Restore**                   |    run    |       run      |      run      |    run    |
-|  build  | **Build**                     |    run    |    not added   |   not added   | not added |
-|   test  | **Build+Test**                | not added |       run      |      run      |    run    |
-|   test  | **Lint Markdown**             | not added |       run      |      run      |    run    |
-|   pack  | **Pack NuGet**                |    run    |     manual     |     manual    |   manual  |
-| publish | **Publish NuGet**             |   manual  |     manual     |     manual    |   manual  |
-| publish | **Prerelease EngineHost Raw** | not added |     manual     |     manual    |   manual  |
-| publish | **Release EngineHost Raw**    |    run    |    not added   |   not added   | not added |
-| publish | **Publish EngineHost Raw**    |   manual  |    not added   |   not added   | not added |
+|  Stage  | Job                         |    Tag    | Default branch | Merge request |    Web    |
+|:-------:|-----------------------------|:---------:|:--------------:|:-------------:|:---------:|
+|   .pre  | **Get version**             |    run    |       run      |      run      |    run    |
+|   .pre  | **Runtime Identifier**      |    run    |       run      |      run      |    run    |
+|   .pre  | **dotnet Restore**          |    run    |       run      |      run      |    run    |
+|  build  | **Project Metadata**        |    run    |       run      |      run      |    run    |
+|  build  | **dotnet Build**            |    run    |    not added   |   not added   | not added |
+|   test  | **Build+Test**              | not added |       run      |      run      |    run    |
+|   test  | **Lint Markdown**           | not added |       run      |      run      |    run    |
+|   pack  | **Pack NuGets**             |    run    |     manual     |     manual    |   manual  |
+|   pack  | **dotnet Publish**          |    run    |     manual     |     manual    |   manual  |
+|   pack  | **Pack binaries**           |    run    |       run      |      run      |    run    |
+| publish | **Push NuGets**             |   manual  |     manual     |     manual    |   manual  |
+| publish | **Push binaries (dev)**     | not added |     manual     |     manual    |   manual  |
+| publish | **Push binaries (staging)** |   manual  |    not added   |   not added   | not added |
+| release | **Release binaries**        |   manual  |    not added   |   not added   | not added |
