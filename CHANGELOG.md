@@ -19,6 +19,7 @@
 - Update `Testably.Abstractions` to `10.2.0`
 - Update `NuGet.Commands` to `7.3.1`
 - Update `MQTTnet.Extensions` to `1.0.0`
+- Rename the company to `ViciOne open automation gmbh` in the license and the package metadata
 
 ### Fixed
 
