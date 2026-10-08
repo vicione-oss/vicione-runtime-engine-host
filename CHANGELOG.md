@@ -25,6 +25,7 @@
 
 - Cache assemblies in `PackagesAssemblyLoadContext` with weak references to ensure they can be collected when the context is unloaded
 - Update `FastCloner` to `3.5.5` to fix unloading issues until core engine updates the version
+- Write engine journal metadata (e.g. `ENGINE_ID`) and log event properties as journal fields, so engine logs can be filtered by them
 
 ## 1.0.0 - 2026-03-18
 
